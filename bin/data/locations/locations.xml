@@ -1,0 +1,87 @@
+<location>
+
+<node>
+  <text> You come across a moth awkwardly flapping it's wings
+          along to some unheard beat </text>
+  <id> 0 </id>
+
+  <response>
+    <text> "Hello, can you hear music?"" </text>
+    <id> 1 </id>
+  </response>
+
+  <response>
+    <text> [Say Nothing, and flap your wings too]</text>
+    <id> 2 </id>
+  </response>
+
+</node>
+
+<node>
+  <text> "Oh hello. No. I can't, but there was a song I knew ... once ...
+    If I could only remember how it went, i would be so happy!" </text>
+  <id> 1 </id>
+
+  <response>
+    <text> "Fret not! I shall find you this mystery song!" </text>
+    <id> 3 </id>
+  </response>
+
+  <response>
+    <text> "I can't remember music either." </text>
+    <id> 3 </id>
+  </response>
+
+</node>
+
+<node>
+  <text> After a while the moth notices you, and gets excited:
+    "You know the song too! Do you know its name?! I have spent weeks trying to "
+    remember it ... " </text>
+  <id> 2 </id>
+
+  <response>
+    <text> "I am afraid not ..." </text>
+    <id> 4 </id>
+  </response>
+
+  <response>
+    <text> "Yes! I do!" </text>
+    <id> 5 </id>
+  </response>
+
+</node>
+
+<node>
+  <text> The moth goes back to flapping its wings. </text>
+  <id> 3 </id>
+</node>
+
+<node>
+  <text> "Oh... I hope some day I find it ..." </text>
+  <id> 4 </id>
+
+  <response>
+    <text> "Fret not! I shall find you this mystery song!" </text>
+    <id> 3 </id>
+  </response>
+
+  <response>
+    <text> "I can't remember music either." </text>
+    <id> 3 </id>
+  </response>
+
+</node>
+
+<node>
+  <text> "You do ?! What is it ?!" </text>
+  <id> 5 </id>
+
+  <response>
+    <text> "I Lied." </text>
+    <id> 4 </id>
+  </response>
+  
+</node>
+
+</location>
