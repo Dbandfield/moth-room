@@ -29,7 +29,7 @@ public:
 	void setFont(unsigned int _ID, FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(unsigned int _ID, FONT_SIZE _sz);
 
-	void setCallback(unsigned int _ID, GameControl *_gameControl, void(GameControl::*_f)());
+	void setCallback(unsigned int _ID, GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
 
 	float getHeight();
 

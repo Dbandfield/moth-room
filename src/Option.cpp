@@ -16,6 +16,7 @@ Option::Option()
 
 	gameControl = nullptr;
 	f = 0;
+	callbackArg = 0;
 }
 
 Option::~Option()
@@ -26,15 +27,16 @@ void Option::onSelect()
 {
 	ofLog(OF_LOG_VERBOSE) << "[Options] Selected";
 
-	((*gameControl).*f)();
+	((*gameControl).*f)(callbackArg);
 }
 
-void Option::setCallback(GameControl *_gameControl, void (GameControl::*_f)())
+void Option::setCallback(GameControl *_gameControl, void (GameControl::*_f)(unsigned int), unsigned int _arg)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Option] Setting Callback";
 
 	f = _f;
 	gameControl = _gameControl;
+	callbackArg = _arg;
 }
 
 } /* namespace moth */

@@ -52,7 +52,7 @@ public:
 	void clearText();
 	void addText(unsigned int _p, std::string, FONT_SIZE _sz=FONT_SMALL);
 	void clearOptions();
-	void addOption(unsigned int _p, std::string, void(GameControl::*_f)(), FONT_SIZE _sz=FONT_SMALL);
+	void addOption(unsigned int _p, std::string, void(GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz=FONT_SMALL);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <vector>
 
 namespace moth
 {
-
+typedef std::vector<std::pair<unsigned int, std::string>> vResponse;
 class StoryNode
 {
 public:
@@ -15,7 +15,8 @@ public:
 	void addResponse(unsigned int _ID, std::string _text);
 
 	std::string getText();
-	std::string getResponse(unsigned int _id);
+	vResponse getResponses(){return responses;};
+	unsigned int getID(){return ID;};
 
 protected:
 	unsigned int ID;
@@ -25,7 +26,7 @@ protected:
 	/* A response has text that is displayed, as well
 	 * as an ID correspindign to the Story Node it takes you
 	 * to.  */
-	std::map<unsigned int, std::string> responses;
+	vResponse responses;
 };
 
 } /* namespace moth */

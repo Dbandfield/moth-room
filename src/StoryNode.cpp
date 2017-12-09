@@ -22,23 +22,12 @@ StoryNode::~StoryNode()
 
 void StoryNode::addResponse(unsigned int _ID, std::string _text)
 {
-	responses.insert(std::pair<unsigned int, std::string>(_ID, _text));
+	responses.push_back(std::pair<unsigned int, std::string>(_ID, _text));
 }
 
 std::string StoryNode::getText()
 {
 	return text;
-}
-std::string StoryNode::getResponse(unsigned int _ID)
-{
-	if(responses.find(_ID) == responses.end())
-	{
-		return "[ERROR - NO RESPONSE WITH THAT ID]";
-	}
-	else
-	{
-		return responses[_ID];
-	}
 }
 
 } /* namespace moth */

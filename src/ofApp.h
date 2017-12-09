@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "ofMain.h"
 
 #include "DisplayControl.h"
@@ -23,8 +25,18 @@ protected:
 	moth::DisplayControl *displayControl;
 	moth::DataLoader *dataLoader;
 
+	ofShader pixelate;
+	ofShader vignette;
+	ofFbo buf1;
+	ofFbo buf2;
+
+	float distort;
+	float dividor;
+	float dividorChange = 0.1;
+
 	ofTrueTypeFont *font;
 
 	bool fontsTransferred;
+	bool locationsTransferred;
 
 };

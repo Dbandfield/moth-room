@@ -15,14 +15,15 @@ public:
 	Option();
 	virtual ~Option();
 
-	void setCallback(GameControl *_gameControl, void(GameControl::*_f)());
+	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
 	void onSelect();
 
 protected:
 
 	GameControl *gameControl;
-	void (GameControl::*f)();
+	void (GameControl::*f)(unsigned int);
 	ofRectangle bounds;
+	unsigned int callbackArg;
 };
 
 } /* namespace moth */

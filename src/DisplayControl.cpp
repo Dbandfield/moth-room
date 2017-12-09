@@ -26,7 +26,6 @@ DisplayControl::DisplayControl() :
 	clearLayout();
 
 	ofAddListener(ofEvents().keyReleased, this, &DisplayControl::onKeyPressed);
-
 }
 
 DisplayControl::~DisplayControl()
@@ -282,7 +281,7 @@ void DisplayControl::clearOptions()
 }
 
 void DisplayControl::addOption(unsigned int _p, std::string _str,
-		void (GameControl::*_f)(), FONT_SIZE _sz)
+		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding option " << _str;
 
@@ -299,17 +298,17 @@ void DisplayControl::addOption(unsigned int _p, std::string _str,
 		options[_p]->addTextFrame(40, 40, pt, true);
 		options[_p]->setText(options[_p]->getSize() - 1, _str);
 		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f);
+		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f, _arg);
 	}
 	else
 	{
 		options[_p]->addTextFrame(40, 40, pt, true);
 		options[_p]->setText(options[_p]->getSize() - 1, _str);
 		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f);
+		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f, _arg);
 	}
 
-	if(options.size() == 0)
+	if(options.size() != 0)
 	{
 		options[_p]->setSelected(true, SELECTED_NO_CHANGE);
 	}

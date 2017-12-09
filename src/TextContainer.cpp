@@ -81,11 +81,11 @@ void TextContainer::setFontSize(unsigned int _ID, FONT_SIZE _sz)
 }
 
 void TextContainer::setCallback(unsigned int _ID, GameControl *_gameControl,
-		void (GameControl::*_f)())
+		void (GameControl::*_f)(unsigned int), unsigned int _arg)
 {
 	if (_ID < frames.size())
 	{
-		frames[_ID]->setCallback(_gameControl, _f);
+		frames[_ID]->setCallback(_gameControl, _f, _arg);
 	}
 	else
 	{

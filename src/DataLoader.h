@@ -1,10 +1,14 @@
 #pragma once
 #include <map>
 #include <string>
+#include <sstream>
 
 #include <ofMain.h>
+#include <ofxXmlSettings.h>
 
 #include "enums.h"
+#include "Location.h"
+#include "StoryNode.h"
 
 namespace moth
 {
@@ -19,29 +23,51 @@ public:
 	void load();
 
 	ofTrueTypeFont& getFont(FONT_SIZE _size);
+	std::vector<Location*> getLocations();
 
 	void update();
-	bool isLoaded();
+	bool areFontsLoaded();
+	bool areLocationsLoaded();
 
 protected:
-	void stripHeader(std::string &str);
+	void loadConfig();
+	void loadFonts();
+	void loadLocations();
+	ofBuffer getBufferFromFile(std::string _fileName);
+
+	void stripHeader(std::string &str, char del1='[', char del2=']');
+
+	/* FONTS */
 	mFont fonts;
+	bool fontHeaderFound;
+	bool allFontsLoaded;
+
+	std::string fontPath;
+
+	const int SZ_SMALL = 16;
+	const int SZ_MEDIUM = 24;
+	const int SZ_LARGE = 48;
+
+	/* LOCATIONS */
+	bool allLocationsLoaded;
+	std::vector<Location*> locations;
+	const std::string LOCATION_DIR;
+	const std::string LOCATION_NAME;
+	ofxXmlSettings locationsXml;
+
+	ofFile locationFile;
+	std::string pathToLocationFile;
+	ofBuffer locationBuf;
+
+	/* CONFIG */
 
 	ofFile   configFile;
 	std::string   pathToConfig;
-	ofBuffer fileBuf;
+	ofBuffer configBuf;
 
 	const std::string CONFIG_DIR;
 	const std::string CONFIG_NAME;
 
-	bool fontHeaderFound;
-	bool allLoaded;
-
-	std::string fontPath;
-
-	const int SZ_SMALL = 12;
-	const int SZ_MEDIUM = 24;
-	const int SZ_LARGE = 48;
 };
 
 } /* namespace moth */

@@ -6,6 +6,7 @@
 #include "enums.h"
 #include "StoryNode.h"
 #include "Location.h"
+#include "DataLoader.h"
 
 namespace moth
 {
@@ -20,13 +21,16 @@ public:
 
 	void setDisplayControl(DisplayControl *_displayControl);
 
-	void beginGame();
+	void beginGame(unsigned int _arg);
+	void advanceNode(unsigned int _arg);
 	void nodeResponse();
+
+	void setLocations(std::vector<Location*> _locs);
+	void locationsReady();
 
 protected:
 	void switchStage(STAGE _stage);
 	void makeLocations();
-	void setupLocation();
 
 	std::vector<Location*> locations;
 	Location* currentLocation;
@@ -34,6 +38,7 @@ protected:
 
 	DisplayControl *displayControl;
 	STAGE stage;
+
 };
 
 } /* namespace moth */

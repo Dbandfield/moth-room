@@ -39,7 +39,7 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	marginLeft = marginTop = marginRight = marginBottom = 32;
 	letterSpacing = 4;
 
-	colSelected.setHsb(0, 0, 255);
+	colSelected.setHsb(240, 120, 255);
 	colNotSelected.setHsb(0, 0, 180);
 	colStatic.setHsb(0, 0, 200);
 	colCurrent = colStatic;
@@ -82,11 +82,11 @@ void TextFrame::onSelect()
 }
 
 void TextFrame::setCallback(GameControl *_gameControl,
-		void (GameControl::*_f)())
+		void (GameControl::*_f)(unsigned int), unsigned int _arg)
 {
 	if (isOption)
 	{
-		opt->setCallback(_gameControl, _f);
+		opt->setCallback(_gameControl, _f, _arg);
 	}
 	else
 	{
@@ -136,9 +136,10 @@ void TextFrame::setText(std::string _str)
 		symbols.back()->setCharacter(c);
 
 	}
-
 	if(fontLarge != nullptr) setFont(FONT_LARGE, fontLarge);
+
 	if(fontMedium != nullptr) setFont(FONT_MEDIUM, fontMedium);
+
 	if(fontSmall != nullptr) setFont(FONT_SMALL, fontSmall);
 
 	recalculatePositions();
@@ -183,6 +184,7 @@ void TextFrame::setFontSize(FONT_SIZE _sz)
 
 void TextFrame::recalculatePositions()
 {
+
 	adjustedPosition = position;
 	float letterHeight = 0;
 	height = 0;
@@ -204,6 +206,7 @@ void TextFrame::recalculatePositions()
 
 	for (size_t i = 0; i < symbols.size(); i++)
 	{
+
 		w += (symbols[i]->getWidth() * 1.2);// + letterSpacing;
 		if (w >= innerWidth)
 		{
@@ -214,7 +217,7 @@ void TextFrame::recalculatePositions()
 			{
 				if (symbols[j]->getText() == " ")
 				{
-					ins = j + 1;
+					ins = std::min(j + 1, symbols.size() -1); // make sure doesnt go beyind bounds
 					break;
 				}
 			}
@@ -244,6 +247,8 @@ void TextFrame::recalculatePositions()
 
 	}
 	height = height + letterHeight + marginTop + marginBottom;
+
+
 
 
 }
