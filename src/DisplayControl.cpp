@@ -38,16 +38,6 @@ void DisplayControl::display()
 {
 	ofBackground(backgroundColour);
 	ofSetColor(textColour);
-	for (auto i = layout.begin(); i != layout.end(); i++)
-	{
-		/* Was for debugging layout, will delete later. */
-//		ofNoFill();
-//		ofDrawRectangle(i->second.rect);
-//		std::stringstream ss;
-//		ss << i->first;
-//
-//		fontLarge->drawString(ss.str(), i->second.rect.x, i->second.rect.y + 100);
-	}
 
 	for (auto i = text.begin(); i != text.end(); i++)
 	{
@@ -126,15 +116,11 @@ void DisplayControl::setLayout(std::vector<float> _layout)
 	for (size_t i = 0; i < _layout.size(); i++)
 	{
 		float pc = _layout[i] / 100.f;
-		ofLog() << "Percent of this is " << pc;
 
 		pcTrack += pc;
 
-		ofLog() << "Total percent of this line is " << pcTrack;
-
 		if (pcTrack > 1.)
 		{
-			ofLog() << "Time for new row " << i;
 			row++;
 			x = 0;
 			y += h;
@@ -180,6 +166,7 @@ void DisplayControl::readjustHeights()
 		{
 			if (it->second->getHeight() > h)
 				h = it->second->getHeight();
+
 		}
 		else
 		{
@@ -188,6 +175,7 @@ void DisplayControl::readjustHeights()
 			{
 				if (it2->second->getHeight() > h)
 					h = it2->second->getHeight();
+
 			}
 		}
 
@@ -303,6 +291,8 @@ void DisplayControl::clearOptions()
 	options.clear();
 
 	readjustHeights();
+
+	selected = 0;
 
 }
 
@@ -432,6 +422,7 @@ void DisplayControl::onArrow(int _key)
 						{
 							it2->second->setSelected(false, SELECTED_NO_CHANGE);
 						}
+
 						i2++;
 					}
 					break;
@@ -446,12 +437,16 @@ void DisplayControl::onArrow(int _key)
 
 	case OF_KEY_DOWN:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow down Pressed";
+		ofLog() << "option sz is " << options.size();
+		ofLog() << "selected is " << selected;
 
 		i = 0;
 		for (auto it = options.begin(); it != options.end(); it++)
 		{
 			if (i == selected)
 			{
+				ofLog() << "is sel: " << i;
+
 				switch (it->second->incrementSelected())
 				{
 				case SELECTED_BELOW:
@@ -472,13 +467,16 @@ void DisplayControl::onArrow(int _key)
 						{
 							it2->second->setSelected(false, SELECTED_NO_CHANGE);
 						}
+
 						i2++;
 					}
+
 					break;
 				}
 
 				break;
 			}
+
 			i++;
 		}
 
