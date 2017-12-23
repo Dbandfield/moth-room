@@ -172,7 +172,7 @@ ofBuffer DataLoader::getBufferFromFile(std::string _filename)
 	return buf;
 }
 
-std::vector<Location*> DataLoader::getLocations()
+std::map<unsigned int, Location*> DataLoader::getLocations()
 {
 	return locations;
 }
@@ -193,8 +193,29 @@ void DataLoader::loadLocations()
 
 			locationsXml.pushTag("location", i);
 			int numNodes = locationsXml.getNumTags("node");
+			unsigned int numLinks = locationsXml.getNumTags("link");
 
-			Location* loc = new Location();
+			std::stringstream locIdSs;
+			locIdSs << locationsXml.getValue("id", "");
+			unsigned int locId;
+			locIdSs >> locId;
+			std::string locDesc = locationsXml.getValue("description",
+					"INVALID");
+
+			Location* loc = new Location(locDesc, locId);
+
+			if (numLinks > 0)
+			{
+				for (size_t j = 0; j < numLinks; j++)
+				{
+					unsigned int linkId;
+					std::stringstream linkIdSs;
+					linkIdSs << locationsXml.getValue("link", "0", j);
+					linkIdSs >> linkId;
+
+					loc->addLink(linkId);
+				}
+			}
 
 			if (numNodes > 0)
 			{
@@ -208,14 +229,39 @@ void DataLoader::loadLocations()
 					unsigned int nodeId;
 					std::string nodeTxt;
 
+					unsigned int secretId;
+					std::string secretTxt;
+					Secret *secret;
+
 					nodeTxt = locationsXml.getValue("text", "");
 					nodeStream << locationsXml.getValue("id", "0");
 					nodeStream >> nodeId;
 
+					nodeStream = std::stringstream();
+
+					unsigned int numSecrets = locationsXml.getNumTags("secret");
+					if(numSecrets == 1)
+					{
+						locationsXml.pushTag("secret");
+						nodeStream << locationsXml.getValue("id", "-1");
+						nodeStream >> secretId;
+						secretTxt = locationsXml.getValue("text", "notext");
+						secret = new Secret(secretTxt, secretId);
+
+						ofLog(OF_LOG_VERBOSE) << "[DataLoader] Node has secret, Text: "
+								<< nodeTxt << " ID: " << nodeId;
+						locationsXml.popTag();
+
+					}
+					else
+					{
+						secret = nullptr;
+					}
+
 					ofLog(OF_LOG_VERBOSE) << "[DataLoader] Node Info, Text: "
 							<< nodeTxt << " ID: " << nodeId;
 
-					StoryNode* node = new StoryNode(nodeId, nodeTxt);
+					StoryNode* node = new StoryNode(nodeId, nodeTxt, secret);
 
 					int numResponses = locationsXml.getNumTags("response");
 
@@ -236,8 +282,8 @@ void DataLoader::loadLocations()
 						resStream >> resId;
 
 						ofLog(OF_LOG_VERBOSE)
-								<< "[DataLoader] Response info, Text: " << resTxt
-								<< " ID: " << resId;
+								<< "[DataLoader] Response info, Text: "
+								<< resTxt << " ID: " << resId;
 
 						node->addResponse(resId, resTxt);
 						locationsXml.popTag();
@@ -250,7 +296,7 @@ void DataLoader::loadLocations()
 				}
 			}
 
-			locations.push_back(loc);
+			locations.insert(std::pair<unsigned int, Location*>(locId, loc));
 			locationsXml.popTag();
 		}
 

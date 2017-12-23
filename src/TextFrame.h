@@ -38,6 +38,7 @@ public:
 	void setWidth(float _w);
 	void setHeight(float _h);
 	void setSelected(bool _sel);
+	void setMargin(MARGIN, float _amt);
 
 	void onSelect();
 

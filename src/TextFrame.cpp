@@ -36,7 +36,7 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	adjustedPosition = position;
 	width = _width;
 	height = _height;
-	marginLeft = marginTop = marginRight = marginBottom = 32;
+	marginLeft = marginTop = marginRight = marginBottom = 64;
 	letterSpacing = 4;
 
 	colSelected.setHsb(240, 120, 255);
@@ -63,6 +63,26 @@ void TextFrame::setSelected(bool _sel)
 	for(size_t i = 0; i < symbols.size(); i ++)
 	{
 		symbols[i]->setColour(colCurrent);
+	}
+}
+
+void TextFrame::setMargin(MARGIN _mgn, float _amt)
+{
+	switch(_mgn)
+	{
+	case MARGIN_TOP:
+		marginTop = _amt;
+		break;
+	case MARGIN_RIGHT:
+		marginRight = _amt;
+		break;
+	case MARGIN_BOTTOM:
+		marginBottom = _amt;
+		break;
+	case MARGIN_LEFT:
+		marginLeft = _amt;
+		break;
+
 	}
 }
 
@@ -184,7 +204,6 @@ void TextFrame::setFontSize(FONT_SIZE _sz)
 
 void TextFrame::recalculatePositions()
 {
-
 	adjustedPosition = position;
 	float letterHeight = 0;
 	height = 0;
@@ -204,7 +223,7 @@ void TextFrame::recalculatePositions()
 	size_t start = 0;
 	bool lineBeginning = true;
 
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (int i = 0; i < (int)symbols.size(); i++)
 	{
 
 		w += (symbols[i]->getWidth() * 1.2);// + letterSpacing;
@@ -213,16 +232,17 @@ void TextFrame::recalculatePositions()
 			w = 0;
 
 			size_t ins = i;
-			for (size_t j = i; j > start; j--)
+			for (size_t j = std::max(0, i-5); j > start; j--)
 			{
 				if (symbols[j]->getText() == " ")
 				{
-					ins = std::min(j + 1, symbols.size() -1); // make sure doesnt go beyind bounds
+					ins = std::min(j + 1, symbols.size() -1); // make sure doesnt go beyond bounds
 					break;
 				}
 			}
 
 			i = ins;
+
 			thisPos.y += letterHeight;
 			height += letterHeight;
 			thisPos.x = adjustedPosition.x + marginLeft;
@@ -247,8 +267,6 @@ void TextFrame::recalculatePositions()
 
 	}
 	height = height + letterHeight + marginTop + marginBottom;
-
-
 
 
 }

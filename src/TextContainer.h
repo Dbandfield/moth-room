@@ -36,6 +36,7 @@ public:
 	void setPosition(float _x, float _y);
 	void setWidth(float _w);
 	void setHeight(float _h);
+	void setMargin(unsigned int _id, MARGIN _mgn, float _amt);
 
 	unsigned int getSize(){return frames.size();};
 

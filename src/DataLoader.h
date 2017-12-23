@@ -9,6 +9,7 @@
 #include "enums.h"
 #include "Location.h"
 #include "StoryNode.h"
+#include "Secret.h"
 
 namespace moth
 {
@@ -23,7 +24,7 @@ public:
 	void load();
 
 	ofTrueTypeFont& getFont(FONT_SIZE _size);
-	std::vector<Location*> getLocations();
+	std::map<unsigned int, Location*> getLocations();
 
 	void update();
 	bool areFontsLoaded();
@@ -50,7 +51,7 @@ protected:
 
 	/* LOCATIONS */
 	bool allLocationsLoaded;
-	std::vector<Location*> locations;
+	std::map<unsigned int, Location*> locations;
 	const std::string LOCATION_DIR;
 	const std::string LOCATION_NAME;
 	ofxXmlSettings locationsXml;

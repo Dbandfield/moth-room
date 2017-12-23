@@ -3,13 +3,15 @@
 #include <string>
 #include <vector>
 
+#include "Secret.h"
+
 namespace moth
 {
 typedef std::vector<std::pair<unsigned int, std::string>> vResponse;
 class StoryNode
 {
 public:
-	StoryNode(unsigned int _ID, std::string _text);
+	StoryNode(unsigned int _ID, std::string _text, Secret* _secret=nullptr);
 	virtual ~StoryNode();
 
 	void addResponse(unsigned int _ID, std::string _text);
@@ -17,9 +19,14 @@ public:
 	std::string getText();
 	vResponse getResponses(){return responses;};
 	unsigned int getID(){return ID;};
+	bool getIsSecret(){return isSecret;};
+	Secret* getSecret(){return secret;};
 
 protected:
+	Secret *secret;
+
 	unsigned int ID;
+	bool isSecret;
 
 	std::string text;
 

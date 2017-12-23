@@ -10,9 +10,11 @@
 namespace moth
 {
 
-Location::Location()
+Location::Location(std::string _description, unsigned int _id)
 {
-
+	secretDiscovered = false;
+	description = _description;
+	id = _id;
 }
 
 Location::~Location()
@@ -23,8 +25,14 @@ Location::~Location()
 	}
 }
 
+void Location::addLink(unsigned int _id)
+{
+	links.push_back(_id);
+}
+
 void Location::addStoryNode(unsigned int _ID, StoryNode* _node)
 {
+	ofLog() << "ADDING: " << _ID;
 	storyNodes.insert(std::pair<unsigned int, StoryNode*>(_ID, _node));
 }
 
@@ -32,7 +40,7 @@ StoryNode* Location::getNode(unsigned int _ID)
 {
 	if(storyNodes.find(_ID) == storyNodes.end())
 	{
-		ofLog(OF_LOG_ERROR) << "[ERROR][Location] No node with that ID";
+		ofLog(OF_LOG_ERROR) << "[ERROR][Location] No node with that ID " << _ID;
 		return nullptr;
 	}
 	else

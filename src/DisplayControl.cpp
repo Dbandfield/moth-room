@@ -38,6 +38,17 @@ void DisplayControl::display()
 {
 	ofBackground(backgroundColour);
 	ofSetColor(textColour);
+	for (auto i = layout.begin(); i != layout.end(); i++)
+	{
+		/* Was for debugging layout, will delete later. */
+//		ofNoFill();
+//		ofDrawRectangle(i->second.rect);
+//		std::stringstream ss;
+//		ss << i->first;
+//
+//		fontLarge->drawString(ss.str(), i->second.rect.x, i->second.rect.y + 100);
+	}
+
 	for (auto i = text.begin(); i != text.end(); i++)
 	{
 		i->second->display();
@@ -82,25 +93,20 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 	switch (_sz)
 	{
 	case FONT_LARGE:
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting lg ";
 
 		fontLarge = _f;
 		break;
 	case FONT_MEDIUM:
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting md ";
 
 		fontMedium = _f;
 		break;
 	case FONT_SMALL:
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting sm ";
 
 		fontSmall = _f;
 		break;
 	}
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] now adj ";
 
 	readjustHeights();
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] end ";
 
 }
 
@@ -120,6 +126,25 @@ void DisplayControl::setLayout(std::vector<float> _layout)
 	for (size_t i = 0; i < _layout.size(); i++)
 	{
 		float pc = _layout[i] / 100.f;
+		ofLog() << "Percent of this is " << pc;
+
+		pcTrack += pc;
+
+		ofLog() << "Total percent of this line is " << pcTrack;
+
+		if (pcTrack > 1.)
+		{
+			ofLog() << "Time for new row " << i;
+			row++;
+			x = 0;
+			y += h;
+			col = 0;
+			pcTrack = pc;
+		}
+		else
+		{
+		}
+
 		w = ofGetWidth() * pc;
 		id = i;
 
@@ -127,20 +152,9 @@ void DisplayControl::setLayout(std::vector<float> _layout)
 				std::pair<unsigned int, Cell>(id,
 						Cell(row, col, pc, x, y, w, h)));
 
-		pcTrack += pc;
-		if (pcTrack >= 1.0)
-		{
-			row++;
-			x = 0;
-			y += h;
-			col = 0;
-			pcTrack = 0.0;
-		}
-		else
-		{
-			x += w;
-			col++;
-		}
+		x += w;
+		col++;
+
 	}
 
 	readjustHeights();
@@ -161,12 +175,20 @@ void DisplayControl::readjustHeights()
 			thisRow = i.second.row;
 		}
 
-		std::map<unsigned int, TextContainer*>::iterator it = text.find(
-				i.first);
+		auto it = text.find(i.first);
 		if (it != text.end())
 		{
 			if (it->second->getHeight() > h)
 				h = it->second->getHeight();
+		}
+		else
+		{
+			auto it2 = options.find(i.first);
+			if (it2 != options.end())
+			{
+				if (it2->second->getHeight() > h)
+					h = it2->second->getHeight();
+			}
 		}
 
 	}
@@ -185,7 +207,6 @@ void DisplayControl::readjustHeights()
 			y += rowMaxHeight[thisRow];
 			thisRow = cell.row;
 		}
-
 		cell.rect.setHeight(rowMaxHeight[thisRow]);
 		cell.rect.setY(y);
 	}
@@ -256,6 +277,11 @@ void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
 	}
 
+	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_TOP, 64);
+	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_RIGHT, 64);
+	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_LEFT, 64);
+	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_BOTTOM, 0);
+
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);
 	if (fontMedium != nullptr)
@@ -298,17 +324,24 @@ void DisplayControl::addOption(unsigned int _p, std::string _str,
 		options[_p]->addTextFrame(40, 40, pt, true);
 		options[_p]->setText(options[_p]->getSize() - 1, _str);
 		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f, _arg);
+		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
+				_arg);
 	}
 	else
 	{
 		options[_p]->addTextFrame(40, 40, pt, true);
 		options[_p]->setText(options[_p]->getSize() - 1, _str);
 		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f, _arg);
+		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
+				_arg);
 	}
 
-	if(options.size() != 0)
+	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_TOP, 64);
+	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_RIGHT, 64);
+	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_LEFT, 64);
+	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_BOTTOM, 64);
+
+	if (options.size() != 0)
 	{
 		options[_p]->setSelected(true, SELECTED_NO_CHANGE);
 	}
@@ -366,14 +399,14 @@ void DisplayControl::onSelect()
 
 void DisplayControl::onArrow(int _key)
 {
-	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed. Selected is: " << selected;
+	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed. Selected is: "
+			<< selected;
 	size_t i = 0;
 
 	switch (_key)
 	{
 	case OF_KEY_UP:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed up";
-
 
 		for (auto it = options.begin(); it != options.end(); it++)
 		{

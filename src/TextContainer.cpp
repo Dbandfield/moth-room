@@ -25,6 +25,20 @@ TextContainer::~TextContainer()
 	frames.clear();
 }
 
+void TextContainer::setMargin(unsigned int _id, MARGIN _mgn, float _amt)
+{
+	if (_id < frames.size())
+	{
+		frames[_id]->setMargin(_mgn, _amt);
+	}
+	else
+	{
+		ofLog(OF_LOG_ERROR)
+				<< "[ERROR][TextContainer] Choose an index which actually exists please";
+	}
+}
+
+
 void TextContainer::addTextFrame(float _width, float _height, ofPoint _position,
 		bool _isOption)
 {
@@ -57,7 +71,6 @@ void TextContainer::setFont(unsigned int _ID, FONT_SIZE _sz,
 {
 	if (_ID < frames.size())
 	{
-		ofLog() << "ah";
 		frames[_ID]->setFont(_sz, _font);
 	}
 	else
@@ -113,7 +126,7 @@ void TextContainer::setPosition(float _x, float _y)
 	for (auto i = frames.begin(); i != frames.end(); i++)
 	{
 		(*i)->setPosition(x, y);
-		y += (*i)->getHeight();
+		y += (*i)->getHeight()/2;
 	}
 }
 

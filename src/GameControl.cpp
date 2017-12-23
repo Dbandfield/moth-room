@@ -15,71 +15,116 @@ GameControl::GameControl()
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setup";
 
 	switchStage(STAGE_TITLE);
-
-	//makeLocations();
 }
 
 GameControl::~GameControl()
 {
 }
 
-void GameControl::makeLocations()
+void GameControl::listSecrets(unsigned int _arg)
 {
-//	ofLog(OF_LOG_VERBOSE) << "[GameControl] Making Locations";
-//
-//	StoryNode* n0 = new StoryNode(0,
-//			"You come across a moth awkwardly flapping it's wings"
-//					"along to some unheard beat");
-//	n0->addResponse(1, "Hello, can you hear music?");
-//	n0->addResponse(2, "[Say Nothing, and flap your wings too]");
-//
-//	StoryNode* n1 =
-//			new StoryNode(1,
-//					"\"Oh hello. No. I can't, but there was a song I knew ... once ..."
-//							"If I could only remember how it went, i would be so happy!\"");
-//	n1->addResponse(3, "Fret not! I shall find you this mystery song!");
-//	n1->addResponse(3, "I can't remember music either.");
-//
-//	StoryNode* n2 =
-//			new StoryNode(2,
-//					"After a while the moth notices you, and gets excited: "
-//							"\"You know the song too! Do you know its name?! I have spent weeks trying to "
-//							"remember it ... \"");
-//	n2->addResponse(4, "I am afraid not ... ");
-//	n2->addResponse(5, "Yes! I do!");
-//
-//	StoryNode* n3 = new StoryNode(3,
-//			"The moth goes back to flapping its wings.");
-//
-//	StoryNode* n4 = new StoryNode(4,
-//			"\"Oh... I hope some day I find it ... \"");
-//	n4->addResponse(3, "Fret not! I shall find you this mystery song!");
-//	n4->addResponse(3, "I can't remember music either.");
-//
-//	StoryNode* n5 = new StoryNode(5, "\"You do ?! What is it ?! \"");
-//	n5->addResponse(4, "I Lied.");
-//
-//	Location* loc = new Location();
-//	loc->addStoryNode(0, n0);
-//	loc->addStoryNode(1, n1);
-//	loc->addStoryNode(2, n2);
-//	loc->addStoryNode(3, n3);
-//	loc->addStoryNode(4, n4);
-//	loc->addStoryNode(5, n5);
-//
-//	locations.push_back(loc);
-	currentLocation = locations[0];
-	currentNodeID = 0;
+	displayControl->clearOptions();
+	displayControl->clearText();
+	displayControl->clearLayout();
+	std::vector<float> layout;
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 1
+	layout.push_back(30.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 4
+	layout.push_back(30.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f);  // 7
+	layout.push_back(30.f);
+
+	ofLog() << "[GAME_CONTROL] - Setting layout of secrets";
+	displayControl->setLayout(layout);
+
+	displayControl->addText(1, "You Know: ", FONT_MEDIUM);
+	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end(); it++)
+	{
+		std::string txt = (*it)->getText();
+		displayControl->addText(4, txt,
+				FONT_SMALL);
+	}
+
+	displayControl->addOption(7, "return",
+			&GameControl::advanceNode, currentNodeID, FONT_SMALL);
 
 }
 
-void GameControl::setLocations(std::vector<Location*> _locs)
+void GameControl::listLocations(unsigned int _arg)
+{
+	displayControl->clearOptions();
+	displayControl->clearText();
+	displayControl->clearLayout();
+	std::vector<float> layout;
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 1
+	layout.push_back(30.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 4
+	layout.push_back(30.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f);  // 7
+	layout.push_back(30.f);
+
+	ofLog() << "[GAME_CONTROL] - Setting layout of locations";
+
+	displayControl->setLayout(layout);
+	displayControl->addText(1, "Fly to: ", FONT_MEDIUM);
+	auto linkVec = currentLocation->getLinks();
+	for (auto it = linkVec.begin(); it != linkVec.end(); it++)
+	{
+		std::string txt = locations[*it]->getDescription();
+		displayControl->addOption(4, txt, &GameControl::moveLocation, *it,
+				FONT_SMALL);
+	}
+
+	displayControl->addOption(7, "return",
+			&GameControl::advanceNode, currentNodeID, FONT_SMALL);
+}
+
+void GameControl::setLocations(std::map<unsigned int, Location*> _locs)
 {
 	locations = _locs;
 	currentLocation = locations[0];
 	currentNodeID = 0;
 }
 
+void GameControl::moveLocation(unsigned int _arg)
+{
+	currentLocation = locations[_arg];
+	advanceNode(0);
+}
+
+void GameControl::advanceSecretNode(unsigned int _arg)
+{
+	ofLog() << "advance issecret!";
+
+	discoveredSecrets.push_back(currentNode->getSecret());
+	ofLog() << "add secret";
+	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end();
+			it++)
+	{
+		ofLog() << "bslkm";
+		discoveredSecrets[0]->getId();
+		ofLog() << "jknl";
+		discoveredSecrets[0]->getText();
+		ofLog() <<"vf\rg";
+
+
+		ofLog(OF_LOG_VERBOSE) << "[GAME_CONTROL] Discovered Secret "
+				<< (*it)->getId() << ": " << (*it)->getText();
+	}
+	advanceNode(_arg);
+}
 
 void GameControl::advanceNode(unsigned int _arg)
 {
@@ -95,15 +140,28 @@ void GameControl::advanceNode(unsigned int _arg)
 
 	displayControl->setLayout(layout);
 	currentNodeID = _arg;
-	displayControl->addText(0,
-			currentLocation->getNode(currentNodeID)->getText(), FONT_MEDIUM);
-	auto nodeMap = currentLocation->getNode(currentNodeID)->getResponses();
+	currentNode = currentLocation->getNode(currentNodeID);
+	displayControl->addText(0, currentNode->getText(), FONT_MEDIUM);
+	auto nodeMap = currentNode->getResponses();
 	for (auto it = nodeMap.begin(); it != nodeMap.end(); it++)
 	{
-		displayControl->addOption(2,
-				it->second,
-				&GameControl::advanceNode, it->first, FONT_SMALL);
+		if (currentNode->getIsSecret())
+		{
+			ofLog() << "issecret! " << it->second;
+			displayControl->addOption(1, it->second,
+					&GameControl::advanceSecretNode, it->first, FONT_SMALL);
+		}
+		else
+		{
+			displayControl->addOption(1, it->second, &GameControl::advanceNode,
+					it->first, FONT_SMALL);
+		}
 	}
+
+	displayControl->addOption(1, "* Move to location *",
+			&GameControl::listLocations, currentLocation->getId(), FONT_SMALL);
+	displayControl->addOption(1, "* Show Secrets *",
+			&GameControl::listSecrets, 0, FONT_SMALL);
 
 }
 
@@ -129,13 +187,15 @@ void GameControl::locationsReady()
 	displayControl->setLayout(layout);
 	displayControl->addText(0, "The Room of Rotting Fruit", FONT_LARGE);
 	displayControl->addText(1,
-			"You awake and your body feels furry; your vision segmented. ", FONT_SMALL);
-	displayControl->addText(1,
-					"The room is filled with the sickly sweet smell of rotting fruit, which you can't help but find intoxicating. ", FONT_SMALL);
-	displayControl->addText(1, "At first you think you are alone, but as you adjust to your new eye-sight you see "
-					"the darkened room is full of the flickerings and flutterings of hundreds of moths.",
+			"You awake in a strange place, your body aching, surrounded by darkness.",
 			FONT_SMALL);
-	displayControl->addOption(3, "Live this life ...", &GameControl::beginGame,
+	displayControl->addText(1,
+			"You smell the sickly sweet scent of rotting fruit, which you can't help but find intoxicating. ",
+			FONT_SMALL);
+	displayControl->addText(1,
+			"At first you think you are alone, but you begin to hear hundreds of flickerings and flutterings"
+					" emerging from the darkness.", FONT_SMALL);
+	displayControl->addOption(2, "Continue", &GameControl::beginGame,
 			FONT_SMALL);
 }
 
@@ -144,7 +204,6 @@ void GameControl::setDisplayControl(DisplayControl *_displayControl)
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setting Display Control";
 
 	displayControl = _displayControl;
-
 
 }
 
