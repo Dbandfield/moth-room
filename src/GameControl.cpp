@@ -113,11 +113,8 @@ void GameControl::advanceSecretNode(unsigned int _arg)
 	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end();
 			it++)
 	{
-		ofLog() << "bslkm";
 		discoveredSecrets[0]->getId();
-		ofLog() << "jknl";
 		discoveredSecrets[0]->getText();
-		ofLog() <<"vf\rg";
 
 
 		ofLog(OF_LOG_VERBOSE) << "[GAME_CONTROL] Discovered Secret "
