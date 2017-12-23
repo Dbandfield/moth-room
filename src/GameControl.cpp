@@ -44,15 +44,15 @@ void GameControl::listSecrets(unsigned int _arg)
 	displayControl->setLayout(layout);
 
 	displayControl->addText(1, "You Know: ", FONT_MEDIUM);
-	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end(); it++)
+	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end();
+			it++)
 	{
 		std::string txt = (*it)->getText();
-		displayControl->addText(4, txt,
-				FONT_SMALL);
+		displayControl->addText(4, txt, FONT_SMALL);
 	}
 
-	displayControl->addOption(7, "return",
-			&GameControl::advanceNode, currentNodeID, FONT_SMALL);
+	displayControl->addOption(7, "return", &GameControl::advanceNode,
+			currentNodeID, FONT_SMALL);
 
 }
 
@@ -87,8 +87,8 @@ void GameControl::listLocations(unsigned int _arg)
 				FONT_SMALL);
 	}
 
-	displayControl->addOption(7, "return",
-			&GameControl::advanceNode, currentNodeID, FONT_SMALL);
+	displayControl->addOption(7, "return", &GameControl::advanceNode,
+			currentNodeID, FONT_SMALL);
 }
 
 void GameControl::setLocations(std::map<unsigned int, Location*> _locs)
@@ -106,21 +106,36 @@ void GameControl::moveLocation(unsigned int _arg)
 
 void GameControl::advanceSecretNode(unsigned int _arg)
 {
-	ofLog() << "advance issecret!";
-
-	discoveredSecrets.push_back(currentNode->getSecret());
-	ofLog() << "add secret";
-	for (auto it = discoveredSecrets.begin(); it != discoveredSecrets.end();
-			it++)
+	if (!currentLocation->getSecretDiscovered())
 	{
-		discoveredSecrets[0]->getId();
-		discoveredSecrets[0]->getText();
-
-
-		ofLog(OF_LOG_VERBOSE) << "[GAME_CONTROL] Discovered Secret "
-				<< (*it)->getId() << ": " << (*it)->getText();
+		discoveredSecrets.push_back(currentNode->getSecret());
+		currentLocation->setSecretDiscovered(true);
 	}
-	advanceNode(_arg);
+
+	displayControl->clearOptions();
+	displayControl->clearText();
+	displayControl->clearLayout();
+	std::vector<float> layout;
+
+	layout.push_back(100.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 2
+	layout.push_back(30.f);
+
+	layout.push_back(30.f);
+	layout.push_back(30.f); // 5
+	layout.push_back(30.f);
+
+	displayControl->setLayout(layout);
+
+	displayControl->addText(0, "You have gained new KNOWLEDGE:", FONT_MEDIUM);
+
+	std::string txt = discoveredSecrets.back()->getText();
+	displayControl->addText(2, txt, FONT_SMALL);
+
+	displayControl->addOption(5, "return", &GameControl::advanceNode, _arg,
+			FONT_SMALL);
 }
 
 void GameControl::advanceNode(unsigned int _arg)
@@ -138,15 +153,18 @@ void GameControl::advanceNode(unsigned int _arg)
 	displayControl->setLayout(layout);
 	currentNodeID = _arg;
 	currentNode = currentLocation->getNode(currentNodeID);
+
 	displayControl->addText(0, currentNode->getText(), FONT_MEDIUM);
+
 	auto nodeMap = currentNode->getResponses();
+
 	for (auto it = nodeMap.begin(); it != nodeMap.end(); it++)
 	{
 		if (currentNode->getIsSecret())
 		{
-			ofLog() << "issecret! " << it->second;
 			displayControl->addOption(1, it->second,
-					&GameControl::advanceSecretNode, it->first, FONT_SMALL);
+					&GameControl::advanceSecretNode, it->first, FONT_SMALL,
+					true);
 		}
 		else
 		{
@@ -157,8 +175,8 @@ void GameControl::advanceNode(unsigned int _arg)
 
 	displayControl->addOption(1, "* Move to location *",
 			&GameControl::listLocations, currentLocation->getId(), FONT_SMALL);
-	displayControl->addOption(1, "* Show Secrets *",
-			&GameControl::listSecrets, 0, FONT_SMALL);
+	displayControl->addOption(1, "* Show Secrets *", &GameControl::listSecrets,
+			0, FONT_SMALL);
 
 }
 

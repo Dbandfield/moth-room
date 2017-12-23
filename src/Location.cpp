@@ -25,6 +25,11 @@ Location::~Location()
 	}
 }
 
+void Location::setSecretDiscovered(bool _disc)
+{
+	secretDiscovered = _disc;
+}
+
 void Location::addLink(unsigned int _id)
 {
 	links.push_back(_id);

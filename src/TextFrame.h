@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "ofMain.h"
 
@@ -20,7 +21,7 @@ class Option;
 class TextFrame
 {
 public:
-	TextFrame(float _width, float _height, ofPoint _position, bool _isOption=false);
+	TextFrame(float _width, float _height, ofPoint _position, bool _isOption=false, bool _isSecret=false);
 	virtual ~TextFrame();
 
 	void display();
@@ -31,6 +32,8 @@ public:
 	void setFontSize(FONT_SIZE _sz);
 
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
+
+	void setIsSecret(bool _isSecret);
 
 	float getHeight();
 
@@ -46,12 +49,14 @@ protected:
 	void recalculatePositions();
 	Option* opt;
 
-	ofColor colSelected;
-	ofColor colNotSelected;
+	float selectedMod;
 	ofColor colStatic;
 	ofColor colCurrent;
+	ofColor colIsSecret;
+	ofColor colBase;
 
 	bool isOption;
+	bool isSecret;
 
 	std::vector<Symbol*> symbols;
 

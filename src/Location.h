@@ -23,6 +23,10 @@ public:
 	std::vector<unsigned int> getLinks(){return links;};
 	std::string getDescription(){return description;};
 
+	bool getSecretDiscovered(){return secretDiscovered;};
+
+	void setSecretDiscovered(bool _disc);
+
 
 protected:
 

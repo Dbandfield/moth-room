@@ -297,7 +297,7 @@ void DisplayControl::clearOptions()
 }
 
 void DisplayControl::addOption(unsigned int _p, std::string _str,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz)
+		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz, bool _isSecret)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding option " << _str;
 
@@ -330,6 +330,7 @@ void DisplayControl::addOption(unsigned int _p, std::string _str,
 	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_RIGHT, 64);
 	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_LEFT, 64);
 	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_BOTTOM, 64);
+	options[_p]->setIsSecret(options[_p]->getSize() - 1, _isSecret);
 
 	if (options.size() != 0)
 	{

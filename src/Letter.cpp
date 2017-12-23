@@ -48,7 +48,11 @@ ofPoint Letter::getPosition()
 
 void Letter::setColour(ofColor _col)
 {
+
 	colour = _col;
+	float h, s, b;
+	colour.getHsb(h, s, b);
+	ofLog() << "Letter: " << h << " " << s << " " << b;
 }
 
 float Letter::getSpacing()
