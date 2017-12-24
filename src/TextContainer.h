@@ -38,6 +38,8 @@ public:
 	void setHeight(float _h);
 	void setMargin(unsigned int _id, MARGIN _mgn, float _amt);
 
+	void setIsSecret(unsigned int _id, bool _isSecret);
+
 	unsigned int getSize(){return frames.size();};
 
 	SELECTED_BOUNDS decrementSelected();

@@ -28,6 +28,7 @@ public:
 	void listLocations(unsigned int _arg);
 	void listSecrets(unsigned int _arg);
 	void moveLocation(unsigned int _arg);
+	void tellSecret(unsigned int _arg);
 
 	void setLocations(std::map<unsigned int, Location*>  _locs);
 	void locationsReady();

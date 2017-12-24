@@ -195,14 +195,41 @@ void DataLoader::loadLocations()
 			int numNodes = locationsXml.getNumTags("node");
 			unsigned int numLinks = locationsXml.getNumTags("link");
 
+			Secret* secret;
+			unsigned int secretId;
+			std::string secretTxt;
+
 			std::stringstream locIdSs;
 			locIdSs << locationsXml.getValue("id", "");
 			unsigned int locId;
 			locIdSs >> locId;
+
+			std::stringstream locExpSecSS;
+			locExpSecSS << locationsXml.getValue("expected-secret", "");
+			unsigned int locExpSec;
+			locExpSecSS >> locExpSec;
+
 			std::string locDesc = locationsXml.getValue("description",
 					"INVALID");
+			std::string locPosSec = locationsXml.getValue("pos-secret-response",
+					"INVALID");
+			std::string locNegSec = locationsXml.getValue("neg-secret-response",
+					"INVALID");
 
-			Location* loc = new Location(locDesc, locId);
+			std::stringstream secretStream;
+			unsigned int numSecrets = locationsXml.getNumTags("secret");
+			if(numSecrets == 1)
+			{
+				locationsXml.pushTag("secret");
+				secretStream << locationsXml.getValue("id", "0");
+				secretStream >> secretId;
+				secretTxt = locationsXml.getValue("text", "INVALID");
+				secret = new Secret(secretTxt, secretId);
+				locationsXml.popTag();
+
+			}
+
+			Location* loc = new Location(locDesc, locPosSec, locNegSec, locId, locExpSec, secret);
 
 			if (numLinks > 0)
 			{
@@ -229,39 +256,18 @@ void DataLoader::loadLocations()
 					unsigned int nodeId;
 					std::string nodeTxt;
 
-					unsigned int secretId;
-					std::string secretTxt;
-					Secret *secret;
-
 					nodeTxt = locationsXml.getValue("text", "");
 					nodeStream << locationsXml.getValue("id", "0");
 					nodeStream >> nodeId;
 
 					nodeStream = std::stringstream();
 
-					unsigned int numSecrets = locationsXml.getNumTags("secret");
-					if(numSecrets == 1)
-					{
-						locationsXml.pushTag("secret");
-						nodeStream << locationsXml.getValue("id", "-1");
-						nodeStream >> secretId;
-						secretTxt = locationsXml.getValue("text", "notext");
-						secret = new Secret(secretTxt, secretId);
-
-						ofLog(OF_LOG_VERBOSE) << "[DataLoader] Node has secret, Text: "
-								<< nodeTxt << " ID: " << nodeId;
-						locationsXml.popTag();
-
-					}
-					else
-					{
-						secret = nullptr;
-					}
+					unsigned int numSecrets = locationsXml.getNumTags("is-secret");
 
 					ofLog(OF_LOG_VERBOSE) << "[DataLoader] Node Info, Text: "
 							<< nodeTxt << " ID: " << nodeId;
 
-					StoryNode* node = new StoryNode(nodeId, nodeTxt, secret);
+					StoryNode* node = new StoryNode(nodeId, nodeTxt, numSecrets==1);
 
 					int numResponses = locationsXml.getNumTags("response");
 

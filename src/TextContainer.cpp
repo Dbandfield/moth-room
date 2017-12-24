@@ -25,6 +25,19 @@ TextContainer::~TextContainer()
 	frames.clear();
 }
 
+void TextContainer::setIsSecret(unsigned int _id, bool _isSecret)
+{
+	if (_id < frames.size())
+	{
+		frames[_id]->setIsSecret(_isSecret);
+	}
+	else
+	{
+		ofLog(OF_LOG_ERROR)
+				<< "[ERROR][TextContainer] Choose an index which actually exists please";
+	}
+}
+
 void TextContainer::setMargin(unsigned int _id, MARGIN _mgn, float _amt)
 {
 	if (_id < frames.size())

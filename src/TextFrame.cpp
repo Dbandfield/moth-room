@@ -11,11 +11,12 @@ namespace moth
 {
 
 TextFrame::TextFrame(float _width, float _height, ofPoint _position,
-		bool _isOption):isOption(true), fontLarge(0), fontMedium(0), fontSmall(0)
+		bool _isOption, bool _isSecret):isOption(true), fontLarge(0), fontMedium(0), fontSmall(0)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
 
-	bool isOption = _isOption;
+	isOption = _isOption;
+	isSecret = _isSecret;
 
 	if (isOption)
 	{
@@ -30,8 +31,6 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 		opt = nullptr;
 	}
 
-
-
 	position = _position;
 	adjustedPosition = position;
 	width = _width;
@@ -39,27 +38,52 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	marginLeft = marginTop = marginRight = marginBottom = 64;
 	letterSpacing = 4;
 
-	colSelected.setHsb(240, 120, 255);
-	colNotSelected.setHsb(0, 0, 180);
-	colStatic.setHsb(0, 0, 200);
-	colCurrent = colStatic;
+	selectedMod = 100;
+	colStatic.setHsb(0, 0, 150);
+	colIsSecret.setHsb(40, 200, 200);
+
+	colBase = isSecret ? colIsSecret : colStatic;
+	colCurrent = colBase;
+
 }
 
 TextFrame::~TextFrame()
 {
 }
 
+void TextFrame::setIsSecret(bool _isSecret)
+{
+	ofLog() << "IS SECRET!";
+	isSecret =  _isSecret;
+	if(isSecret)
+		{
+		colBase = colIsSecret;
+		}
+	else
+	{
+		colBase = colStatic;
+	}
+	colCurrent = colBase;
+	for(size_t i = 0; i < symbols.size(); i ++)
+	{
+		symbols[i]->setColour(colCurrent);
+	}
+}
+
 void TextFrame::setSelected(bool _sel)
 {
 	if(_sel)
 	{
-		colCurrent = colSelected;
-
+		float h, s, b;
+		colBase.getHsb(h, s, b);
+		b = std::min(255.f, float(b + selectedMod));
+		colCurrent.setHsb(h, s, b);
 	}
 	else
 	{
-		colCurrent = colNotSelected;
+		colCurrent = colBase;
 	}
+
 	for(size_t i = 0; i < symbols.size(); i ++)
 	{
 		symbols[i]->setColour(colCurrent);
