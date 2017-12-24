@@ -21,6 +21,46 @@ GameControl::~GameControl()
 {
 }
 
+void GameControl::tellSecret(unsigned int _arg)
+{
+	displayControl->clearOptions();
+	displayControl->clearText();
+	displayControl->clearLayout();
+	std::vector<float> layout;
+
+	layout.push_back(50.f);
+	layout.push_back(50.f);
+	layout.push_back(50.f);
+	layout.push_back(50.f);
+
+	displayControl->setLayout(layout);
+
+	std::string txt;
+	std::string res;
+
+	bool success = currentLocation->solveProblem(_arg);
+
+	if(success)
+	{
+		txt = currentLocation->getGoodSecretResponse();
+		res = "Wonderful";
+
+		displayControl->addText(0, txt, FONT_SMALL);
+		displayControl->addOption(1, res, &GameControl::advanceSecretNode, currentNodeID,
+				FONT_SMALL, true);
+
+	}
+	else
+	{
+		txt = currentLocation->getBadSecretResponse();
+		res = "Unfortunate";
+
+		displayControl->addText(0, txt, FONT_SMALL);
+		displayControl->addOption(1, res, &GameControl::advanceNode, currentNodeID,
+				FONT_SMALL);
+	}
+}
+
 void GameControl::listSecrets(unsigned int _arg)
 {
 	displayControl->clearOptions();
@@ -48,7 +88,7 @@ void GameControl::listSecrets(unsigned int _arg)
 			it++)
 	{
 		std::string txt = (*it)->getText();
-		displayControl->addText(4, txt, FONT_SMALL);
+		displayControl->addOption(4, txt, &GameControl::tellSecret, (*it)->getId(),  FONT_SMALL);
 	}
 
 	displayControl->addOption(7, "return", &GameControl::advanceNode,
@@ -108,7 +148,7 @@ void GameControl::advanceSecretNode(unsigned int _arg)
 {
 	if (!currentLocation->getSecretDiscovered())
 	{
-		discoveredSecrets.push_back(currentNode->getSecret());
+		discoveredSecrets.push_back(currentLocation->getSecret());
 		currentLocation->setSecretDiscovered(true);
 	}
 
@@ -175,7 +215,7 @@ void GameControl::advanceNode(unsigned int _arg)
 
 	displayControl->addOption(1, "* Move to location *",
 			&GameControl::listLocations, currentLocation->getId(), FONT_SMALL);
-	displayControl->addOption(1, "* Show Secrets *", &GameControl::listSecrets,
+	displayControl->addOption(1, "* Tell Secret *", &GameControl::listSecrets,
 			0, FONT_SMALL);
 
 }

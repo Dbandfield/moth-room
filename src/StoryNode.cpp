@@ -10,13 +10,12 @@
 namespace moth
 {
 
-StoryNode::StoryNode(unsigned int _ID, std::string _text, Secret* _secret)
+StoryNode::StoryNode(unsigned int _ID, std::string _text, bool _isSecret)
 {
 	ID = _ID;
 	text = _text;
 
-	isSecret =_secret != nullptr;
-	secret = _secret;
+	isSecret = _isSecret;
 }
 
 StoryNode::~StoryNode()

@@ -1,5 +1,11 @@
 <!--- LOCATION ONE: FRIENDLY INTRO MOTH ---> <location> <id> 0 </id>
-<description> A Friendly and Welcoming Moth </description> <link> 1 </link>
+<description> A Friendly and Welcoming Moth </description>
+<pos-secret-response> N/A </pos-secret-response>
+<neg-secret-response> N/A </neg-secret-response>
+<expected-secret>0</expected-secret>
+<secret> <text> There is a spool of thread behind the clock!</text>
+    <id> 1 </id></secret>
+    <link> 1 </link>
 
 <node> <text> You are perched on a great mantlepiece that drops precipitously to
 a floor you can not see. You are not alone.  </text> <id> 0 </id>
@@ -92,8 +98,7 @@ else. Like you."  </text> <id> 5 </id>
     <node> <text> "There must be some way. Maybe if you explore you can find a
     way. The only useful information I can give you is that behind the clock is
     a spool of thread. Perhaps other moths know clues as well." </text> <id> 9
-    </id> <secret> <text> There is a spool of thread behind the clock!</text>
-    <id> 0 </id></secret>  <response> <text> "Thank you friendly
+</id> <is-secret></is-secret> <response> <text> "Thank you friendly
     insect-beast" </text> <id> 3 </id> </response> </node>
 
       <node> <text> "I don't know. All I know is that those who eat the rotten
@@ -106,10 +111,16 @@ else. Like you."  </text> <id> 5 </id>
 </location>
 
 <!--- LOCATION TWO ---> <location> <id> 1 </id> <description> Two Moths, In
-Distress </description> <link> 0</link>
+Distress </description>
+<pos-secret-response> Perfect! We can pull her out with the greatest of ease! </pos-secret-response>
+<neg-secret-response> What? How would that help? </neg-secret-response>
+<expected-secret>1</expected-secret>
+<secret> <text> The letter has the lyrics to Dancing in the Moonlight on it</text>
+    <id> 2 </id></secret>
+<link> 0</link>
 
 <node><text> At the end of the mantlepiece is an unlit oil lamp. Within the
-glass vessel a moth frantically tries to fly, but is unable to escape. Outsidereact,
+glass vessel a moth frantically tries to fly, but is unable to escape. Outside,
 another moth looks on in despair </text><id> 0</id>
 
   <response><text> "Hello. Who are you?" </text><id> 1 </id></response>
