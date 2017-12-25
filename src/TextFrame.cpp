@@ -11,7 +11,8 @@ namespace moth
 {
 
 TextFrame::TextFrame(float _width, float _height, ofPoint _position,
-		bool _isOption, bool _isSecret):isOption(true), fontLarge(0), fontMedium(0), fontSmall(0)
+		bool _isOption, bool _isSecret) :
+		isOption(true), fontLarge(0), fontMedium(0), fontSmall(0)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
 
@@ -54,17 +55,13 @@ TextFrame::~TextFrame()
 void TextFrame::setIsSecret(bool _isSecret)
 {
 	ofLog() << "IS SECRET!";
-	isSecret =  _isSecret;
-	if(isSecret)
-		{
-		colBase = colIsSecret;
-		}
-	else
-	{
-		colBase = colStatic;
-	}
+	isSecret = _isSecret;
+
+	colBase = isSecret ? colIsSecret : colStatic;
+
 	colCurrent = colBase;
-	for(size_t i = 0; i < symbols.size(); i ++)
+
+	for (size_t i = 0; i < symbols.size(); i++)
 	{
 		symbols[i]->setColour(colCurrent);
 	}
@@ -72,7 +69,7 @@ void TextFrame::setIsSecret(bool _isSecret)
 
 void TextFrame::setSelected(bool _sel)
 {
-	if(_sel)
+	if (_sel)
 	{
 		float h, s, b;
 		colBase.getHsb(h, s, b);
@@ -84,7 +81,7 @@ void TextFrame::setSelected(bool _sel)
 		colCurrent = colBase;
 	}
 
-	for(size_t i = 0; i < symbols.size(); i ++)
+	for (size_t i = 0; i < symbols.size(); i++)
 	{
 		symbols[i]->setColour(colCurrent);
 	}
@@ -92,7 +89,7 @@ void TextFrame::setSelected(bool _sel)
 
 void TextFrame::setMargin(MARGIN _mgn, float _amt)
 {
-	switch(_mgn)
+	switch (_mgn)
 	{
 	case MARGIN_TOP:
 		marginTop = _amt;
@@ -114,13 +111,14 @@ void TextFrame::onSelect()
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Selected";
 
-	if(opt != nullptr)
+	if (opt != nullptr)
 	{
 		opt->onSelect();
 	}
 	else
 	{
-		ofLog(OF_LOG_ERROR) << "[ERROR][TextFrame] Tried to access option on non-option text frame";
+		ofLog(OF_LOG_ERROR)
+				<< "[ERROR][TextFrame] Tried to access option on non-option text frame";
 	}
 
 }
@@ -180,11 +178,14 @@ void TextFrame::setText(std::string _str)
 		symbols.back()->setCharacter(c);
 
 	}
-	if(fontLarge != nullptr) setFont(FONT_LARGE, fontLarge);
+	if (fontLarge != nullptr)
+		setFont(FONT_LARGE, fontLarge);
 
-	if(fontMedium != nullptr) setFont(FONT_MEDIUM, fontMedium);
+	if (fontMedium != nullptr)
+		setFont(FONT_MEDIUM, fontMedium);
 
-	if(fontSmall != nullptr) setFont(FONT_SMALL, fontSmall);
+	if (fontSmall != nullptr)
+		setFont(FONT_SMALL, fontSmall);
 
 	recalculatePositions();
 }
@@ -198,8 +199,7 @@ void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		symbols[i]->setFont(_sz, _f);
 	}
 
-
-	switch(_sz)
+	switch (_sz)
 	{
 	case FONT_LARGE:
 		fontLarge = _f;
@@ -247,21 +247,29 @@ void TextFrame::recalculatePositions()
 	size_t start = 0;
 	bool lineBeginning = true;
 
-	for (int i = 0; i < (int)symbols.size(); i++)
+	for (int i = 0; i < (int) symbols.size(); i++)
 	{
+		ofLog() << symbols[i]->getText();
+		bool newLine = symbols[i]->getText() == "\n";
+		bool invisible = symbols[i]->getWidth() <= 0;
 
-		w += (symbols[i]->getWidth() * 1.2);// + letterSpacing;
-		if (w >= innerWidth)
+		w += (symbols[i]->getWidth() * 1.2); // + letterSpacing;
+		if (w >= innerWidth || newLine)
 		{
-			w = 0;
+			w = invisible ? 0 : symbols[i]->getWidth() * 1.2;
 
 			size_t ins = i;
-			for (size_t j = std::max(0, i-5); j > start; j--)
+
+			if (!newLine)
 			{
-				if (symbols[j]->getText() == " ")
+				for (size_t j = i; j > start; j--)
 				{
-					ins = std::min(j + 1, symbols.size() -1); // make sure doesnt go beyond bounds
-					break;
+
+					if (symbols[j]->getText() == " ")
+					{
+						ins = std::min(j + 1, symbols.size() - 1); // make sure doesnt go beyond bounds
+						break;
+					}
 				}
 			}
 
@@ -278,20 +286,22 @@ void TextFrame::recalculatePositions()
 
 		if (!lineBeginning)
 		{
-			float adj = symbols[i - 1]->getWidth() + letterSpacing;
-			thisPos.x += adj;
+			if (symbols[i - 1]->getText() != "\n")
+			{
+				float adj = symbols[i - 1]->getWidth() + letterSpacing;
+				thisPos.x += adj;
+			}
 		}
 		else
 		{
 			lineBeginning = false;
 		}
 
+		ofLog() << "new letter pos is " << thisPos;
 		symbols[i]->setPosition(thisPos);
-
 
 	}
 	height = height + letterHeight + marginTop + marginBottom;
-
 
 }
 
