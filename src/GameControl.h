@@ -8,6 +8,8 @@
 #include "Location.h"
 #include "DataLoader.h"
 #include "Secret.h"
+#include "Animator.h"
+#include "AnimCorruptCharacter.h"
 
 namespace moth
 {
@@ -36,6 +38,8 @@ public:
 protected:
 	void switchStage(STAGE _stage);
 
+	AnimCorruptCharacter* animCorruptCharacter;
+
 	std::map<unsigned int, Location*> locations;
 	Location* currentLocation;
 	unsigned int currentNodeID;
@@ -45,6 +49,8 @@ protected:
 	STAGE stage;
 
 	std::vector<Secret*> discoveredSecrets;
+
+	int hunger;
 
 };
 

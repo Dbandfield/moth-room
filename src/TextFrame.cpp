@@ -164,6 +164,10 @@ void TextFrame::display()
 	{
 		symbols[i]->display();
 	}
+//
+//	ofNoFill();
+//	ofSetColor(ofColor(255, 0, 0));
+//	ofDrawRectangle(position.x, position.y, width, height);
 }
 
 void TextFrame::setText(std::string _str)
@@ -249,11 +253,10 @@ void TextFrame::recalculatePositions()
 
 	for (int i = 0; i < (int) symbols.size(); i++)
 	{
-		ofLog() << symbols[i]->getText();
 		bool newLine = symbols[i]->getText() == "\n";
 		bool invisible = symbols[i]->getWidth() <= 0;
 
-		w += (symbols[i]->getWidth() * 1.2); // + letterSpacing;
+		w += (symbols[i]->getWidth() + letterSpacing); // + letterSpacing;
 		if (w >= innerWidth || newLine)
 		{
 			w = invisible ? 0 : symbols[i]->getWidth() * 1.2;
@@ -264,7 +267,6 @@ void TextFrame::recalculatePositions()
 			{
 				for (size_t j = i; j > start; j--)
 				{
-
 					if (symbols[j]->getText() == " ")
 					{
 						ins = std::min(j + 1, symbols.size() - 1); // make sure doesnt go beyond bounds
@@ -297,7 +299,6 @@ void TextFrame::recalculatePositions()
 			lineBeginning = false;
 		}
 
-		ofLog() << "new letter pos is " << thisPos;
 		symbols[i]->setPosition(thisPos);
 
 	}

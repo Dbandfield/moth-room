@@ -15,6 +15,8 @@ GameControl::GameControl()
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setup";
 
 	switchStage(STAGE_TITLE);
+
+	hunger = 0;
 }
 
 GameControl::~GameControl()
@@ -140,6 +142,14 @@ void GameControl::setLocations(std::map<unsigned int, Location*> _locs)
 
 void GameControl::moveLocation(unsigned int _arg)
 {
+	hunger ++;
+	if(animCorruptCharacter!= nullptr)
+	{
+		animCorruptCharacter->lock();
+		int arr[1] = {hunger};
+		animCorruptCharacter->setArg(arr, 1);
+		animCorruptCharacter->unlock();
+	}
 	currentLocation = locations[_arg];
 	advanceNode(0);
 }
@@ -242,12 +252,8 @@ void GameControl::locationsReady()
 	displayControl->setLayout(layout);
 	displayControl->addText(0, "The Room of Rotting Fruit", FONT_LARGE);
 	displayControl->addText(1,
-			"You awake in a strange place, your body aching, surrounded by darkness.",
-			FONT_SMALL);
-	displayControl->addText(1,
-			"You smell the sickly sweet scent of rotting fruit, which you can't help but find intoxicating. ",
-			FONT_SMALL);
-	displayControl->addText(1,
+			"You awake in a strange place, your body aching, surrounded by darkness.\n\n\n"
+			"You smell the sickly sweet scent of rotting fruit, which you can't help but find intoxicating.\n\n\n"
 			"At first you think you are alone, but you begin to hear hundreds of flickerings and flutterings"
 					" emerging from the darkness.", FONT_SMALL);
 	displayControl->addOption(2, "Continue", &GameControl::beginGame,
@@ -259,6 +265,11 @@ void GameControl::setDisplayControl(DisplayControl *_displayControl)
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setting Display Control";
 
 	displayControl = _displayControl;
+	animCorruptCharacter = new AnimCorruptCharacter();
+	int iArr[1] = {0};
+	animCorruptCharacter->init(iArr, 1);
+	displayControl->setAnimator(animCorruptCharacter);
+	displayControl->startAnimator();
 
 }
 

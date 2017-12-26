@@ -51,7 +51,6 @@ void TextContainer::setMargin(unsigned int _id, MARGIN _mgn, float _amt)
 	}
 }
 
-
 void TextContainer::addTextFrame(float _width, float _height, ofPoint _position,
 		bool _isOption)
 {
@@ -139,7 +138,7 @@ void TextContainer::setPosition(float _x, float _y)
 	for (auto i = frames.begin(); i != frames.end(); i++)
 	{
 		(*i)->setPosition(x, y);
-		y += (*i)->getHeight()/2;
+		y += (*i)->getHeight() / 2;
 	}
 }
 
@@ -180,21 +179,19 @@ SELECTED_BOUNDS TextContainer::decrementSelected()
 		for (auto i = frames.begin(); i != frames.end(); i++)
 		{
 			(*i)->setSelected(ndx == selected);
-			ndx ++;
+			ndx++;
 		}
 		ofLog(OF_LOG_VERBOSE) << "[Text Container] not Below 0 " << selected;
 
 		return SELECTED_NO_CHANGE;
 	}
 
-
 }
 SELECTED_BOUNDS TextContainer::incrementSelected()
 {
 	ofLog(OF_LOG_VERBOSE) << "[Text Container] incrementing Selected ";
 
-
-	if (selected == frames.size()-1)
+	if (selected == frames.size() - 1)
 	{
 		for (auto i = frames.begin(); i != frames.end(); i++)
 		{
@@ -211,13 +208,12 @@ SELECTED_BOUNDS TextContainer::incrementSelected()
 		for (auto i = frames.begin(); i != frames.end(); i++)
 		{
 			(*i)->setSelected(ndx == selected);
-			ndx ++;
+			ndx++;
 		}
 		ofLog(OF_LOG_VERBOSE) << "[Text Container] not over max " << selected;
 
 		return SELECTED_NO_CHANGE;
 	}
-
 
 }
 
@@ -243,7 +239,7 @@ void TextContainer::setSelected(bool _sel, SELECTED_BOUNDS _bounds)
 		for (auto i = frames.begin(); i != frames.end(); i++)
 		{
 			(*i)->setSelected(ndx == selected);
-			ndx ++;
+			ndx++;
 		}
 
 	}
@@ -256,7 +252,6 @@ void TextContainer::setSelected(bool _sel, SELECTED_BOUNDS _bounds)
 	}
 	ofLog(OF_LOG_VERBOSE) << "[Text Container] selected is " << selected;
 
-
 }
 
 void TextContainer::onSelect()
@@ -264,6 +259,18 @@ void TextContainer::onSelect()
 	ofLog(OF_LOG_VERBOSE) << "on select " << selected;
 
 	frames[selected]->onSelect();
+}
+
+std::vector<Symbol*> TextContainer::getSymbols()
+{
+	std::vector<Symbol*> sym;
+	for (auto it = frames.begin(); it != frames.end(); it++)
+	{
+		std::vector<Symbol*> frameSym = (*it)->getSymbols();
+		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
+	}
+
+	return sym;
 }
 
 } /* namespace moth */

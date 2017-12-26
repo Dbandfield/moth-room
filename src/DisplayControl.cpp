@@ -15,6 +15,7 @@ DisplayControl::DisplayControl() :
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Setup";
 
+	animator = nullptr;
 	gameControl = nullptr;
 
 	backgroundColour = ofColor();
@@ -34,11 +35,59 @@ DisplayControl::~DisplayControl()
 			&DisplayControl::onKeyPressed);
 }
 
+void DisplayControl::setAnimator(Animator *_animator)
+{
+	animator = _animator;
+}
+
+void DisplayControl::startAnimator()
+{
+	if(animator!= nullptr)
+	{
+		if(!animator->isThreadRunning())
+		{
+			animator->setSymbols(getSymbols());
+			animator->start();
+		}
+	}
+
+}
+
+std::vector<Symbol*> DisplayControl::getSymbols()
+{
+	std::vector<Symbol*> sym;
+	for (auto it = options.begin(); it != options.end(); it++)
+	{
+		std::vector<Symbol*> frameSym = it->second->getSymbols();
+		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
+	}
+
+	for (auto it = text.begin(); it != text.end(); it++)
+	{
+		std::vector<Symbol*> frameSym = it->second->getSymbols();
+		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
+	}
+
+	return sym;
+}
+
 void DisplayControl::display()
 {
 	ofBackground(backgroundColour);
 	ofSetColor(textColour);
 
+	animator->lock();
+//	int nt = 0;
+//	for (auto i = layout.begin(); i != layout.end(); i++)
+//	{
+//		ofNoFill();
+//		ofColor c;
+//		c.setHsb(nt * 50, 100, 100);
+//		ofSetColor(c);
+//
+//		ofDrawRectangle(i->second.rect);
+//		nt ++;
+//	}
 	for (auto i = text.begin(); i != text.end(); i++)
 	{
 		i->second->display();
@@ -49,12 +98,16 @@ void DisplayControl::display()
 		i->second->display();
 	}
 
+
+	animator->unlock();
+
 }
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font";
 	int it = 0;
+	animator->lock();
 	for (auto i = text.begin(); i != text.end(); i++)
 	{
 		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt " << it;
@@ -95,6 +148,8 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		fontSmall = _f;
 		break;
 	}
+
+	animator->unlock();
 
 	readjustHeights();
 
@@ -146,12 +201,26 @@ void DisplayControl::setLayout(std::vector<float> _layout)
 	readjustHeights();
 }
 
+void DisplayControl::stopAnimator()
+{
+	if (animator != nullptr)
+	{
+		if (animator->isThreadRunning())
+		{
+			animator->waitForThread();
+		}
+	}
+}
+
 void DisplayControl::readjustHeights()
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Readjusting Heights";
 	std::vector<float> rowMaxHeight;
 	float h = 0;
 	unsigned int thisRow = 0;
+
+	animator->lock();
+
 	for (auto i : layout)
 	{
 		if (i.second.row != thisRow)
@@ -215,6 +284,8 @@ void DisplayControl::readjustHeights()
 		//i.second->setHeight(layout[i.first].rect.height);
 	}
 
+	animator->unlock();
+
 }
 
 void DisplayControl::clearLayout()
@@ -228,6 +299,8 @@ void DisplayControl::clearLayout()
 
 void DisplayControl::clearText()
 {
+	stopAnimator();
+
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
 	for (auto i = text.begin(); i != text.end(); i++)
 	{
@@ -242,6 +315,8 @@ void DisplayControl::clearText()
 
 void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 {
+	stopAnimator();
+
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
 	ofPoint pt = ofPoint();
@@ -265,6 +340,7 @@ void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
 	}
 
+
 	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_TOP, 64);
 	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_RIGHT, 64);
 	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_LEFT, 64);
@@ -278,10 +354,13 @@ void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 		setFont(FONT_SMALL, fontSmall);
 
 	readjustHeights();
+	startAnimator();
 }
 
 void DisplayControl::clearOptions()
 {
+	stopAnimator();
+
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
 	for (auto i = options.begin(); i != options.end(); i++)
 	{
@@ -297,8 +376,11 @@ void DisplayControl::clearOptions()
 }
 
 void DisplayControl::addOption(unsigned int _p, std::string _str,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz, bool _isSecret)
+		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
+		bool _isSecret)
 {
+	stopAnimator();
+
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding option " << _str;
 
 	ofPoint pt = ofPoint();
@@ -345,6 +427,7 @@ void DisplayControl::addOption(unsigned int _p, std::string _str,
 		setFont(FONT_SMALL, fontSmall);
 
 	readjustHeights();
+	startAnimator();
 
 }
 

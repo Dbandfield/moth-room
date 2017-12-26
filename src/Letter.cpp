@@ -52,7 +52,6 @@ void Letter::setColour(ofColor _col)
 	colour = _col;
 	float h, s, b;
 	colour.getHsb(h, s, b);
-	ofLog() << "Letter: " << h << " " << s << " " << b;
 }
 
 float Letter::getSpacing()
@@ -139,7 +138,6 @@ void Letter::setCharacter(std::string _c)
 
 void Letter::setPosition(ofPoint _pt)
 {
-//	ofLog(OF_LOG_VERBOSE) << "[Letter] Setting Position";
 	position = _pt;
 }
 
