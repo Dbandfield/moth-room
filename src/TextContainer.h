@@ -8,6 +8,7 @@
 #include "GameControl.h"
 #include "TextFrame.h"
 #include "enums.h"
+#include "Symbol.h"
 namespace moth
 {
 
@@ -47,6 +48,8 @@ public:
 
 	void setSelected(bool _sel, SELECTED_BOUNDS);
 	void onSelect();
+
+	std::vector<Symbol*> getSymbols();
 
 
 protected:

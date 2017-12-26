@@ -45,6 +45,8 @@ public:
 
 	void onSelect();
 
+	std::vector<Symbol*> getSymbols(){return symbols;};
+
 protected:
 	void recalculatePositions();
 	Option* opt;

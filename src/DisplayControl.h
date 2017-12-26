@@ -9,6 +9,7 @@
 #include "TextContainer.h"
 #include "TextFrame.h"
 #include "GameControl.h"
+#include "Animator.h"
 
 #include "enums.h"
 
@@ -58,10 +59,16 @@ public:
 	void onArrow(int _key);
 	void onSelect();
 
+	void setAnimator(Animator *_animator);
+	void startAnimator();
+	void stopAnimator();
+
 	void setGameControl(GameControl *_gameControl);
 
 protected:
 	void readjustHeights();
+
+	std::vector<Symbol*> getSymbols();
 
 	GameControl* gameControl;
 
@@ -79,6 +86,8 @@ protected:
 	ofTrueTypeFont* fontLarge;
 	ofTrueTypeFont* fontMedium;
 	ofTrueTypeFont* fontSmall;
+
+	Animator *animator;
 };
 
 } /* namespace moth */
