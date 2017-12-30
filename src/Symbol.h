@@ -15,9 +15,9 @@ public:
 	Symbol(){};
 	virtual ~Symbol(){};
 
-
 	virtual void display() = 0;
 
+	virtual std::vector<Symbol*> getChildren() = 0;
 
 	virtual float getHeight() = 0;
 	virtual float getWidth() = 0;
@@ -25,10 +25,9 @@ public:
 	virtual std::string getText() = 0;
 	virtual float getSpacing() = 0;
 
-
-	virtual void setCharacter(char _c) = 0;
-	virtual void setCharacter(char* _c) = 0;
-	virtual void setCharacter(std::string _c) = 0;
+	virtual void setText(char _c) = 0;
+	virtual void setText(char* _c) = 0;
+	virtual void setText(std::string _c) = 0;
 
 	virtual void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font) = 0;
 	virtual void setFontSize(FONT_SIZE _sz) = 0;
@@ -38,9 +37,14 @@ public:
 	virtual void setColour(ofColor _col) = 0;
 
 protected:
+
 	virtual void calculateSize()= 0;
 
+	ofColor colCurrent;
 
+	std::vector<Symbol*> children;
+
+	std::string text;
 	ofPoint position;
 	float width;
 	float height;

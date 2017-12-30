@@ -24,7 +24,7 @@ Letter::Letter(ofColor _col)
 
 	fontSize = FONT_SMALL;
 
-	colour = _col;
+	colCurrent = _col;
 
 }
 
@@ -49,9 +49,9 @@ ofPoint Letter::getPosition()
 void Letter::setColour(ofColor _col)
 {
 
-	colour = _col;
+	colCurrent = _col;
 	float h, s, b;
-	colour.getHsb(h, s, b);
+	colCurrent.getHsb(h, s, b);
 }
 
 float Letter::getSpacing()
@@ -106,14 +106,19 @@ void Letter::setFontSize(FONT_SIZE _sz)
 
 void Letter::display()
 {
-	ofSetColor(colour);
+	ofSetColor (colCurrent);
 	if (currentFont != nullptr)
 	{
 		currentFont->drawString(text, position.x, position.y);
 	}
 }
 
-void Letter::setCharacter(char _c)
+std::vector<Symbol*> Letter::getChildren()
+{
+	return children;
+}
+
+void Letter::setText(char _c)
 {
 
 	text = std::string();
@@ -121,7 +126,7 @@ void Letter::setCharacter(char _c)
 	calculateSize();
 }
 
-void Letter::setCharacter(char* _c)
+void Letter::setText(char* _c)
 {
 
 	text = std::string();
@@ -129,7 +134,7 @@ void Letter::setCharacter(char* _c)
 	calculateSize();
 }
 
-void Letter::setCharacter(std::string _c)
+void Letter::setText(std::string _c)
 {
 
 	text = _c.substr(0, 1);

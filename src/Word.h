@@ -1,23 +1,25 @@
 #pragma once
 
 #include "Symbol.h"
+#include "Letter.h"
 
 namespace moth
 {
 
-class Letter: public Symbol
+class Letter;
+
+class Word: public Symbol
 {
 public:
-
-	Letter(ofColor _col);
-	virtual ~Letter();
+	Word(ofColor _col);
+	virtual ~Word();
 
 	void display();
 
 	float getHeight();
 	float getWidth();
 	ofPoint getPosition();
-	std::string getText(){return text;};
+	std::string getText();
 	float getSpacing();
 	std::vector<Symbol*> getChildren();
 
@@ -28,9 +30,9 @@ public:
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(FONT_SIZE _sz);
 
-	void setPosition(ofPoint _pt);
-
 	void setColour(ofColor _col);
+
+	void setPosition(ofPoint _pt);
 
 protected:
 
@@ -43,4 +45,3 @@ protected:
 };
 
 } /* namespace moth */
-

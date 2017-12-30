@@ -14,6 +14,7 @@ namespace moth
 
 class GameControl;
 class TextFrame;
+class Symbol;
 
 class TextContainer
 {
@@ -36,7 +37,6 @@ public:
 
 	void setPosition(float _x, float _y);
 	void setWidth(float _w);
-	void setHeight(float _h);
 	void setMargin(unsigned int _id, MARGIN _mgn, float _amt);
 
 	void setIsSecret(unsigned int _id, bool _isSecret);

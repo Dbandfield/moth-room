@@ -9,7 +9,6 @@
 #include "TextContainer.h"
 #include "TextFrame.h"
 #include "GameControl.h"
-#include "Animator.h"
 
 #include "enums.h"
 
@@ -59,9 +58,9 @@ public:
 	void onArrow(int _key);
 	void onSelect();
 
-	void setAnimator(Animator *_animator);
-	void startAnimator();
-	void stopAnimator();
+//	void setAnimator(Animator *_animator);
+//	void startAnimator();
+//	void stopAnimator();
 
 	void setGameControl(GameControl *_gameControl);
 
@@ -87,7 +86,7 @@ protected:
 	ofTrueTypeFont* fontMedium;
 	ofTrueTypeFont* fontSmall;
 
-	Animator *animator;
+//	Animator *animator;
 };
 
 } /* namespace moth */

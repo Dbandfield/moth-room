@@ -137,7 +137,7 @@ void TextContainer::setPosition(float _x, float _y)
 	float y = _y;
 	for (auto i = frames.begin(); i != frames.end(); i++)
 	{
-		(*i)->setPosition(x, y);
+		(*i)->setPosition(ofPoint(x, y));
 		y += (*i)->getHeight() / 2;
 	}
 }
@@ -150,13 +150,6 @@ void TextContainer::setWidth(float _w)
 	}
 }
 
-void TextContainer::setHeight(float _h)
-{
-	for (auto i = frames.begin(); i != frames.end(); i++)
-	{
-		(*i)->setHeight(_h);
-	}
-}
 
 SELECTED_BOUNDS TextContainer::decrementSelected()
 {
@@ -266,7 +259,7 @@ std::vector<Symbol*> TextContainer::getSymbols()
 	std::vector<Symbol*> sym;
 	for (auto it = frames.begin(); it != frames.end(); it++)
 	{
-		std::vector<Symbol*> frameSym = (*it)->getSymbols();
+		std::vector<Symbol*> frameSym = (*it)->getChildren();
 		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
 	}
 

@@ -21,14 +21,10 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 
 	if (isOption)
 	{
-		ofLog(OF_LOG_VERBOSE) << "[TextFrame] Text Frame can be clicked";
-
 		opt = new Option();
 	}
 	else
 	{
-		ofLog(OF_LOG_VERBOSE) << "[TextFrame] Text Frame Can Not be Clicked";
-
 		opt = nullptr;
 	}
 
@@ -61,9 +57,9 @@ void TextFrame::setIsSecret(bool _isSecret)
 
 	colCurrent = colBase;
 
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		symbols[i]->setColour(colCurrent);
+		children[i]->setColour(colCurrent);
 	}
 }
 
@@ -81,9 +77,9 @@ void TextFrame::setSelected(bool _sel)
 		colCurrent = colBase;
 	}
 
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		symbols[i]->setColour(colCurrent);
+		children[i]->setColour(colCurrent);
 	}
 }
 
@@ -137,19 +133,14 @@ void TextFrame::setCallback(GameControl *_gameControl,
 	}
 }
 
-void TextFrame::setPosition(float _x, float _y)
+void TextFrame::setPosition(ofPoint _pt)
 {
-	position = ofPoint(_x, _y);
+	position = _pt;
 	recalculatePositions();
 }
 void TextFrame::setWidth(float _w)
 {
 	width = _w;
-	recalculatePositions();
-}
-void TextFrame::setHeight(float _h)
-{
-	height = _h;
 	recalculatePositions();
 }
 
@@ -160,9 +151,9 @@ float TextFrame::getHeight()
 
 void TextFrame::display()
 {
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		symbols[i]->display();
+		children[i]->display();
 	}
 //
 //	ofNoFill();
@@ -170,18 +161,66 @@ void TextFrame::display()
 //	ofDrawRectangle(position.x, position.y, width, height);
 }
 
+std::vector<std::string> TextFrame::split(const std::string& s, char delimiter)
+{
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(s);
+	while (std::getline(tokenStream, token, delimiter))
+	{
+		std::istringstream tokenStream2(token);
+		std::string token2;
+		size_t i = 0;
+
+		while (std::getline(tokenStream2, token2, '\n'))
+		{
+			if (i)
+			{
+				ofLog() << "Pushing back new line " << i;
+				tokens.push_back("\n");
+			}
+
+			tokens.push_back(token2);
+
+			i++;
+		}
+	}
+	return tokens;
+}
+
+void TextFrame::setText(char _c)
+{
+	std::string str;
+	str += _c;
+	setText(str);
+}
+
+void TextFrame::setText(char* _c)
+{
+	std::string str = "";
+	while (_c != '\0')
+	{
+		str += *_c;
+		_c++;
+	}
+	setText(str);
+}
+
 void TextFrame::setText(std::string _str)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting text: " << _str;
 
-	symbols.clear();
-	for (size_t i = 0; i < _str.size(); i++)
-	{
-		char c = _str[i];
-		symbols.push_back(new Letter(colStatic));
-		symbols.back()->setCharacter(c);
+	children.clear();
 
+	auto wrds = split(_str, ' ');
+
+	for (size_t i = 0; i < wrds.size(); i++)
+	{
+		//ofLog() << "[TEXT_FRAME] - Split word is: " << wrds[i];
+		children.push_back(new Word(colStatic));
+		children.back()->setText(wrds[i]);
 	}
+
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);
 
@@ -194,13 +233,18 @@ void TextFrame::setText(std::string _str)
 	recalculatePositions();
 }
 
+void TextFrame::setColour(ofColor _col)
+{
+	colCurrent = _col;
+}
+
 void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font";
 
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		symbols[i]->setFont(_sz, _f);
+		children[i]->setFont(_sz, _f);
 	}
 
 	switch (_sz)
@@ -222,9 +266,9 @@ void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 void TextFrame::setFontSize(FONT_SIZE _sz)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font Size";
-	for (size_t i = 0; i < symbols.size(); i++)
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		symbols[i]->setFontSize(_sz);
+		children[i]->setFontSize(_sz);
 	}
 
 	recalculatePositions();
@@ -236,11 +280,11 @@ void TextFrame::recalculatePositions()
 	float letterHeight = 0;
 	height = 0;
 	float innerWidth = width - (marginLeft + marginRight);
-	if (symbols.size() > 0)
+	if (children.size() > 0)
 	{
-		adjustedPosition.y += symbols[0]->getHeight() * LINE_HEIGHT_ADJUST;
-		letterHeight = symbols[0]->getHeight() * LINE_HEIGHT_ADJUST;
-		letterSpacing = symbols[0]->getSpacing();
+		adjustedPosition.y += children[0]->getHeight() * LINE_HEIGHT_ADJUST;
+		letterHeight = children[0]->getHeight() * LINE_HEIGHT_ADJUST;
+		letterSpacing = children[0]->getSpacing();
 	}
 
 	ofPoint thisPos = adjustedPosition;
@@ -251,15 +295,21 @@ void TextFrame::recalculatePositions()
 	size_t start = 0;
 	bool lineBeginning = true;
 
-	for (int i = 0; i < (int) symbols.size(); i++)
+	for (int i = 0; i < (int) children.size(); i++)
 	{
-		bool newLine = symbols[i]->getText() == "\n";
-		bool invisible = symbols[i]->getWidth() <= 0;
+		ofLog() << "Symbol is: " << children[i]->getText();
+		bool newLine = children[i]->getText() == "\n";
+		bool invisible = children[i]->getWidth() <= 0;
 
-		w += (symbols[i]->getWidth() + letterSpacing); // + letterSpacing;
+		if (newLine)
+		{
+			ofLog() << "is newl ine";
+		}
+
+		w += (children[i]->getWidth() + letterSpacing); // + letterSpacing;
 		if (w >= innerWidth || newLine)
 		{
-			w = invisible ? 0 : symbols[i]->getWidth() * 1.2;
+			w = invisible ? 0 : children[i]->getWidth() * 1.2;
 
 			size_t ins = i;
 
@@ -267,9 +317,9 @@ void TextFrame::recalculatePositions()
 			{
 				for (size_t j = i; j > start; j--)
 				{
-					if (symbols[j]->getText() == " ")
+					if (children[j]->getText() == " ")
 					{
-						ins = std::min(j + 1, symbols.size() - 1); // make sure doesnt go beyond bounds
+						ins = std::min(j + 1, children.size() - 1); // make sure doesnt go beyond bounds
 						break;
 					}
 				}
@@ -288,9 +338,9 @@ void TextFrame::recalculatePositions()
 
 		if (!lineBeginning)
 		{
-			if (symbols[i - 1]->getText() != "\n")
+			if (children[i - 1]->getText() != "\n")
 			{
-				float adj = symbols[i - 1]->getWidth() + letterSpacing;
+				float adj = children[i - 1]->getWidth() + letterSpacing;
 				thisPos.x += adj;
 			}
 		}
@@ -299,10 +349,36 @@ void TextFrame::recalculatePositions()
 			lineBeginning = false;
 		}
 
-		symbols[i]->setPosition(thisPos);
+		children[i]->setPosition(thisPos);
 
 	}
 	height = height + letterHeight + marginTop + marginBottom;
+
+}
+
+
+float TextFrame::getWidth()
+{
+	return width;
+}
+
+ofPoint TextFrame::getPosition()
+{
+	return position;
+}
+
+std::string TextFrame::getText()
+{
+	return text;
+}
+
+float TextFrame::getSpacing()
+{
+	return 0.f;
+}
+
+void TextFrame::calculateSize()
+{
 
 }
 

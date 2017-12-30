@@ -143,13 +143,13 @@ void GameControl::setLocations(std::map<unsigned int, Location*> _locs)
 void GameControl::moveLocation(unsigned int _arg)
 {
 	hunger ++;
-	if(animCorruptCharacter!= nullptr)
-	{
-		animCorruptCharacter->lock();
-		int arr[1] = {hunger};
-		animCorruptCharacter->setArg(arr, 1);
-		animCorruptCharacter->unlock();
-	}
+//	if(animCorruptCharacter!= nullptr)
+//	{
+//		animCorruptCharacter->lock();
+//		int arr[1] = {hunger};
+//		animCorruptCharacter->setArg(arr, 1);
+//		animCorruptCharacter->unlock();
+//	}
 	currentLocation = locations[_arg];
 	advanceNode(0);
 }
@@ -265,11 +265,11 @@ void GameControl::setDisplayControl(DisplayControl *_displayControl)
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setting Display Control";
 
 	displayControl = _displayControl;
-	animCorruptCharacter = new AnimCorruptCharacter();
-	int iArr[1] = {0};
-	animCorruptCharacter->init(iArr, 1);
-	displayControl->setAnimator(animCorruptCharacter);
-	displayControl->startAnimator();
+//	animCorruptCharacter = new AnimCorruptCharacter();
+//	int iArr[1] = {0};
+//	animCorruptCharacter->init(iArr, 1);
+//	displayControl->setAnimator(animCorruptCharacter);
+//	displayControl->startAnimator();
 
 }
 
