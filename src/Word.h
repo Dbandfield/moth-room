@@ -36,6 +36,8 @@ public:
 
 	void setPosition(ofPoint _pt);
 
+	void setWidth(float _width);
+
 protected:
 
 	void calculateSize();

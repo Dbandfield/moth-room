@@ -49,6 +49,8 @@ public:
 
 	void setColour(ofColor _col);
 
+	void setWidth(float _w);
+
 	/* --- End inherited --- */
 
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
@@ -56,7 +58,6 @@ public:
 
 	void setIsSecret(bool _isSecret);
 
-	void setWidth(float _w);
 	void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
 

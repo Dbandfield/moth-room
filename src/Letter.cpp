@@ -169,5 +169,11 @@ void Letter::calculateSize()
 
 }
 
+void Letter::setWidth(float _width)
+{
+	ofLog(OF_LOG_WARNING)
+			<< "[WORD] - Setting width does nothing. Width is based on text.";
+}
+
 } /* namespace moth */
 

@@ -168,6 +168,12 @@ float Word::getSpacing()
 	}
 }
 
+void Word::setWidth(float _width)
+{
+	ofLog(OF_LOG_WARNING)
+			<< "[WORD] - Setting width does nothing. Width is based on text.";
+}
+
 void Word::setColour(ofColor _col)
 {
 	colCurrent = _col;

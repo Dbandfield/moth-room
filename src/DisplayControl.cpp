@@ -23,7 +23,12 @@ DisplayControl::DisplayControl() :
 	textColour = ofColor();
 	textColour.setHsb(0, 0, 200);
 
-	clearLayout();
+	DisplayArea* levels = new DisplayArea();
+	DisplayArea* main = new DisplayArea();
+	DisplayArea* buttons = new DisplayArea();
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_LEVELS, levels));
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_MAIN, main));
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_BUTTONS, buttons));
 
 	ofAddListener(ofEvents().keyReleased, this, &DisplayControl::onKeyPressed);
 }
@@ -37,7 +42,7 @@ DisplayControl::~DisplayControl()
 std::vector<Symbol*> DisplayControl::getSymbols()
 {
 	std::vector<Symbol*> sym;
-	for (auto i : containers)
+	for (auto i : areas)
 	{
 		std::vector<Symbol*> frameSym = i.second->getChildren();
 		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
@@ -46,14 +51,20 @@ std::vector<Symbol*> DisplayControl::getSymbols()
 	return sym;
 }
 
+void DisplayControl::setLayout(DISPLAY_AREA _area, std::vector<float> _layout)
+{
+	areas[_area]->setLayout(_layout);
+}
+
+
 void DisplayControl::display()
 {
 	ofBackground(backgroundColour);
 	ofSetColor(textColour);
 
-	for (auto i : containers)
+	for (auto it : areas)
 	{
-		i.second->display();
+		it.second->display();
 	}
 
 }
@@ -62,11 +73,11 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font";
 
-	for (auto i : containers)
+	for (auto it : areas)
 	{
 		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt ";
 
-		i.second->setFont(_sz, _f);
+		it.second->setFont(_sz, _f);
 	}
 
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting personal font ";
@@ -86,216 +97,45 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		fontSmall = _f;
 		break;
 	}
-
-	readjustHeights();
 }
 
-void DisplayControl::setLayout(std::vector<float> _layout)
-{
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting layout";
-	layout.clear();
-	float w = 0;
-	float h = 50;
-	float x = 0;
-	float y = 0;
-	unsigned int id = 0;
-	unsigned int row = 0;
-	unsigned int col = 0;
-	float pcTrack = 0;
 
-	for (size_t i = 0; i < _layout.size(); i++)
-	{
-		float pc = _layout[i] / 100.f;
-
-		pcTrack += pc;
-
-		if (pcTrack > 1.)
-		{
-			row++;
-			x = 0;
-			y += h;
-			col = 0;
-			pcTrack = pc;
-		}
-		else
-		{
-		}
-
-		w = ofGetWidth() * pc;
-		id = i;
-
-		layout.insert(
-				std::pair<unsigned int, Cell>(id,
-						Cell(row, col, pc, x, y, w, h)));
-
-		x += w;
-		col++;
-
-	}
-
-	readjustHeights();
-}
-
-void DisplayControl::readjustHeights()
-{
-	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Readjusting Heights";
-	std::vector<float> rowMaxHeight;
-	float h = 0;
-	unsigned int thisRow = 0;
-
-	for (auto i : layout)
-	{
-		if (i.second.row != thisRow)
-		{
-			rowMaxHeight.push_back(h);
-			h = 0;
-			thisRow = i.second.row;
-		}
-
-		auto it = containers.find(i.first);
-		if (it != containers.end())
-		{
-			if (it->second->getHeight() > h)
-				h = it->second->getHeight();
-
-		}
-	}
-
-	if (layout.size() > 0)
-		rowMaxHeight.push_back(h);
-
-	thisRow = 0;
-	float y = 0;
-
-	for (auto i = layout.begin(); i != layout.end(); i++)
-	{
-		Cell& cell = i->second;
-		if (cell.row != thisRow)
-		{
-			y += rowMaxHeight[thisRow];
-			thisRow = cell.row;
-		}
-		cell.rect.setHeight(rowMaxHeight[thisRow]);
-		cell.rect.setY(y);
-	}
-
-	for (auto i : containers)
-	{
-		i.second->setPosition(layout[i.first].rect.x, layout[i.first].rect.y);
-		i.second->setWidth(layout[i.first].rect.width);
-	}
-
-}
-
-void DisplayControl::clearLayout()
-{
-	layout.clear();
-	layout.insert(
-			std::pair<unsigned int, Cell>(0,
-					Cell(0, 0, 100, 0, 0, ofGetWidth(), ofGetHeight())));
-
-}
 
 void DisplayControl::clearContent()
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto i : containers)
+	for (auto it : areas)
 	{
-		delete i.second;
+		it.second->clearContent();
 	}
-
-	containers.clear();
 	options.clear();
-
-	readjustHeights();
 }
 
-void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
+void DisplayControl::clearLayout()
 {
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
-
-	ofPoint pt = ofPoint();
-	pt.x = layout[_p].rect.x;
-	pt.y = layout[_p].rect.y;
-
-	if (containers.find(_p) == containers.end())
+	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing layout";
+	for (auto it : areas)
 	{
-
-		containers.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
-
+		it.second->clearLayout();
 	}
-
-	TextFrame* frame = new TextFrame(40, 40, pt, false);
-
-	frame->setText(_str);
-	frame->setFontSize(_sz);
-	frame->setMargin(MARGIN_TOP, 64);
-	frame->setMargin(MARGIN_RIGHT, 64);
-	frame->setMargin(MARGIN_LEFT, 64);
-	frame->setMargin(MARGIN_BOTTOM, 0);
-
-	containers[_p]->addChild(frame);
-
-	if (fontLarge != nullptr)
-		setFont(FONT_LARGE, fontLarge);
-	if (fontMedium != nullptr)
-		setFont(FONT_MEDIUM, fontMedium);
-	if (fontSmall != nullptr)
-		setFont(FONT_SMALL, fontSmall);
-
-	readjustHeights();
+}
+void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p, std::string _str, FONT_SIZE _sz)
+{
+	areas[_area]->addText(_p, _str, _sz);
 }
 
-void DisplayControl::addOption(unsigned int _p, std::string _str,
+void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p, std::string _str,
 		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
 		bool _isSecret)
 {
+	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg, _sz, _isSecret);
 
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
-
-	ofPoint pt = ofPoint();
-	pt.x = layout[_p].rect.x;
-	pt.y = layout[_p].rect.y;
-
-	if (containers.find(_p) == containers.end())
-	{
-
-		containers.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
-
-	}
-
-	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
-
-	frame->setText(_str);
-	frame->setFontSize(_sz);
-	frame->setMargin(MARGIN_TOP, 64);
-	frame->setMargin(MARGIN_RIGHT, 64);
-	frame->setMargin(MARGIN_LEFT, 64);
-	frame->setMargin(MARGIN_BOTTOM, 0);
-	frame->setCallback(gameControl, _f, _arg);
-
-	options.push_back(frame);
+	options.push_back(fr);
 
 	for(size_t i = 0; i < options.size(); i ++)
 	{
-		options[i]->setSelected[i == selected];
+		options[i]->setSelected(i == selected);
 	}
-
-	containers[_p]->addChild(frame);
-
-	if (fontLarge != nullptr)
-		setFont(FONT_LARGE, fontLarge);
-	if (fontMedium != nullptr)
-		setFont(FONT_MEDIUM, fontMedium);
-	if (fontSmall != nullptr)
-		setFont(FONT_SMALL, fontSmall);
-
-	readjustHeights();
-
 }
 
 void DisplayControl::onKeyPressed(ofKeyEventArgs &_args)

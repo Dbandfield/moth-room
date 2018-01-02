@@ -38,6 +38,8 @@ public:
 
 	virtual void setColour(ofColor _col) = 0;
 
+	virtual void setWidth(float _width) = 0;
+
 protected:
 
 	ofColor colCurrent;

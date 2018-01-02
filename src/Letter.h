@@ -34,6 +34,8 @@ public:
 
 	void setColour(ofColor _col);
 
+	void setWidth(float _width);
+
 protected:
 
 	void calculateSize();
