@@ -15,7 +15,6 @@ DisplayControl::DisplayControl() :
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Setup";
 
-//	animator = nullptr;
 	gameControl = nullptr;
 
 	backgroundColour = ofColor();
@@ -35,36 +34,12 @@ DisplayControl::~DisplayControl()
 			&DisplayControl::onKeyPressed);
 }
 
-//void DisplayControl::setAnimator(Animator *_animator)
-//{
-//	animator = _animator;
-//}
-
-//void DisplayControl::startAnimator()
-//{
-//	if(animator!= nullptr)
-//	{
-//		if(!animator->isThreadRunning())
-//		{
-//			animator->setSymbols(getSymbols());
-//			animator->start();
-//		}
-//	}
-//
-//}
-
 std::vector<Symbol*> DisplayControl::getSymbols()
 {
 	std::vector<Symbol*> sym;
-	for (auto it = options.begin(); it != options.end(); it++)
+	for (auto i : containers)
 	{
-		std::vector<Symbol*> frameSym = it->second->getSymbols();
-		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
-	}
-
-	for (auto it = text.begin(); it != text.end(); it++)
-	{
-		std::vector<Symbol*> frameSym = it->second->getSymbols();
+		std::vector<Symbol*> frameSym = i.second->getChildren();
 		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
 	}
 
@@ -76,59 +51,22 @@ void DisplayControl::display()
 	ofBackground(backgroundColour);
 	ofSetColor(textColour);
 
-//	animator->lock();
-//	int nt = 0;
-//	for (auto i = layout.begin(); i != layout.end(); i++)
-//	{
-//		ofNoFill();
-//		ofColor c;
-//		c.setHsb(nt * 50, 100, 100);
-//		ofSetColor(c);
-//
-//		ofDrawRectangle(i->second.rect);
-//		nt ++;
-//	}
-	for (auto i = text.begin(); i != text.end(); i++)
+	for (auto i : containers)
 	{
-		i->second->display();
+		i.second->display();
 	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		i->second->display();
-	}
-
-
-//	animator->unlock();
 
 }
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font";
-	int it = 0;
-//	animator->lock();
-	for (auto i = text.begin(); i != text.end(); i++)
+
+	for (auto i : containers)
 	{
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt " << it;
+		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt ";
 
-		for (size_t ii = 0; ii < i->second->getSize(); ii++)
-		{
-			i->second->setFont(ii, _sz, _f);
-		}
-		it++;
-	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font opt " << it;
-
-		for (size_t ii = 0; ii < i->second->getSize(); ii++)
-		{
-			i->second->setFont(ii, _sz, _f);
-		}
-
-		it++;
+		i.second->setFont(_sz, _f);
 	}
 
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting personal font ";
@@ -149,10 +87,7 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		break;
 	}
 
-//	animator->unlock();
-
 	readjustHeights();
-
 }
 
 void DisplayControl::setLayout(std::vector<float> _layout)
@@ -201,25 +136,12 @@ void DisplayControl::setLayout(std::vector<float> _layout)
 	readjustHeights();
 }
 
-//void DisplayControl::stopAnimator()
-//{
-//	if (animator != nullptr)
-//	{
-//		if (animator->isThreadRunning())
-//		{
-//			animator->waitForThread();
-//		}
-//	}
-//}
-
 void DisplayControl::readjustHeights()
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Readjusting Heights";
 	std::vector<float> rowMaxHeight;
 	float h = 0;
 	unsigned int thisRow = 0;
-
-//	animator->lock();
 
 	for (auto i : layout)
 	{
@@ -230,24 +152,13 @@ void DisplayControl::readjustHeights()
 			thisRow = i.second.row;
 		}
 
-		auto it = text.find(i.first);
-		if (it != text.end())
+		auto it = containers.find(i.first);
+		if (it != containers.end())
 		{
 			if (it->second->getHeight() > h)
 				h = it->second->getHeight();
 
 		}
-		else
-		{
-			auto it2 = options.find(i.first);
-			if (it2 != options.end())
-			{
-				if (it2->second->getHeight() > h)
-					h = it2->second->getHeight();
-
-			}
-		}
-
 	}
 
 	if (layout.size() > 0)
@@ -268,21 +179,11 @@ void DisplayControl::readjustHeights()
 		cell.rect.setY(y);
 	}
 
-	for (auto i = text.begin(); i != text.end(); i++)
+	for (auto i : containers)
 	{
-		i->second->setPosition(layout[i->first].rect.x,
-				layout[i->first].rect.y);
-		i->second->setWidth(layout[i->first].rect.width);
+		i.second->setPosition(layout[i.first].rect.x, layout[i.first].rect.y);
+		i.second->setWidth(layout[i.first].rect.width);
 	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		i->second->setPosition(layout[i->first].rect.x,
-				layout[i->first].rect.y);
-		i->second->setWidth(layout[i->first].rect.width);
-	}
-
-//	animator->unlock();
 
 }
 
@@ -295,25 +196,62 @@ void DisplayControl::clearLayout()
 
 }
 
-void DisplayControl::clearText()
+void DisplayControl::clearContent()
 {
-//	stopAnimator();
-
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto i = text.begin(); i != text.end(); i++)
+	for (auto i : containers)
 	{
-		delete i->second;
+		delete i.second;
 	}
 
-	text.clear();
+	containers.clear();
+	options.clear();
 
 	readjustHeights();
-
 }
 
 void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 {
-//	stopAnimator();
+	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
+
+	ofPoint pt = ofPoint();
+	pt.x = layout[_p].rect.x;
+	pt.y = layout[_p].rect.y;
+
+	if (containers.find(_p) == containers.end())
+	{
+
+		containers.insert(
+				std::pair<unsigned int, TextContainer*>(_p,
+						new TextContainer()));
+
+	}
+
+	TextFrame* frame = new TextFrame(40, 40, pt, false);
+
+	frame->setText(_str);
+	frame->setFontSize(_sz);
+	frame->setMargin(MARGIN_TOP, 64);
+	frame->setMargin(MARGIN_RIGHT, 64);
+	frame->setMargin(MARGIN_LEFT, 64);
+	frame->setMargin(MARGIN_BOTTOM, 0);
+
+	containers[_p]->addChild(frame);
+
+	if (fontLarge != nullptr)
+		setFont(FONT_LARGE, fontLarge);
+	if (fontMedium != nullptr)
+		setFont(FONT_MEDIUM, fontMedium);
+	if (fontSmall != nullptr)
+		setFont(FONT_SMALL, fontSmall);
+
+	readjustHeights();
+}
+
+void DisplayControl::addOption(unsigned int _p, std::string _str,
+		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
+		bool _isSecret)
+{
 
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
@@ -321,28 +259,33 @@ void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 	pt.x = layout[_p].rect.x;
 	pt.y = layout[_p].rect.y;
 
-	if (text.find(_p) == text.end())
+	if (containers.find(_p) == containers.end())
 	{
 
-		text.insert(
+		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
 						new TextContainer()));
-		text[_p]->addTextFrame(40, 40, pt, false);
-		text[_p]->setText(text[_p]->getSize() - 1, _str);
-		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
+
 	}
-	else
+
+	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
+
+	frame->setText(_str);
+	frame->setFontSize(_sz);
+	frame->setMargin(MARGIN_TOP, 64);
+	frame->setMargin(MARGIN_RIGHT, 64);
+	frame->setMargin(MARGIN_LEFT, 64);
+	frame->setMargin(MARGIN_BOTTOM, 0);
+	frame->setCallback(gameControl, _f, _arg);
+
+	options.push_back(frame);
+
+	for(size_t i = 0; i < options.size(); i ++)
 	{
-		text[_p]->addTextFrame(40, 40, pt, false);
-		text[_p]->setText(text[_p]->getSize() - 1, _str);
-		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
+		options[i]->setSelected[i == selected];
 	}
 
-
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_TOP, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_RIGHT, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_LEFT, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_BOTTOM, 0);
+	containers[_p]->addChild(frame);
 
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);
@@ -352,80 +295,6 @@ void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
 		setFont(FONT_SMALL, fontSmall);
 
 	readjustHeights();
-//	startAnimator();
-}
-
-void DisplayControl::clearOptions()
-{
-//	stopAnimator();
-
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		delete i->second;
-	}
-
-	options.clear();
-
-	readjustHeights();
-
-	selected = 0;
-
-}
-
-void DisplayControl::addOption(unsigned int _p, std::string _str,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
-		bool _isSecret)
-{
-//	stopAnimator();
-
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding option " << _str;
-
-	ofPoint pt = ofPoint();
-	pt.x = layout[_p].rect.x;
-	pt.y = layout[_p].rect.y;
-
-	if (options.find(_p) == options.end())
-	{
-
-		options.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
-		options[_p]->addTextFrame(40, 40, pt, true);
-		options[_p]->setText(options[_p]->getSize() - 1, _str);
-		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
-				_arg);
-	}
-	else
-	{
-		options[_p]->addTextFrame(40, 40, pt, true);
-		options[_p]->setText(options[_p]->getSize() - 1, _str);
-		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
-				_arg);
-	}
-
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_TOP, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_RIGHT, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_LEFT, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_BOTTOM, 64);
-	options[_p]->setIsSecret(options[_p]->getSize() - 1, _isSecret);
-
-	if (options.size() != 0)
-	{
-		options[_p]->setSelected(true, SELECTED_NO_CHANGE);
-	}
-
-	if (fontLarge != nullptr)
-		setFont(FONT_LARGE, fontLarge);
-	if (fontMedium != nullptr)
-		setFont(FONT_MEDIUM, fontMedium);
-	if (fontSmall != nullptr)
-		setFont(FONT_SMALL, fontSmall);
-
-	readjustHeights();
-//	startAnimator();
 
 }
 
@@ -454,18 +323,7 @@ void DisplayControl::onSelect()
 
 	if (options.size() > 0)
 	{
-		ofLog() << selected;
-		size_t i = 0;
-		for (auto it = options.begin(); it != options.end(); it++)
-		{
-			if (i == selected)
-			{
-				it->second->onSelect();
-				break;
-			}
-
-			i++;
-		}
+		options[selected]->onSelect();
 	}
 }
 
@@ -473,93 +331,37 @@ void DisplayControl::onArrow(int _key)
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed. Selected is: "
 			<< selected;
-	size_t i = 0;
 
 	switch (_key)
 	{
 	case OF_KEY_UP:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed up";
 
-		for (auto it = options.begin(); it != options.end(); it++)
+		selected--;
+		if (selected < 0)
 		{
-			if (i == selected)
-			{
-				switch (it->second->decrementSelected())
-				{
-				case SELECTED_ABOVE:
-					selected--;
-					if (selected < 0)
-						selected = options.size() - 1;
+			selected = options.size() - 1;
+		}
 
-					size_t i2 = 0;
-					for (auto it2 = options.begin(); it2 != options.end();
-							it2++)
-					{
-
-						if (i2 == selected)
-						{
-							it2->second->setSelected(true, SELECTED_BELOW);
-						}
-						else
-						{
-							it2->second->setSelected(false, SELECTED_NO_CHANGE);
-						}
-
-						i2++;
-					}
-					break;
-				}
-
-				break;
-			}
-			i++;
+		for(size_t i = 0; i < options.size(); i ++)
+		{
+			options[i]->setSelected(i == selected);
 		}
 
 		break;
 
 	case OF_KEY_DOWN:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow down Pressed";
-		ofLog() << "option sz is " << options.size();
-		ofLog() << "selected is " << selected;
 
-		i = 0;
-		for (auto it = options.begin(); it != options.end(); it++)
+		selected++;
+		if (selected >= options.size())
 		{
-			if (i == selected)
-			{
-				ofLog() << "is sel: " << i;
+			selected = 0;
+		}
 
-				switch (it->second->incrementSelected())
-				{
-				case SELECTED_BELOW:
-					selected++;
-					if (selected >= options.size())
-						selected = 0;
-
-					size_t i2 = 0;
-					for (auto it2 = options.begin(); it2 != options.end();
-							it2++)
-					{
-
-						if (i2 == selected)
-						{
-							it2->second->setSelected(true, SELECTED_ABOVE);
-						}
-						else
-						{
-							it2->second->setSelected(false, SELECTED_NO_CHANGE);
-						}
-
-						i2++;
-					}
-
-					break;
-				}
-
-				break;
-			}
-
-			i++;
+		for(size_t i = 0; i < options.size(); i ++)
+		{
+			options[i]->setSelected(i == selected);
 		}
 
 		break;

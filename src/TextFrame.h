@@ -40,6 +40,8 @@ public:
 	void setText(char* _c);
 	void setText(std::string _str);
 
+	void addChild(Symbol* _symbol);
+
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(FONT_SIZE _sz);
 
@@ -71,10 +73,6 @@ protected:
 
 	bool isOption;
 	bool isSecret;
-
-	ofTrueTypeFont* fontLarge;
-	ofTrueTypeFont* fontMedium;
-	ofTrueTypeFont* fontSmall;
 
 	ofPoint adjustedPosition;
 

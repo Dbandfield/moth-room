@@ -49,18 +49,13 @@ public:
 
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
 
-	void clearText();
 	void addText(unsigned int _p, std::string, FONT_SIZE _sz=FONT_SMALL);
-	void clearOptions();
+	void clearContent();
 	void addOption(unsigned int _p, std::string, void(GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz=FONT_SMALL, bool _isSecret=false);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);
 	void onSelect();
-
-//	void setAnimator(Animator *_animator);
-//	void startAnimator();
-//	void stopAnimator();
 
 	void setGameControl(GameControl *_gameControl);
 
@@ -74,8 +69,8 @@ protected:
 	std::map<unsigned int, Cell> layout;
 	unsigned int numCells;
 
-	std::map<unsigned int, TextContainer*> text;
-	std::map<unsigned int, TextContainer*> options;
+	std::map<unsigned int, TextContainer*> containers;
+	std::vector<TextFrame*> options;
 
 	ofColor backgroundColour;
 	ofColor textColour;

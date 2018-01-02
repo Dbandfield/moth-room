@@ -29,6 +29,8 @@ public:
 	virtual void setText(char* _c) = 0;
 	virtual void setText(std::string _c) = 0;
 
+	virtual void addChild(Symbol* _symbol) = 0;
+
 	virtual void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font) = 0;
 	virtual void setFontSize(FONT_SIZE _sz) = 0;
 
@@ -38,8 +40,6 @@ public:
 
 protected:
 
-	virtual void calculateSize()= 0;
-
 	ofColor colCurrent;
 
 	std::vector<Symbol*> children;
@@ -48,6 +48,13 @@ protected:
 	ofPoint position;
 	float width;
 	float height;
+
+	FONT_SIZE fontSize;
+
+	ofTrueTypeFont *currentFont;
+	ofTrueTypeFont* fontLarge;
+	ofTrueTypeFont* fontMedium;
+	ofTrueTypeFont* fontSmall;
 };
 
 } /* namespace moth */

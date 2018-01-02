@@ -14,9 +14,9 @@ Letter::Letter(ofColor _col)
 {
 
 	currentFont = nullptr;
-	smallFont = nullptr;
-	mediumFont = nullptr;
-	largeFont = nullptr;
+	fontSmall = nullptr;
+	fontMedium = nullptr;
+	fontLarge = nullptr;
 	text = "";
 	position = ofPoint(0, 0);
 	width = 0;
@@ -31,6 +31,11 @@ Letter::Letter(ofColor _col)
 Letter::~Letter()
 {
 	// TODO Auto-generated destructor stub
+}
+
+void Letter::addChild(Symbol* _symbol)
+{
+	children.push_back(_symbol);
 }
 
 float Letter::getWidth()
@@ -71,13 +76,13 @@ void Letter::setFont(FONT_SIZE _sz, ofTrueTypeFont *_font)
 	switch (_sz)
 	{
 	case FONT_LARGE:
-		largeFont = _font;
+		fontLarge = _font;
 		break;
 	case FONT_MEDIUM:
-		mediumFont = _font;
+		fontMedium = _font;
 		break;
 	case FONT_SMALL:
-		smallFont = _font;
+		fontSmall = _font;
 		break;
 
 	}
@@ -91,13 +96,13 @@ void Letter::setFontSize(FONT_SIZE _sz)
 	switch (_sz)
 	{
 	case FONT_LARGE:
-		currentFont = largeFont;
+		currentFont = fontLarge;
 		break;
 	case FONT_MEDIUM:
-		currentFont = mediumFont;
+		currentFont = fontMedium;
 		break;
 	case FONT_SMALL:
-		currentFont = smallFont;
+		currentFont = fontSmall;
 		break;
 
 	}

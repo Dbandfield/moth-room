@@ -11,10 +11,14 @@ namespace moth
 {
 
 TextFrame::TextFrame(float _width, float _height, ofPoint _position,
-		bool _isOption, bool _isSecret) :
-		isOption(true), fontLarge(0), fontMedium(0), fontSmall(0)
+		bool _isOption, bool _isSecret)
+
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
+
+	fontSmall = nullptr;
+	fontMedium = nullptr;
+	fontLarge = nullptr;
 
 	isOption = _isOption;
 	isSecret = _isSecret;
@@ -46,6 +50,10 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 
 TextFrame::~TextFrame()
 {
+	for (auto i = children.begin(); i != children.end(); i++)
+	{
+		delete (*i);
+	}
 }
 
 void TextFrame::setIsSecret(bool _isSecret)
@@ -198,7 +206,7 @@ void TextFrame::setText(char _c)
 void TextFrame::setText(char* _c)
 {
 	std::string str = "";
-	while (_c != '\0')
+	while (*_c != '\0')
 	{
 		str += *_c;
 		_c++;
@@ -356,7 +364,6 @@ void TextFrame::recalculatePositions()
 
 }
 
-
 float TextFrame::getWidth()
 {
 	return width;
@@ -380,6 +387,11 @@ float TextFrame::getSpacing()
 void TextFrame::calculateSize()
 {
 
+}
+
+void TextFrame::addChild(Symbol* _symbol)
+{
+	children.push_back(_symbol);
 }
 
 } /* namespace moth */

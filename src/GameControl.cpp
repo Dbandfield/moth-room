@@ -25,8 +25,7 @@ GameControl::~GameControl()
 
 void GameControl::tellSecret(unsigned int _arg)
 {
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	displayControl->clearLayout();
 	std::vector<float> layout;
 
@@ -65,8 +64,7 @@ void GameControl::tellSecret(unsigned int _arg)
 
 void GameControl::listSecrets(unsigned int _arg)
 {
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	displayControl->clearLayout();
 	std::vector<float> layout;
 
@@ -100,8 +98,7 @@ void GameControl::listSecrets(unsigned int _arg)
 
 void GameControl::listLocations(unsigned int _arg)
 {
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	displayControl->clearLayout();
 	std::vector<float> layout;
 
@@ -143,13 +140,6 @@ void GameControl::setLocations(std::map<unsigned int, Location*> _locs)
 void GameControl::moveLocation(unsigned int _arg)
 {
 	hunger ++;
-//	if(animCorruptCharacter!= nullptr)
-//	{
-//		animCorruptCharacter->lock();
-//		int arr[1] = {hunger};
-//		animCorruptCharacter->setArg(arr, 1);
-//		animCorruptCharacter->unlock();
-//	}
 	currentLocation = locations[_arg];
 	advanceNode(0);
 }
@@ -162,8 +152,7 @@ void GameControl::advanceSecretNode(unsigned int _arg)
 		currentLocation->setSecretDiscovered(true);
 	}
 
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	displayControl->clearLayout();
 	std::vector<float> layout;
 
@@ -190,8 +179,7 @@ void GameControl::advanceSecretNode(unsigned int _arg)
 
 void GameControl::advanceNode(unsigned int _arg)
 {
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	displayControl->clearLayout();
 	std::vector<float> layout;
 
@@ -240,8 +228,7 @@ void GameControl::beginGame(unsigned int _arg)
 
 void GameControl::locationsReady()
 {
-	displayControl->clearOptions();
-	displayControl->clearText();
+	displayControl->clearContent();
 	std::vector<float> layout;
 	layout.push_back(100.f);
 	layout.push_back(50.f);
@@ -265,11 +252,6 @@ void GameControl::setDisplayControl(DisplayControl *_displayControl)
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setting Display Control";
 
 	displayControl = _displayControl;
-//	animCorruptCharacter = new AnimCorruptCharacter();
-//	int iArr[1] = {0};
-//	animCorruptCharacter->init(iArr, 1);
-//	displayControl->setAnimator(animCorruptCharacter);
-//	displayControl->startAnimator();
 
 }
 
