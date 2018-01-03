@@ -109,7 +109,7 @@ void Letter::setFontSize(FONT_SIZE _sz)
 	calculateSize();
 }
 
-void Letter::display()
+void Letter::display(LAYER _layer)
 {
 	ofSetColor (colCurrent);
 	if (currentFont != nullptr)

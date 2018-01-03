@@ -123,11 +123,11 @@ void Word::setText(std::string _c)
 	calculateSize();
 }
 
-void Word::display()
+void Word::display(LAYER _layer)
 {
 	for (auto i = children.begin(); i != children.end(); i++)
 	{
-		(*i)->display();
+		(*i)->display(_layer);
 	}
 }
 

@@ -17,6 +17,7 @@ Level::Level()
 	barWidth = 60;
 	barMaxHeight = 0;
 	barPercent = 100;
+	barRealHeight = barMaxHeight * (barPercent / 100.f);
 
 	marginTop = 20;
 	marginBottom = 70;
@@ -36,21 +37,27 @@ Level::~Level()
 	}
 }
 
-void Level::display()
+void Level::setValue(float _value)
+{
+	barPercent = std::min(100.f, std::max(0.f, _value));
+	barRealHeight = barMaxHeight * (barPercent / 100);
+}
+
+void Level::display(LAYER _layer)
 {
 
 	ofSetColor(colCurrent);
 
 	ofNoFill();
-	ofDrawRectangle(barPos.x, barPos.y, barWidth,
-			barMaxHeight);
+	ofDrawRectangle(barPos.x, barPos.y, barWidth, barMaxHeight);
 	ofFill();
-	ofDrawRectangle(barPos.x+ 10, barPos.y + 10, barWidth - 20,
-			(barMaxHeight * (barPercent / 100)) - 20);
+	ofDrawRectangle(barPos.x + 10,
+			barPos.y + 10 + (barMaxHeight - barRealHeight), barWidth - 20,
+			barRealHeight - 20);
 
 	for (auto it : children)
 	{
-		it->display();
+		it->display(_layer);
 	}
 }
 
@@ -109,7 +116,7 @@ void Level::setText(std::string _c)
 
 	children.clear();
 
-	for(auto it : _c)
+	for (auto it : _c)
 	{
 		children.push_back(new Letter(ofColor(0, 0, 0)));
 		children.back()->setText(it);
@@ -205,19 +212,20 @@ void Level::readjustDimensions()
 	y += marginTop;
 
 	barMaxHeight = height - (marginTop + marginBottom);
+	barRealHeight = barMaxHeight * (barPercent / 100);
 
 	barPos = ofPoint(x, y);
 
-	x = barPos.x + (barWidth/2);
-	if(children.size() > 0)
+	x = barPos.x + (barWidth / 2);
+	if (children.size() > 0)
 	{
-		x -= children[0]->getWidth()/2;
+		x -= children[0]->getWidth() / 2;
 	}
 	y = barPos.y + 32;
 
-	float inc = barMaxHeight / ((float)children.size() + 4);
+	float inc = barMaxHeight / ((float) children.size() + 4);
 	y += inc * 2;
-	for(auto it : children)
+	for (auto it : children)
 	{
 		it->setPosition(ofPoint(x, y));
 		y += inc;

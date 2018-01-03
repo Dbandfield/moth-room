@@ -10,6 +10,8 @@
 #include "Symbol.h"
 #include "Option.h"
 #include "Word.h"
+#include "BackgroundDecorator.h"
+#include "BorderDecorator.h"
 
 #include "enums.h"
 
@@ -27,7 +29,7 @@ public:
 
 	/* --- Inherited --- */
 
-	void display();
+	void display(LAYER _layer);
 
 	float getHeight();
 	float getWidth();
@@ -60,6 +62,8 @@ public:
 
 	void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
+
+	void setBackground();
 
 protected:
 	void calculateSize();

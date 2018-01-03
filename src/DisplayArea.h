@@ -2,6 +2,8 @@
 
 #include "Symbol.h"
 #include "TextFrame.h"
+#include "BackgroundDecorator.h"
+#include "Level.h"
 
 namespace moth
 {
@@ -36,7 +38,7 @@ public:
 
 	/* Inherited */
 
-	void display();
+	void display(LAYER _layer);
 
 	std::vector<Symbol*> getChildren();
 
@@ -73,8 +75,9 @@ public:
 			FONT_SIZE _sz = FONT_SMALL);
 	TextFrame* addOption(unsigned int _p, std::string, GameControl* _gc,
 			void (GameControl::*_f)(unsigned int), unsigned int _arg,
-			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false);
-	void addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height);
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false, bool _background = false);
+	Level* addBar(unsigned int _p, std::string _str, FONT_SIZE _sz,
+			float _height);
 
 protected:
 	void readjustHeights();

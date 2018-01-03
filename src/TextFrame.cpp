@@ -157,11 +157,11 @@ float TextFrame::getHeight()
 	return height;
 }
 
-void TextFrame::display()
+void TextFrame::display(LAYER _layer)
 {
 	for (size_t i = 0; i < children.size(); i++)
 	{
-		children[i]->display();
+		children[i]->display(_layer);
 	}
 //
 //	ofNoFill();
@@ -392,6 +392,20 @@ void TextFrame::calculateSize()
 void TextFrame::addChild(Symbol* _symbol)
 {
 	children.push_back(_symbol);
+}
+
+void TextFrame::setBackground()
+{
+	std::vector<Symbol*> tmpVec;
+	for(auto it : children)
+	{
+		auto tmpIt = it;
+		BackgroundDecorator* bg = new BackgroundDecorator(tmpIt);
+		BorderDecorator* bd = new BorderDecorator(bg);
+		tmpVec.push_back(bd);
+	}
+
+	children = tmpVec;
 }
 
 } /* namespace moth */

@@ -44,8 +44,8 @@ DisplayControl::DisplayControl() :
 	layout.push_back(50);
 	layout.push_back(50);
 	levels->setLayout(layout);
-	levels->addBar(0, "Hunger", FONT_SMALL, screenHeight);
-	levels->addBar(1, "Humanity", FONT_SMALL, screenHeight);
+	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUNGER, levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
+	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUMANITY, levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
 
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_LEVELS, levels));
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_MAIN, main));
@@ -58,6 +58,11 @@ DisplayControl::~DisplayControl()
 {
 	ofRemoveListener(ofEvents().keyReleased, this,
 			&DisplayControl::onKeyPressed);
+}
+
+void DisplayControl::setLevel(LEVEL _level, float _value)
+{
+	levelMap[_level]->setValue(_value);
 }
 
 std::vector<Symbol*> DisplayControl::getSymbols()
@@ -156,10 +161,10 @@ void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
 
 void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 		std::string _str, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret)
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background)
 {
 	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
-			_sz, _isSecret);
+			_sz, _isSecret, _background);
 
 	options.push_back(fr);
 

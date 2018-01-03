@@ -13,7 +13,7 @@ public:
 
 	/* Inherited */
 
-	void display();
+	void display(LAYER _layer);
 
 	std::vector<Symbol*> getChildren();
 

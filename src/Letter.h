@@ -12,7 +12,7 @@ public:
 	Letter(ofColor _col);
 	virtual ~Letter();
 
-	void display();
+	void display(LAYER _layer);
 
 	float getHeight();
 	float getWidth();

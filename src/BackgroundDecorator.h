@@ -1,19 +1,14 @@
 #pragma once
 
-#include <algorithm>
-
-#include "Symbol.h"
-#include "Letter.h"
+#include "SymbolDecorator.h"
 
 namespace moth
 {
-
-class Level: public Symbol
+class BackgroundDecorator : public SymbolDecorator
 {
 public:
-	Level();
-
-	virtual ~Level();
+	BackgroundDecorator(Symbol* _decorated);
+	~BackgroundDecorator();
 
 	void display(LAYER _layer);
 
@@ -37,30 +32,11 @@ public:
 	void setPosition(ofPoint _pt);
 
 	void setColour(ofColor _col);
+
 	void setWidth(float _width);
 
-
-	/* --- Not inherited --- */
-
-	void setHeight(float _height);
-	void setValue(float _value);
-
 protected:
-	void readjustDimensions();
 
-	float barWidth;
-	float barMaxHeight;
-	float barPercent;
-	float barRealHeight;
-
-	float marginTop;
-	float marginBottom;
-	float marginLeft;
-	float marginRight;
-
-	ofPoint barPos;
-	std::vector<ofPoint> textPos;
-
+	void getData();
 };
-
-} /* namespace moth */
+}

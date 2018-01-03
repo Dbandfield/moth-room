@@ -23,11 +23,11 @@ LevelsFrame::~LevelsFrame()
 	}
 }
 
-void LevelsFrame::display()
+void LevelsFrame::display(LAYER _layer)
 {
 	for(auto i = children.begin(); i != children.end(); i ++)
 	{
-		(*i)->display();
+		(*i)->display(_layer);
 	}
 }
 

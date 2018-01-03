@@ -23,8 +23,6 @@ class TextFrame;
 class TextContainer;
 class DisplayArea;
 
-
-
 class DisplayControl
 {
 public:
@@ -38,10 +36,13 @@ public:
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
 	void setLayout(DISPLAY_AREA, std::vector<float> _layout);
 
-	void addText(DISPLAY_AREA _area, unsigned int _p, std::string, FONT_SIZE _sz=FONT_SMALL);
+	void addText(DISPLAY_AREA _area, unsigned int _p, std::string,
+			FONT_SIZE _sz = FONT_SMALL);
 	void clearContent(DISPLAY_AREA _area);
 	void clearLayout(DISPLAY_AREA _area);
-	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string, void(GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz=FONT_SMALL, bool _isSecret=false);
+	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
+			void (GameControl::*_f)(unsigned int), unsigned int _arg,
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false, bool _background=false);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);
@@ -49,11 +50,15 @@ public:
 
 	void setGameControl(GameControl *_gameControl);
 
+	void setLevel(LEVEL _level, float _value);
+
 protected:
 
 	std::vector<Symbol*> getSymbols();
 
 	GameControl* gameControl;
+
+	std::map<LEVEL, Level*> levelMap;
 
 	std::map<DISPLAY_AREA, DisplayArea*> areas;
 	std::vector<TextFrame*> options;

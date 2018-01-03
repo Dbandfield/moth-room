@@ -14,7 +14,7 @@ public:
 	Word(ofColor _col);
 	virtual ~Word();
 
-	void display();
+	void display(LAYER _layer);
 
 	float getHeight();
 	float getWidth();

@@ -33,7 +33,7 @@ DisplayArea::~DisplayArea()
 {
 }
 
-void DisplayArea::display()
+void DisplayArea::display(LAYER _layer)
 {
 	for (auto it : containers)
 	{
@@ -341,7 +341,7 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 		GameControl* _gc, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret)
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
@@ -368,7 +368,13 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	frame->setMargin(MARGIN_BOTTOM, 0);
 	frame->setCallback(_gc, _f, _arg);
 
+	if(_background)
+	{
+		frame->setBackground();
+	}
+
 	containers[_p]->addChild(frame);
+
 
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);
@@ -382,7 +388,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	return frame;
 }
 
-void DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height)
+Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height)
 {
 	if (containers.find(_p) == containers.end())
 	{
@@ -412,6 +418,8 @@ void DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float
 	containers[_p]->addChild(level);
 
 	readjustHeights();
+
+	return level;
 }
 
 void DisplayArea::clearContent()
