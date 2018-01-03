@@ -39,4 +39,6 @@ protected:
 	bool fontsTransferred;
 	bool locationsTransferred;
 
+	ofColor backgroundColour;
+
 };

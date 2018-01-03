@@ -10,6 +10,8 @@
 #include "TextFrame.h"
 #include "GameControl.h"
 #include "DisplayArea.h"
+#include "Level.h"
+#include "LevelsFrame.h"
 
 #include "enums.h"
 
@@ -29,14 +31,16 @@ public:
 	DisplayControl();
 	virtual ~DisplayControl();
 
-	void display();
+	void displayMain();
+	void displayLevels();
+	void displayButtons();
 
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
 	void setLayout(DISPLAY_AREA, std::vector<float> _layout);
 
 	void addText(DISPLAY_AREA _area, unsigned int _p, std::string, FONT_SIZE _sz=FONT_SMALL);
-	void clearContent();
-	void clearLayout();
+	void clearContent(DISPLAY_AREA _area);
+	void clearLayout(DISPLAY_AREA _area);
 	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string, void(GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz=FONT_SMALL, bool _isSecret=false);
 
 	void onKeyPressed(ofKeyEventArgs &_args);

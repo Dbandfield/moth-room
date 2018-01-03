@@ -23,9 +23,30 @@ DisplayControl::DisplayControl() :
 	textColour = ofColor();
 	textColour.setHsb(0, 0, 200);
 
-	DisplayArea* levels = new DisplayArea();
-	DisplayArea* main = new DisplayArea();
-	DisplayArea* buttons = new DisplayArea();
+	float screenWidth = ofGetWidth();
+	float screenHeight = ofGetHeight();
+	float levelsWidth = 150;
+	float levelsHeight = screenHeight;
+	float buttonWidth = screenWidth - levelsWidth;
+	float buttonHeight = 200;
+	float mainWidth = screenWidth - levelsWidth;
+	float mainHeight = screenHeight - buttonHeight;
+
+	DisplayArea* levels = new DisplayArea(ofPoint(0, 0), levelsWidth,
+			screenHeight);
+	DisplayArea* main = new DisplayArea(ofPoint(levelsWidth, 0), mainWidth,
+			mainHeight);
+	DisplayArea* buttons = new DisplayArea(
+			ofPoint(levelsWidth, screenHeight - buttonHeight), buttonWidth,
+			buttonHeight);
+
+	std::vector<float> layout;
+	layout.push_back(50);
+	layout.push_back(50);
+	levels->setLayout(layout);
+	levels->addBar(0, "Hunger", FONT_SMALL, screenHeight);
+	levels->addBar(1, "Humanity", FONT_SMALL, screenHeight);
+
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_LEVELS, levels));
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_MAIN, main));
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_BUTTONS, buttons));
@@ -56,17 +77,28 @@ void DisplayControl::setLayout(DISPLAY_AREA _area, std::vector<float> _layout)
 	areas[_area]->setLayout(_layout);
 }
 
-
-void DisplayControl::display()
+void DisplayControl::displayMain()
 {
-	ofBackground(backgroundColour);
+	//ofBackground(backgroundColour);
 	ofSetColor(textColour);
 
-	for (auto it : areas)
-	{
-		it.second->display();
-	}
+	areas[AREA_MAIN]->display();
+}
 
+void DisplayControl::displayLevels()
+{
+	//ofBackground(backgroundColour);
+	ofSetColor(textColour);
+
+	areas[AREA_LEVELS]->display();
+}
+
+void DisplayControl::displayButtons()
+{
+	//ofBackground(backgroundColour);
+	ofSetColor(textColour);
+
+	areas[AREA_BUTTONS]->display();
 }
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
@@ -99,40 +131,39 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 	}
 }
 
-
-
-void DisplayControl::clearContent()
+void DisplayControl::clearContent(DISPLAY_AREA _area)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto it : areas)
-	{
-		it.second->clearContent();
-	}
+
+	areas[_area]->clearContent();
+
 	options.clear();
+	selected = 0;
+
 }
 
-void DisplayControl::clearLayout()
+void DisplayControl::clearLayout(DISPLAY_AREA _area)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing layout";
-	for (auto it : areas)
-	{
-		it.second->clearLayout();
-	}
+	areas[_area]->clearLayout();
+
 }
-void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p, std::string _str, FONT_SIZE _sz)
+void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
+		std::string _str, FONT_SIZE _sz)
 {
 	areas[_area]->addText(_p, _str, _sz);
 }
 
-void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p, std::string _str,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
-		bool _isSecret)
+void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
+		std::string _str, void (GameControl::*_f)(unsigned int),
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret)
 {
-	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg, _sz, _isSecret);
+	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
+			_sz, _isSecret);
 
 	options.push_back(fr);
 
-	for(size_t i = 0; i < options.size(); i ++)
+	for (size_t i = 0; i < options.size(); i++)
 	{
 		options[i]->setSelected(i == selected);
 	}
@@ -183,7 +214,7 @@ void DisplayControl::onArrow(int _key)
 			selected = options.size() - 1;
 		}
 
-		for(size_t i = 0; i < options.size(); i ++)
+		for (size_t i = 0; i < options.size(); i++)
 		{
 			options[i]->setSelected(i == selected);
 		}
@@ -199,7 +230,7 @@ void DisplayControl::onArrow(int _key)
 			selected = 0;
 		}
 
-		for(size_t i = 0; i < options.size(); i ++)
+		for (size_t i = 0; i < options.size(); i++)
 		{
 			options[i]->setSelected(i == selected);
 		}

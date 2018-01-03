@@ -11,6 +11,8 @@ public:
 	LevelsFrame();
 	~LevelsFrame();
 
+	/* Inherited */
+
 	void display();
 
 	std::vector<Symbol*> getChildren();
@@ -25,6 +27,8 @@ public:
 	void setText(char* _c);
 	void setText(std::string _c);
 
+	void addChild(Symbol* _symbol);
+
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(FONT_SIZE _sz);
 
@@ -32,9 +36,14 @@ public:
 
 	void setColour(ofColor _col);
 
+	void setWidth(float _width);
+
+	/* not inherited */
+
+	void setHeight(float _height);
+
 protected:
 
-	void calculateSize();
 };
 
 } /* namespace moth */

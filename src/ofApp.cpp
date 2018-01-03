@@ -39,6 +39,9 @@ void ofApp::setup()
 	dividor = 0;
 	dividorChange = 0.1;
 
+	backgroundColour = ofColor();
+	backgroundColour.setHsb(0, 0, 30);
+
 }
 
 //--------------------------------------------------------------
@@ -92,7 +95,11 @@ void ofApp::draw()
 {
 
 	buf1.begin();
-	if(displayControl != nullptr) displayControl->display();
+	ofBackground(backgroundColour);
+	if(displayControl != nullptr) displayControl->displayMain();
+	if(displayControl != nullptr) displayControl->displayButtons();
+	if(displayControl != nullptr) displayControl->displayLevels();
+
 	buf1.end();
 
 	buf2.begin();
@@ -102,10 +109,12 @@ void ofApp::draw()
 	buf1.draw(0,0);
 
 	pixelate.end();
+
 	buf2.end();
 
 	vignette.begin();
 	buf2.draw(0, 0);
+
 	vignette.end();
 }
 

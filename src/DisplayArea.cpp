@@ -12,9 +12,21 @@ namespace moth
 
 DisplayArea::DisplayArea()
 {
+	numCells = 0;
+	width = 0;
+	height = 0;
 	index = 0;
 	clearLayout();
 
+}
+
+DisplayArea::DisplayArea(ofPoint _pos, float _width, float _height)
+{
+	numCells = 0;
+	position = _pos;
+	width = _width;
+	height = _height;
+	clearLayout();
 }
 
 DisplayArea::~DisplayArea()
@@ -84,9 +96,11 @@ void DisplayArea::setText(char* _c)
 
 void DisplayArea::setText(std::string _str)
 {
-	TextContainer* con = new TextContainer();
+	TextContainer* con = new TextContainer(FLOW_VERTICAL);
 	con->setText(_str);
 	containers.insert(std::pair<unsigned int, Symbol*>(index, con));
+
+	readjustHeights();
 }
 
 void DisplayArea::addChild(Symbol* _symbol)
@@ -97,9 +111,9 @@ void DisplayArea::addChild(Symbol* _symbol)
 void DisplayArea::setFont(FONT_SIZE _sz, ofTrueTypeFont *_font)
 {
 
-	for (auto it : children)
+	for (auto it : containers)
 	{
-		it->setFont(_sz, _font);
+		it.second->setFont(_sz, _font);
 	}
 
 	switch (_sz)
@@ -123,9 +137,9 @@ void DisplayArea::setFont(FONT_SIZE _sz, ofTrueTypeFont *_font)
 
 void DisplayArea::setFontSize(FONT_SIZE _sz)
 {
-	for (auto it : children)
+	for (auto it : containers)
 	{
-		it->setFontSize(_sz);
+		it.second->setFontSize(_sz);
 	}
 
 	switch (_sz)
@@ -156,9 +170,9 @@ void DisplayArea::setColour(ofColor _col)
 {
 	colCurrent = _col;
 
-	for (auto it : children)
+	for (auto it : containers)
 	{
-		it->setColour(colCurrent);
+		it.second->setColour(colCurrent);
 	}
 }
 
@@ -168,9 +182,9 @@ void DisplayArea::setLayout(std::vector<float> _layout)
 	layout.clear();
 	percentages = _layout;
 	float w = 0;
-	float h = 50;
-	float x = 0;
-	float y = 0;
+	float h = height;
+	float x = position.x;
+	float y = position.y;
 	unsigned int id = 0;
 	unsigned int row = 0;
 	unsigned int col = 0;
@@ -185,7 +199,7 @@ void DisplayArea::setLayout(std::vector<float> _layout)
 		if (pcTrack > 1.)
 		{
 			row++;
-			x = 0;
+			x = position.x;
 			y += h;
 			col = 0;
 			pcTrack = pc;
@@ -219,7 +233,7 @@ bool DisplayArea::setIndex(unsigned int _index)
 
 void DisplayArea::readjustHeights()
 {
-	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Readjusting Heights";
+	ofLog(OF_LOG_VERBOSE) << "[DISPLAY_AREA] - Readjusting Heights";
 	std::vector<float> rowMaxHeight;
 	float h = 0;
 	unsigned int thisRow = 0;
@@ -246,7 +260,7 @@ void DisplayArea::readjustHeights()
 		rowMaxHeight.push_back(h);
 
 	thisRow = 0;
-	float y = 0;
+	float y = position.y;
 
 	for (auto i = layout.begin(); i != layout.end(); i++)
 	{
@@ -281,7 +295,7 @@ void DisplayArea::clearLayout()
 	layout.clear();
 	layout.insert(
 			std::pair<unsigned int, Cell>(0,
-					Cell(0, 0, 100, 0, 0, ofGetWidth(), ofGetHeight())));
+					Cell(0, 0, 100, position.x, position.y, width, height)));
 
 }
 
@@ -299,7 +313,7 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
+						new TextContainer(FLOW_VERTICAL)));
 
 	}
 
@@ -340,7 +354,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
+						new TextContainer(FLOW_VERTICAL)));
 
 	}
 
@@ -368,9 +382,41 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	return frame;
 }
 
+void DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height)
+{
+	if (containers.find(_p) == containers.end())
+	{
+
+		containers.insert(
+				std::pair<unsigned int, TextContainer*>(_p,
+						new TextContainer(FLOW_HORIZONTAL)));
+
+	}
+
+	Level* level = new Level();
+	level->setPosition(ofPoint(layout[_p].rect.x, layout[_p].rect.y));
+	level->setWidth(100);
+	level->setHeight(_height);
+	level->setFontSize(_sz);
+	level->setText(_str);
+//	TextFrame* frame = new TextFrame(layout[_p].rect.width,
+//			layout[_p].rect.height,
+//			ofPoint(layout[_p].rect.x, layout[_p].rect.y), false, false);
+//	frame->setText(_str);
+//	frame->setFontSize(_sz);
+//	frame->setMargin(MARGIN_TOP, 8);
+//	frame->setMargin(MARGIN_RIGHT, 8);
+//	frame->setMargin(MARGIN_LEFT, 8);
+//	frame->setMargin(MARGIN_BOTTOM, 8);
+//	level->addChild(frame);
+	containers[_p]->addChild(level);
+
+	readjustHeights();
+}
+
 void DisplayArea::clearContent()
 {
-	for(auto it : containers)
+	for (auto it : containers)
 	{
 		delete it.second;
 	}

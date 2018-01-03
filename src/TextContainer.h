@@ -19,7 +19,7 @@ class Symbol;
 class TextContainer : public Symbol
 {
 public:
-	TextContainer();
+	TextContainer(FLOW _flow);
 	virtual ~TextContainer();
 
 	/* Inherited */
@@ -58,6 +58,8 @@ public:
 
 
 protected:
+
+	FLOW flow;
 
 };
 

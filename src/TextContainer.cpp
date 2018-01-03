@@ -10,8 +10,9 @@
 namespace moth
 {
 
-TextContainer::TextContainer()
+TextContainer::TextContainer(FLOW _flow)
 {
+	flow = _flow;
 }
 
 TextContainer::~TextContainer()
@@ -88,16 +89,25 @@ float TextContainer::getHeight()
 	}
 
 	return h;
-
 }
 
-void TextContainer::setPosition(float _x, float _y)
+void TextContainer::setPosition(ofPoint _pt)
 {
-	position = ofPoint(_x, _y);
+	position = ofPoint(_pt.x, _pt.y);
 	for (auto i : children)
 	{
 		i->setPosition(position);
-		position.y += i->getHeight() / 2;
+		switch(flow)
+		{
+		case FLOW_VERTICAL:
+			position.y += i->getHeight() / 2;
+
+			break;
+		case FLOW_HORIZONTAL:
+			position.x += i->getWidth();
+
+			break;
+		}
 	}
 }
 
@@ -152,11 +162,6 @@ void TextContainer::setColour(ofColor _col)
 std::vector<Symbol*> TextContainer::getChildren()
 {
 	return children;
-}
-
-void TextContainer::setPosition(ofPoint _pt)
-{
-	position = _pt;
 }
 
 

@@ -31,6 +31,7 @@ class DisplayArea: public Symbol
 {
 public:
 	DisplayArea();
+	DisplayArea(ofPoint _pos, float _width, float _height);
 	virtual ~DisplayArea();
 
 	/* Inherited */
@@ -73,6 +74,7 @@ public:
 	TextFrame* addOption(unsigned int _p, std::string, GameControl* _gc,
 			void (GameControl::*_f)(unsigned int), unsigned int _arg,
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false);
+	void addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height);
 
 protected:
 	void readjustHeights();

@@ -12,7 +12,7 @@ namespace moth
 
 LevelsFrame::LevelsFrame()
 {
-
+	text = "";
 }
 
 LevelsFrame::~LevelsFrame()
@@ -125,6 +125,19 @@ void LevelsFrame::setColour(ofColor _col)
 	colCurrent = _col;
 }
 
-void LevelsFrame::calculateSize(){};
+void LevelsFrame::addChild(Symbol* _symbol)
+{
+	children.push_back(_symbol);
+}
+
+void LevelsFrame::setWidth(float _width)
+{
+	width = _width;
+}
+
+void LevelsFrame::setHeight(float _height)
+{
+	height = _height;
+}
 
 } /* namespace moth */

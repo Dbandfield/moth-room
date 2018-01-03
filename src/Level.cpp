@@ -12,12 +12,25 @@ namespace moth
 
 Level::Level()
 {
+	text = "";
+	currentFont = fontSmall = fontMedium = fontLarge = nullptr;
+	barWidth = 60;
+	barMaxHeight = 0;
+	barPercent = 100;
 
+	marginTop = 20;
+	marginBottom = 70;
+	marginLeft = 10;
+	marginRight = 10;
+
+	colCurrent = ofColor(255, 255, 255);
+
+	readjustDimensions();
 }
 
 Level::~Level()
 {
-	for(auto i = children.begin(); i != children.end(); i ++)
+	for (auto i = children.begin(); i != children.end(); i++)
 	{
 		delete (*i);
 	}
@@ -25,9 +38,20 @@ Level::~Level()
 
 void Level::display()
 {
+
 	ofSetColor(colCurrent);
+
 	ofNoFill();
-	ofDrawRectangle(position.x, position.y, width, height);
+	ofDrawRectangle(barPos.x, barPos.y, barWidth,
+			barMaxHeight);
+	ofFill();
+	ofDrawRectangle(barPos.x+ 10, barPos.y + 10, barWidth - 20,
+			(barMaxHeight * (barPercent / 100)) - 20);
+
+	for (auto it : children)
+	{
+		it->display();
+	}
 }
 
 std::vector<Symbol*> Level::getChildren()
@@ -70,10 +94,10 @@ void Level::setText(char* _c)
 {
 	std::string str;
 
-	while(*_c != '\0')
+	while (*_c != '\0')
 	{
 		str += *_c;
-		_c ++;
+		_c++;
 	}
 
 	setText(str);
@@ -82,6 +106,16 @@ void Level::setText(char* _c)
 void Level::setText(std::string _c)
 {
 	text = _c;
+
+	children.clear();
+
+	for(auto it : _c)
+	{
+		children.push_back(new Letter(ofColor(0, 0, 0)));
+		children.back()->setText(it);
+	}
+
+	readjustDimensions();
 }
 
 void Level::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
@@ -107,16 +141,31 @@ void Level::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 
 void Level::setFontSize(FONT_SIZE _sz)
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font Size";
+	ofLog(OF_LOG_VERBOSE) << "[LEVEL] Setting Font Size";
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		children[i]->setFontSize(_sz);
+	}
+
+	switch (_sz)
+	{
+	case FONT_LARGE:
+		currentFont = fontLarge;
+		break;
+	case FONT_MEDIUM:
+		currentFont = fontMedium;
+		break;
+	case FONT_SMALL:
+		currentFont = fontSmall;
+		break;
 	}
 }
 
 void Level::setPosition(ofPoint _pt)
 {
 	position = _pt;
+
+	readjustDimensions();
 }
 
 void Level::setColour(ofColor _col)
@@ -127,16 +176,52 @@ void Level::setColour(ofColor _col)
 void Level::setWidth(float _width)
 {
 	width = _width;
+
+	readjustDimensions();
+
 }
 
 void Level::setHeight(float _height)
 {
 	height = _height;
+
+	readjustDimensions();
+
 }
 
-void Level::calculateSize()
+void Level::addChild(Symbol* _symbol)
 {
 
+}
+
+void Level::readjustDimensions()
+{
+	float x, y;
+	x = position.x;
+	x += width / 2;
+	x -= barWidth / 2;
+
+	y = position.y;
+	y += marginTop;
+
+	barMaxHeight = height - (marginTop + marginBottom);
+
+	barPos = ofPoint(x, y);
+
+	x = barPos.x + (barWidth/2);
+	if(children.size() > 0)
+	{
+		x -= children[0]->getWidth()/2;
+	}
+	y = barPos.y + 32;
+
+	float inc = barMaxHeight / ((float)children.size() + 4);
+	y += inc * 2;
+	for(auto it : children)
+	{
+		it->setPosition(ofPoint(x, y));
+		y += inc;
+	}
 }
 
 } /* namespace moth */
