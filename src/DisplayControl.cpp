@@ -33,7 +33,7 @@ DisplayControl::DisplayControl() :
 	float mainHeight = screenHeight - buttonHeight;
 
 	DisplayArea* levels = new DisplayArea(ofPoint(0, 0), levelsWidth,
-			screenHeight);
+			levelsHeight);
 	DisplayArea* main = new DisplayArea(ofPoint(levelsWidth, 0), mainWidth,
 			mainHeight);
 	DisplayArea* buttons = new DisplayArea(
