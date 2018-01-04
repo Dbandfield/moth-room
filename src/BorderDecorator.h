@@ -1,28 +1,16 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
-#include <ofMain.h>
-
-#include "GameControl.h"
-#include "TextFrame.h"
+#include "SymbolDecorator.h"
 #include "enums.h"
-#include "Symbol.h"
+
 namespace moth
 {
 
-class GameControl;
-class TextFrame;
-class Symbol;
-
-class TextContainer : public Symbol
+class BorderDecorator: public SymbolDecorator
 {
 public:
-	TextContainer(FLOW _flow);
-	virtual ~TextContainer();
-
-	/* Inherited */
+	BorderDecorator(Symbol* _decorated);
+	~BorderDecorator();
 
 	void display(LAYER _layer);
 
@@ -47,23 +35,13 @@ public:
 
 	void setColour(ofColor _col);
 
+	void setWidth(float _width);
+
 	void setLayer(LAYER _layer);
-
-	/* Not inherited */
-
-	void setPosition(float _x, float _y);
-	void setWidth(float _w);
-
-	unsigned int getSize(){return children.size();};
-
-	std::vector<Symbol*> getSymbols();
-
 
 protected:
 
-	FLOW flow;
-
+	void getData();
 };
 
 } /* namespace moth */
-

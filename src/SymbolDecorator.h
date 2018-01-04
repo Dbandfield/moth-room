@@ -1,25 +1,16 @@
 #pragma once
 
-#include <string>
-
-#include "ofMain.h"
-
+#include "Symbol.h"
 #include "enums.h"
 
 namespace moth
 {
 
-class Symbol
+class SymbolDecorator: public Symbol
 {
 public:
-	Symbol()
-	{
-	}
-	;
-	virtual ~Symbol()
-	{
-	}
-	;
+	SymbolDecorator(){};
+	virtual ~SymbolDecorator(){};
 
 	virtual void display(LAYER _layer) = 0;
 
@@ -46,28 +37,15 @@ public:
 
 	virtual void setWidth(float _width) = 0;
 
-	virtual void setLayer(LAYER _layer) = 0;
+	virtual void setLayer(LAYER _layer) =0;
+
 
 protected:
 
-	ofColor colCurrent;
+	virtual void getData() = 0;
 
-	std::vector<Symbol*> children;
+	Symbol* decorated;
 
-	std::string text;
-	ofPoint position;
-	float width;
-	float height;
-
-	FONT_SIZE fontSize;
-
-	ofTrueTypeFont* currentFont;
-	ofTrueTypeFont* fontLarge;
-	ofTrueTypeFont* fontMedium;
-	ofTrueTypeFont* fontSmall;
-
-	LAYER layer;
 };
 
 } /* namespace moth */
-

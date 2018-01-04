@@ -1,25 +1,24 @@
 #pragma once
 
-#include "Symbol.h"
+#include "SymbolDecorator.h"
 
 namespace moth
 {
-
-class Letter: public Symbol
+class BackgroundDecorator : public SymbolDecorator
 {
 public:
-
-	Letter(ofColor _col);
-	virtual ~Letter();
+	BackgroundDecorator(Symbol* _decorated);
+	~BackgroundDecorator();
 
 	void display(LAYER _layer);
+
+	std::vector<Symbol*> getChildren();
 
 	float getHeight();
 	float getWidth();
 	ofPoint getPosition();
-	std::string getText(){return text;};
+	std::string getText();
 	float getSpacing();
-	std::vector<Symbol*> getChildren();
 
 	void setText(char _c);
 	void setText(char* _c);
@@ -40,8 +39,6 @@ public:
 
 protected:
 
-	void calculateSize();
+	void getData();
 };
-
-} /* namespace moth */
-
+}

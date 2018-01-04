@@ -27,8 +27,10 @@ protected:
 
 	ofShader pixelate;
 	ofShader vignette;
-	ofFbo buf1;
-	ofFbo buf2;
+	ofShader corrupt;
+	ofFbo bufPixelate;
+	ofFbo bufVignette;
+	ofFbo bufCorrupt;
 
 	float distort;
 	float dividor;
@@ -38,5 +40,7 @@ protected:
 
 	bool fontsTransferred;
 	bool locationsTransferred;
+
+	ofColor backgroundColour;
 
 };

@@ -9,7 +9,9 @@
 #include "TextContainer.h"
 #include "TextFrame.h"
 #include "GameControl.h"
-#include "Animator.h"
+#include "DisplayArea.h"
+#include "Level.h"
+#include "LevelsFrame.h"
 
 #include "enums.h"
 
@@ -19,23 +21,7 @@ namespace moth
 class GameControl;
 class TextFrame;
 class TextContainer;
-
-struct Cell
-{
-	Cell(){};
-	Cell(unsigned int _row, unsigned int _col, float _percent, int x, int y, int w, int h)
-	{
-		row = _row;
-		col = _col;
-		percent = _percent;
-		rect = ofRectangle(x, y, w, h);
-	}
-
-	ofRectangle rect;
-	unsigned int col;
-	unsigned int row;
-	float percent;
-};
+class DisplayArea;
 
 class DisplayControl
 {
@@ -43,40 +29,39 @@ public:
 	DisplayControl();
 	virtual ~DisplayControl();
 
-	void display();
-
-	void clearLayout();
-	void setLayout(std::vector<float> _layout);
+	void display(LAYER _layer);
 
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
+	void setLayout(DISPLAY_AREA, std::vector<float> _layout);
 
-	void clearText();
-	void addText(unsigned int _p, std::string, FONT_SIZE _sz=FONT_SMALL);
-	void clearOptions();
-	void addOption(unsigned int _p, std::string, void(GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz=FONT_SMALL, bool _isSecret=false);
+	void addText(DISPLAY_AREA _area, unsigned int _p, std::string,
+			FONT_SIZE _sz = FONT_SMALL);
+	void clearContent(DISPLAY_AREA _area);
+	void clearLayout(DISPLAY_AREA _area);
+	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
+			void (GameControl::*_f)(unsigned int), unsigned int _arg,
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false, bool _background=false);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);
 	void onSelect();
 
-	void setAnimator(Animator *_animator);
-	void startAnimator();
-	void stopAnimator();
-
 	void setGameControl(GameControl *_gameControl);
 
+	void setLevel(LEVEL _level, float _value);
+
+	void setCorruption(int _corruption);
+
 protected:
-	void readjustHeights();
 
 	std::vector<Symbol*> getSymbols();
 
 	GameControl* gameControl;
 
-	std::map<unsigned int, Cell> layout;
-	unsigned int numCells;
+	std::map<LEVEL, Level*> levelMap;
 
-	std::map<unsigned int, TextContainer*> text;
-	std::map<unsigned int, TextContainer*> options;
+	std::map<DISPLAY_AREA, DisplayArea*> areas;
+	std::vector<TextFrame*> options;
 
 	ofColor backgroundColour;
 	ofColor textColour;
@@ -86,8 +71,6 @@ protected:
 	ofTrueTypeFont* fontLarge;
 	ofTrueTypeFont* fontMedium;
 	ofTrueTypeFont* fontSmall;
-
-	Animator *animator;
 };
 
 } /* namespace moth */

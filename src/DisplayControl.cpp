@@ -15,7 +15,6 @@ DisplayControl::DisplayControl() :
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Setup";
 
-	animator = nullptr;
 	gameControl = nullptr;
 
 	backgroundColour = ofColor();
@@ -24,7 +23,37 @@ DisplayControl::DisplayControl() :
 	textColour = ofColor();
 	textColour.setHsb(0, 0, 200);
 
-	clearLayout();
+	float screenWidth = ofGetWidth();
+	float screenHeight = ofGetHeight();
+	float levelsWidth = 150;
+	float levelsHeight = screenHeight;
+	float buttonWidth = screenWidth - levelsWidth;
+	float buttonHeight = 200;
+	float mainWidth = screenWidth - levelsWidth;
+	float mainHeight = screenHeight - buttonHeight;
+
+	DisplayArea* levels = new DisplayArea(ofPoint(0, 0), levelsWidth,
+			levelsHeight);
+	DisplayArea* main = new DisplayArea(ofPoint(levelsWidth, 0), mainWidth,
+			mainHeight);
+	DisplayArea* buttons = new DisplayArea(
+			ofPoint(levelsWidth, screenHeight - buttonHeight), buttonWidth,
+			buttonHeight);
+
+	std::vector<float> layout;
+	layout.push_back(50);
+	layout.push_back(50);
+	levels->setLayout(layout);
+	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUNGER, levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
+	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUMANITY, levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
+
+	levels->setLayer(LAYER_PIXELLATED);
+	main->setLayer(LAYER_JITTER);
+	buttons->setLayer(LAYER_PIXELLATED);
+
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_LEVELS, levels));
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_MAIN, main));
+	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_BUTTONS, buttons));
 
 	ofAddListener(ofEvents().keyReleased, this, &DisplayControl::onKeyPressed);
 }
@@ -33,102 +62,51 @@ DisplayControl::~DisplayControl()
 {
 	ofRemoveListener(ofEvents().keyReleased, this,
 			&DisplayControl::onKeyPressed);
-}
 
-void DisplayControl::setAnimator(Animator *_animator)
-{
-	animator = _animator;
-}
-
-void DisplayControl::startAnimator()
-{
-	if(animator!= nullptr)
+	for(auto it : areas)
 	{
-		if(!animator->isThreadRunning())
-		{
-			animator->setSymbols(getSymbols());
-			animator->start();
-		}
+		delete it.second;
 	}
+}
 
+void DisplayControl::setLevel(LEVEL _level, float _value)
+{
+	levelMap[_level]->setValue(_value);
 }
 
 std::vector<Symbol*> DisplayControl::getSymbols()
 {
 	std::vector<Symbol*> sym;
-	for (auto it = options.begin(); it != options.end(); it++)
+	for (auto i : areas)
 	{
-		std::vector<Symbol*> frameSym = it->second->getSymbols();
-		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
-	}
-
-	for (auto it = text.begin(); it != text.end(); it++)
-	{
-		std::vector<Symbol*> frameSym = it->second->getSymbols();
+		std::vector<Symbol*> frameSym = i.second->getChildren();
 		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
 	}
 
 	return sym;
 }
 
-void DisplayControl::display()
+void DisplayControl::setLayout(DISPLAY_AREA _area, std::vector<float> _layout)
 {
-	ofBackground(backgroundColour);
-	ofSetColor(textColour);
-
-	animator->lock();
-//	int nt = 0;
-//	for (auto i = layout.begin(); i != layout.end(); i++)
-//	{
-//		ofNoFill();
-//		ofColor c;
-//		c.setHsb(nt * 50, 100, 100);
-//		ofSetColor(c);
-//
-//		ofDrawRectangle(i->second.rect);
-//		nt ++;
-//	}
-	for (auto i = text.begin(); i != text.end(); i++)
-	{
-		i->second->display();
-	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		i->second->display();
-	}
-
-
-	animator->unlock();
-
+	areas[_area]->setLayout(_layout);
 }
+
+void DisplayControl::display(LAYER _layer)
+{
+	for (auto it : areas)
+	{
+		it.second->display(_layer);
+	}}
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font";
-	int it = 0;
-	animator->lock();
-	for (auto i = text.begin(); i != text.end(); i++)
+
+	for (auto it : areas)
 	{
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt " << it;
+		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font txt ";
 
-		for (size_t ii = 0; ii < i->second->getSize(); ii++)
-		{
-			i->second->setFont(ii, _sz, _f);
-		}
-		it++;
-	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting Font opt " << it;
-
-		for (size_t ii = 0; ii < i->second->getSize(); ii++)
-		{
-			i->second->setFont(ii, _sz, _f);
-		}
-
-		it++;
+		it.second->setFont(_sz, _f);
 	}
 
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting personal font ";
@@ -148,287 +126,52 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		fontSmall = _f;
 		break;
 	}
-
-	animator->unlock();
-
-	readjustHeights();
-
 }
 
-void DisplayControl::setLayout(std::vector<float> _layout)
+void DisplayControl::setCorruption(int _corruption)
 {
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Setting layout";
-	layout.clear();
-	float w = 0;
-	float h = 50;
-	float x = 0;
-	float y = 0;
-	unsigned int id = 0;
-	unsigned int row = 0;
-	unsigned int col = 0;
-	float pcTrack = 0;
-
-	for (size_t i = 0; i < _layout.size(); i++)
+	for(auto it : areas)
 	{
-		float pc = _layout[i] / 100.f;
-
-		pcTrack += pc;
-
-		if (pcTrack > 1.)
-		{
-			row++;
-			x = 0;
-			y += h;
-			col = 0;
-			pcTrack = pc;
-		}
-		else
-		{
-		}
-
-		w = ofGetWidth() * pc;
-		id = i;
-
-		layout.insert(
-				std::pair<unsigned int, Cell>(id,
-						Cell(row, col, pc, x, y, w, h)));
-
-		x += w;
-		col++;
-
-	}
-
-	readjustHeights();
-}
-
-void DisplayControl::stopAnimator()
-{
-	if (animator != nullptr)
-	{
-		if (animator->isThreadRunning())
-		{
-			animator->waitForThread();
-		}
+		it.second->setCorruption(_corruption);
 	}
 }
 
-void DisplayControl::readjustHeights()
+void DisplayControl::clearContent(DISPLAY_AREA _area)
 {
-	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Readjusting Heights";
-	std::vector<float> rowMaxHeight;
-	float h = 0;
-	unsigned int thisRow = 0;
-
-	animator->lock();
-
-	for (auto i : layout)
-	{
-		if (i.second.row != thisRow)
-		{
-			rowMaxHeight.push_back(h);
-			h = 0;
-			thisRow = i.second.row;
-		}
-
-		auto it = text.find(i.first);
-		if (it != text.end())
-		{
-			if (it->second->getHeight() > h)
-				h = it->second->getHeight();
-
-		}
-		else
-		{
-			auto it2 = options.find(i.first);
-			if (it2 != options.end())
-			{
-				if (it2->second->getHeight() > h)
-					h = it2->second->getHeight();
-
-			}
-		}
-
-	}
-
-	if (layout.size() > 0)
-		rowMaxHeight.push_back(h);
-
-	thisRow = 0;
-	float y = 0;
-
-	for (auto i = layout.begin(); i != layout.end(); i++)
-	{
-		Cell& cell = i->second;
-		if (cell.row != thisRow)
-		{
-			y += rowMaxHeight[thisRow];
-			thisRow = cell.row;
-		}
-		cell.rect.setHeight(rowMaxHeight[thisRow]);
-		cell.rect.setY(y);
-	}
-
-	for (auto i = text.begin(); i != text.end(); i++)
-	{
-		i->second->setPosition(layout[i->first].rect.x,
-				layout[i->first].rect.y);
-		i->second->setWidth(layout[i->first].rect.width);
-		//i.second->setHeight(layout[i.first].rect.height);
-	}
-
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		i->second->setPosition(layout[i->first].rect.x,
-				layout[i->first].rect.y);
-		i->second->setWidth(layout[i->first].rect.width);
-		//i.second->setHeight(layout[i.first].rect.height);
-	}
-
-	animator->unlock();
-
-}
-
-void DisplayControl::clearLayout()
-{
-	layout.clear();
-	layout.insert(
-			std::pair<unsigned int, Cell>(0,
-					Cell(0, 0, 100, 0, 0, ofGetWidth(), ofGetHeight())));
-
-}
-
-void DisplayControl::clearText()
-{
-	stopAnimator();
-
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto i = text.begin(); i != text.end(); i++)
-	{
-		delete i->second;
-	}
 
-	text.clear();
-
-	readjustHeights();
-
-}
-
-void DisplayControl::addText(unsigned int _p, std::string _str, FONT_SIZE _sz)
-{
-	stopAnimator();
-
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
-
-	ofPoint pt = ofPoint();
-	pt.x = layout[_p].rect.x;
-	pt.y = layout[_p].rect.y;
-
-	if (text.find(_p) == text.end())
-	{
-
-		text.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
-		text[_p]->addTextFrame(40, 40, pt, false);
-		text[_p]->setText(text[_p]->getSize() - 1, _str);
-		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
-	}
-	else
-	{
-		text[_p]->addTextFrame(40, 40, pt, false);
-		text[_p]->setText(text[_p]->getSize() - 1, _str);
-		text[_p]->setFontSize(text[_p]->getSize() - 1, _sz);
-	}
-
-
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_TOP, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_RIGHT, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_LEFT, 64);
-	text[_p]->setMargin(text[_p]->getSize() - 1, MARGIN_BOTTOM, 0);
-
-	if (fontLarge != nullptr)
-		setFont(FONT_LARGE, fontLarge);
-	if (fontMedium != nullptr)
-		setFont(FONT_MEDIUM, fontMedium);
-	if (fontSmall != nullptr)
-		setFont(FONT_SMALL, fontSmall);
-
-	readjustHeights();
-	startAnimator();
-}
-
-void DisplayControl::clearOptions()
-{
-	stopAnimator();
-
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing options";
-	for (auto i = options.begin(); i != options.end(); i++)
-	{
-		delete i->second;
-	}
+	areas[_area]->clearContent();
 
 	options.clear();
-
-	readjustHeights();
-
 	selected = 0;
 
 }
 
-void DisplayControl::addOption(unsigned int _p, std::string _str,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg, FONT_SIZE _sz,
-		bool _isSecret)
+void DisplayControl::clearLayout(DISPLAY_AREA _area)
 {
-	stopAnimator();
+	ofLog(OF_LOG_VERBOSE) << "[Display Control] Clearing layout";
+	areas[_area]->clearLayout();
 
-	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding option " << _str;
+}
+void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
+		std::string _str, FONT_SIZE _sz)
+{
+	areas[_area]->addText(_p, _str, _sz);
+}
 
-	ofPoint pt = ofPoint();
-	pt.x = layout[_p].rect.x;
-	pt.y = layout[_p].rect.y;
+void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
+		std::string _str, void (GameControl::*_f)(unsigned int),
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background)
+{
+	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
+			_sz, _isSecret, _background);
 
-	if (options.find(_p) == options.end())
+	options.push_back(fr);
+
+	for (size_t i = 0; i < options.size(); i++)
 	{
-
-		options.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer()));
-		options[_p]->addTextFrame(40, 40, pt, true);
-		options[_p]->setText(options[_p]->getSize() - 1, _str);
-		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
-				_arg);
+		options[i]->setSelected(i == selected);
 	}
-	else
-	{
-		options[_p]->addTextFrame(40, 40, pt, true);
-		options[_p]->setText(options[_p]->getSize() - 1, _str);
-		options[_p]->setFontSize(options[_p]->getSize() - 1, _sz);
-		options[_p]->setCallback(options[_p]->getSize() - 1, gameControl, _f,
-				_arg);
-	}
-
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_TOP, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_RIGHT, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_LEFT, 64);
-	options[_p]->setMargin(options[_p]->getSize() - 1, MARGIN_BOTTOM, 64);
-	options[_p]->setIsSecret(options[_p]->getSize() - 1, _isSecret);
-
-	if (options.size() != 0)
-	{
-		options[_p]->setSelected(true, SELECTED_NO_CHANGE);
-	}
-
-	if (fontLarge != nullptr)
-		setFont(FONT_LARGE, fontLarge);
-	if (fontMedium != nullptr)
-		setFont(FONT_MEDIUM, fontMedium);
-	if (fontSmall != nullptr)
-		setFont(FONT_SMALL, fontSmall);
-
-	readjustHeights();
-	startAnimator();
-
 }
 
 void DisplayControl::onKeyPressed(ofKeyEventArgs &_args)
@@ -456,18 +199,7 @@ void DisplayControl::onSelect()
 
 	if (options.size() > 0)
 	{
-		ofLog() << selected;
-		size_t i = 0;
-		for (auto it = options.begin(); it != options.end(); it++)
-		{
-			if (i == selected)
-			{
-				it->second->onSelect();
-				break;
-			}
-
-			i++;
-		}
+		options[selected]->onSelect();
 	}
 }
 
@@ -475,93 +207,37 @@ void DisplayControl::onArrow(int _key)
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed. Selected is: "
 			<< selected;
-	size_t i = 0;
 
 	switch (_key)
 	{
 	case OF_KEY_UP:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed up";
 
-		for (auto it = options.begin(); it != options.end(); it++)
+		selected--;
+		if (selected < 0)
 		{
-			if (i == selected)
-			{
-				switch (it->second->decrementSelected())
-				{
-				case SELECTED_ABOVE:
-					selected--;
-					if (selected < 0)
-						selected = options.size() - 1;
+			selected = options.size() - 1;
+		}
 
-					size_t i2 = 0;
-					for (auto it2 = options.begin(); it2 != options.end();
-							it2++)
-					{
-
-						if (i2 == selected)
-						{
-							it2->second->setSelected(true, SELECTED_BELOW);
-						}
-						else
-						{
-							it2->second->setSelected(false, SELECTED_NO_CHANGE);
-						}
-
-						i2++;
-					}
-					break;
-				}
-
-				break;
-			}
-			i++;
+		for (size_t i = 0; i < options.size(); i++)
+		{
+			options[i]->setSelected(i == selected);
 		}
 
 		break;
 
 	case OF_KEY_DOWN:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow down Pressed";
-		ofLog() << "option sz is " << options.size();
-		ofLog() << "selected is " << selected;
 
-		i = 0;
-		for (auto it = options.begin(); it != options.end(); it++)
+		selected++;
+		if (selected >= options.size())
 		{
-			if (i == selected)
-			{
-				ofLog() << "is sel: " << i;
+			selected = 0;
+		}
 
-				switch (it->second->incrementSelected())
-				{
-				case SELECTED_BELOW:
-					selected++;
-					if (selected >= options.size())
-						selected = 0;
-
-					size_t i2 = 0;
-					for (auto it2 = options.begin(); it2 != options.end();
-							it2++)
-					{
-
-						if (i2 == selected)
-						{
-							it2->second->setSelected(true, SELECTED_ABOVE);
-						}
-						else
-						{
-							it2->second->setSelected(false, SELECTED_NO_CHANGE);
-						}
-
-						i2++;
-					}
-
-					break;
-				}
-
-				break;
-			}
-
-			i++;
+		for (size_t i = 0; i < options.size(); i++)
+		{
+			options[i]->setSelected(i == selected);
 		}
 
 		break;

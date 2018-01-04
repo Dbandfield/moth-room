@@ -10,267 +10,171 @@
 namespace moth
 {
 
-TextContainer::TextContainer()
+TextContainer::TextContainer(FLOW _flow)
 {
-	selected = 0;
+	flow = _flow;
+
+	layer = LAYER_DEFAULT;
 }
 
 TextContainer::~TextContainer()
 {
-	for (auto i = frames.begin(); i != frames.end(); i++)
+	for (auto i = children.begin(); i != children.end(); i++)
 	{
 		delete (*i);
 	}
 
-	frames.clear();
+	children.clear();
 }
 
-void TextContainer::setIsSecret(unsigned int _id, bool _isSecret)
+void TextContainer::setLayer(LAYER _layer)
 {
-	if (_id < frames.size())
+	layer = _layer;
+	for(auto it : children)
 	{
-		frames[_id]->setIsSecret(_isSecret);
-	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
+		it ->setLayer(layer);
 	}
 }
 
-void TextContainer::setMargin(unsigned int _id, MARGIN _mgn, float _amt)
+void TextContainer::addChild(Symbol *_symbol)
 {
-	if (_id < frames.size())
-	{
-		frames[_id]->setMargin(_mgn, _amt);
-	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
-	}
+	children.push_back(_symbol);
 }
 
-void TextContainer::addTextFrame(float _width, float _height, ofPoint _position,
-		bool _isOption)
+void TextContainer::display(LAYER _layer)
 {
-	frames.push_back(new TextFrame(_width, _height, _position, _isOption));
+	for (auto i = children.begin(); i != children.end(); i++)
+	{
+		(*i)->display(_layer);
+	}
 }
 
-void TextContainer::display()
+void TextContainer::setText(char _c)
 {
-	for (auto i = frames.begin(); i != frames.end(); i++)
-	{
-		(*i)->display();
-	}
+	std::string str = "";
+	str += _c;
+	setText(str);
 }
 
-void TextContainer::setText(unsigned int _ID, std::string _str)
+void TextContainer::setText(char* _c)
 {
-	if (_ID < frames.size())
+	std::string str = "";
+	while (*_c != '\0')
 	{
-		frames[_ID]->setText(_str);
+		str += *_c;
+		_c++;
 	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
-	}
+	setText(str);
 }
 
-void TextContainer::setFont(unsigned int _ID, FONT_SIZE _sz,
+void TextContainer::setText(std::string _str)
+{
+	TextFrame* frame = new TextFrame(width, height, position, false, false);
+	frame->setText(_str);
+	children.push_back(frame);
+}
+
+void TextContainer::setFont(FONT_SIZE _sz,
 		ofTrueTypeFont *_font)
 {
-	if (_ID < frames.size())
+	for(auto i : children)
 	{
-		frames[_ID]->setFont(_sz, _font);
-	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
+		i->setFont(_sz, _font);
 	}
 }
 
-void TextContainer::setFontSize(unsigned int _ID, FONT_SIZE _sz)
+void TextContainer::setFontSize(FONT_SIZE _sz)
 {
-	if (_ID < frames.size())
+	for(auto i : children)
 	{
-		frames[_ID]->setFontSize(_sz);
-	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
-	}
-}
-
-void TextContainer::setCallback(unsigned int _ID, GameControl *_gameControl,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg)
-{
-	if (_ID < frames.size())
-	{
-		frames[_ID]->setCallback(_gameControl, _f, _arg);
-	}
-	else
-	{
-		ofLog(OF_LOG_ERROR)
-				<< "[ERROR][TextContainer] Choose an index which actually exists please";
+		i->setFontSize(_sz);
 	}
 }
 
 float TextContainer::getHeight()
 {
 	float h = 0;
-	for (auto i = frames.begin(); i != frames.end(); i++)
+	for (auto i : children)
 	{
-		h += (*i)->getHeight();
+		h += i->getHeight();
 	}
 
 	return h;
-
 }
 
-void TextContainer::setPosition(float _x, float _y)
+void TextContainer::setPosition(ofPoint _pt)
 {
-	float x = _x;
-	float y = _y;
-	for (auto i = frames.begin(); i != frames.end(); i++)
+	position = ofPoint(_pt.x, _pt.y);
+	for (auto i : children)
 	{
-		(*i)->setPosition(x, y);
-		y += (*i)->getHeight() / 2;
+		i->setPosition(position);
+		switch(flow)
+		{
+		case FLOW_VERTICAL:
+			position.y += i->getHeight() / 2;
+
+			break;
+		case FLOW_HORIZONTAL:
+			position.x += i->getWidth();
+
+			break;
+		}
 	}
 }
 
 void TextContainer::setWidth(float _w)
 {
-	for (auto i = frames.begin(); i != frames.end(); i++)
+	width = _w;
+	for (auto i : children)
 	{
-		(*i)->setWidth(_w);
+		TextFrame *frame = static_cast<TextFrame*>(i);
+		frame->setWidth(width);
 	}
 }
 
-void TextContainer::setHeight(float _h)
+float TextContainer::getWidth()
 {
-	for (auto i = frames.begin(); i != frames.end(); i++)
-	{
-		(*i)->setHeight(_h);
-	}
+	return width;
 }
 
-SELECTED_BOUNDS TextContainer::decrementSelected()
+ofPoint TextContainer::getPosition()
 {
-	ofLog(OF_LOG_VERBOSE) << "[Text Container] Decrementing Selected ";
-
-	if (selected == 0)
-	{
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(false);
-		}
-		ofLog(OF_LOG_VERBOSE) << "[Text Container] Below 0 " << selected;
-
-		return SELECTED_ABOVE;
-	}
-	else
-	{
-		selected--;
-		size_t ndx = 0;
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(ndx == selected);
-			ndx++;
-		}
-		ofLog(OF_LOG_VERBOSE) << "[Text Container] not Below 0 " << selected;
-
-		return SELECTED_NO_CHANGE;
-	}
-
+	return position;
 }
-SELECTED_BOUNDS TextContainer::incrementSelected()
+
+std::string TextContainer::getText()
 {
-	ofLog(OF_LOG_VERBOSE) << "[Text Container] incrementing Selected ";
+	std::string cat = "";
 
-	if (selected == frames.size() - 1)
+	for(auto i : children)
 	{
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(false);
-		}
-		ofLog(OF_LOG_VERBOSE) << "[Text Container] over max " << selected;
-
-		return SELECTED_BELOW;
-	}
-	else
-	{
-		selected++;
-		size_t ndx = 0;
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(ndx == selected);
-			ndx++;
-		}
-		ofLog(OF_LOG_VERBOSE) << "[Text Container] not over max " << selected;
-
-		return SELECTED_NO_CHANGE;
+		cat += i->getText();
+		cat += '\n';
 	}
 
+	return cat;
 }
 
-void TextContainer::setSelected(bool _sel, SELECTED_BOUNDS _bounds)
+float TextContainer::getSpacing()
 {
-	ofLog(OF_LOG_VERBOSE) << "[Text Container] Set selected";
-
-	if (_sel)
-	{
-		//frames[selected]->setSelected(true);
-		switch (_bounds)
-		{
-		case SELECTED_ABOVE:
-		default:
-			selected = 0;
-			break;
-		case SELECTED_BELOW:
-			selected = frames.size() - 1;
-			break;
-		}
-
-		size_t ndx = 0;
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(ndx == selected);
-			ndx++;
-		}
-
-	}
-	else
-	{
-		for (auto i = frames.begin(); i != frames.end(); i++)
-		{
-			(*i)->setSelected(false);
-		}
-	}
-	ofLog(OF_LOG_VERBOSE) << "[Text Container] selected is " << selected;
-
+	return 0.f;
 }
 
-void TextContainer::onSelect()
+void TextContainer::setColour(ofColor _col)
 {
-	ofLog(OF_LOG_VERBOSE) << "on select " << selected;
+	colCurrent = _col;
 
-	frames[selected]->onSelect();
-}
-
-std::vector<Symbol*> TextContainer::getSymbols()
-{
-	std::vector<Symbol*> sym;
-	for (auto it = frames.begin(); it != frames.end(); it++)
+	for(auto i : children)
 	{
-		std::vector<Symbol*> frameSym = (*it)->getSymbols();
-		sym.insert(sym.end(), frameSym.begin(), frameSym.end());
+		i->setColour(colCurrent);
 	}
-
-	return sym;
 }
+
+std::vector<Symbol*> TextContainer::getChildren()
+{
+	return children;
+}
+
+
 
 } /* namespace moth */

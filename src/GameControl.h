@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "DisplayControl.h"
 #include "enums.h"
@@ -8,8 +9,6 @@
 #include "Location.h"
 #include "DataLoader.h"
 #include "Secret.h"
-#include "Animator.h"
-#include "AnimCorruptCharacter.h"
 
 namespace moth
 {
@@ -31,14 +30,15 @@ public:
 	void listSecrets(unsigned int _arg);
 	void moveLocation(unsigned int _arg);
 	void tellSecret(unsigned int _arg);
+	void eat(unsigned int _arg);
 
 	void setLocations(std::map<unsigned int, Location*>  _locs);
 	void locationsReady();
 
 protected:
 	void switchStage(STAGE _stage);
-
-	AnimCorruptCharacter* animCorruptCharacter;
+	void setButtons();
+	void makeHungry();
 
 	std::map<unsigned int, Location*> locations;
 	Location* currentLocation;
@@ -51,6 +51,7 @@ protected:
 	std::vector<Secret*> discoveredSecrets;
 
 	int hunger;
+	int humanity;
 
 };
 

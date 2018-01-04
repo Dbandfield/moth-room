@@ -14,9 +14,9 @@ Letter::Letter(ofColor _col)
 {
 
 	currentFont = nullptr;
-	smallFont = nullptr;
-	mediumFont = nullptr;
-	largeFont = nullptr;
+	fontSmall = nullptr;
+	fontMedium = nullptr;
+	fontLarge = nullptr;
 	text = "";
 	position = ofPoint(0, 0);
 	width = 0;
@@ -24,13 +24,20 @@ Letter::Letter(ofColor _col)
 
 	fontSize = FONT_SMALL;
 
-	colour = _col;
+	colCurrent = _col;
+
+	layer = LAYER_DEFAULT;
 
 }
 
 Letter::~Letter()
 {
 	// TODO Auto-generated destructor stub
+}
+
+void Letter::addChild(Symbol* _symbol)
+{
+	children.push_back(_symbol);
 }
 
 float Letter::getWidth()
@@ -49,9 +56,9 @@ ofPoint Letter::getPosition()
 void Letter::setColour(ofColor _col)
 {
 
-	colour = _col;
+	colCurrent = _col;
 	float h, s, b;
-	colour.getHsb(h, s, b);
+	colCurrent.getHsb(h, s, b);
 }
 
 float Letter::getSpacing()
@@ -71,13 +78,13 @@ void Letter::setFont(FONT_SIZE _sz, ofTrueTypeFont *_font)
 	switch (_sz)
 	{
 	case FONT_LARGE:
-		largeFont = _font;
+		fontLarge = _font;
 		break;
 	case FONT_MEDIUM:
-		mediumFont = _font;
+		fontMedium = _font;
 		break;
 	case FONT_SMALL:
-		smallFont = _font;
+		fontSmall = _font;
 		break;
 
 	}
@@ -91,29 +98,46 @@ void Letter::setFontSize(FONT_SIZE _sz)
 	switch (_sz)
 	{
 	case FONT_LARGE:
-		currentFont = largeFont;
+		currentFont = fontLarge;
 		break;
 	case FONT_MEDIUM:
-		currentFont = mediumFont;
+		currentFont = fontMedium;
 		break;
 	case FONT_SMALL:
-		currentFont = smallFont;
+		currentFont = fontSmall;
 		break;
 
 	}
 	calculateSize();
 }
 
-void Letter::display()
+void Letter::setLayer(LAYER _layer)
 {
-	ofSetColor(colour);
-	if (currentFont != nullptr)
+	layer = _layer;
+	for(auto it : children)
 	{
-		currentFont->drawString(text, position.x, position.y);
+		it ->setLayer(layer);
 	}
 }
 
-void Letter::setCharacter(char _c)
+void Letter::display(LAYER _layer)
+{
+	if (layer == _layer)
+	{
+		ofSetColor(colCurrent);
+		if (currentFont != nullptr)
+		{
+			currentFont->drawString(text, position.x, position.y);
+		}
+	}
+}
+
+std::vector<Symbol*> Letter::getChildren()
+{
+	return children;
+}
+
+void Letter::setText(char _c)
 {
 
 	text = std::string();
@@ -121,7 +145,7 @@ void Letter::setCharacter(char _c)
 	calculateSize();
 }
 
-void Letter::setCharacter(char* _c)
+void Letter::setText(char* _c)
 {
 
 	text = std::string();
@@ -129,7 +153,7 @@ void Letter::setCharacter(char* _c)
 	calculateSize();
 }
 
-void Letter::setCharacter(std::string _c)
+void Letter::setText(std::string _c)
 {
 
 	text = _c.substr(0, 1);
@@ -157,6 +181,12 @@ void Letter::calculateSize()
 		}
 	}
 
+}
+
+void Letter::setWidth(float _width)
+{
+	ofLog(OF_LOG_WARNING)
+			<< "[WORD] - Setting width does nothing. Width is based on text.";
 }
 
 } /* namespace moth */

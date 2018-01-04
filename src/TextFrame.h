@@ -9,7 +9,9 @@
 #include "GameControl.h"
 #include "Symbol.h"
 #include "Option.h"
-#include "Letter.h"
+#include "Word.h"
+#include "BackgroundDecorator.h"
+#include "BorderDecorator.h"
 
 #include "enums.h"
 
@@ -17,60 +19,70 @@ namespace moth
 {
 class GameControl;
 class Option;
+class Symbol;
 
-class TextFrame
+class TextFrame : public Symbol
 {
 public:
 	TextFrame(float _width, float _height, ofPoint _position, bool _isOption=false, bool _isSecret=false);
 	virtual ~TextFrame();
 
-	void display();
+	/* --- Inherited --- */
 
+	void display(LAYER _layer);
+
+	float getHeight();
+	float getWidth();
+	ofPoint getPosition();
+	std::string getText();
+	float getSpacing();
+	std::vector<Symbol*> getChildren(){return children;};
+
+	void setText(char _c);
+	void setText(char* _c);
 	void setText(std::string _str);
+
+	void addChild(Symbol* _symbol);
 
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(FONT_SIZE _sz);
 
+	void setPosition(ofPoint _pt);
+
+	void setColour(ofColor _col);
+
+	void setWidth(float _w);
+
+	void setLayer(LAYER _layer);
+
+	/* --- End inherited --- */
+
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
+	void onSelect();
 
 	void setIsSecret(bool _isSecret);
 
-	float getHeight();
-
-	void setPosition(float _x, float _y);
-	void setWidth(float _w);
-	void setHeight(float _h);
 	void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
 
-	void onSelect();
-
-	std::vector<Symbol*> getSymbols(){return symbols;};
+	void setBackground();
 
 protected:
+	void calculateSize();
+	std::vector<std::string> split(const std::string &s, char delimiter);
 	void recalculatePositions();
 	Option* opt;
 
-	float selectedMod;
+	float selectedMod; // to modify colour, when selected
 	ofColor colStatic;
-	ofColor colCurrent;
 	ofColor colIsSecret;
 	ofColor colBase;
 
 	bool isOption;
 	bool isSecret;
 
-	std::vector<Symbol*> symbols;
-
-	ofTrueTypeFont* fontLarge;
-	ofTrueTypeFont* fontMedium;
-	ofTrueTypeFont* fontSmall;
-
-
-	ofPoint position;
 	ofPoint adjustedPosition;
-	float width;
-	float height;
+
 	float marginLeft;
 	float marginTop;
 	float marginRight;
