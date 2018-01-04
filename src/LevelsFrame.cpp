@@ -13,6 +13,8 @@ namespace moth
 LevelsFrame::LevelsFrame()
 {
 	text = "";
+
+	layer = LAYER_DEFAULT;
 }
 
 LevelsFrame::~LevelsFrame()
@@ -20,6 +22,15 @@ LevelsFrame::~LevelsFrame()
 	for(auto i = children.begin(); i != children.end(); i ++)
 	{
 		delete (*i);
+	}
+}
+
+void LevelsFrame::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
 	}
 }
 

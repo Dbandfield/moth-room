@@ -39,6 +39,7 @@ public:
 	void setColour(ofColor _col);
 	void setWidth(float _width);
 
+	void setLayer(LAYER _layer);
 
 	/* --- Not inherited --- */
 

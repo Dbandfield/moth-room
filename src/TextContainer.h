@@ -47,6 +47,8 @@ public:
 
 	void setColour(ofColor _col);
 
+	void setLayer(LAYER _layer);
+
 	/* Not inherited */
 
 	void setPosition(float _x, float _y);

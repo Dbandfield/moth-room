@@ -18,6 +18,8 @@ BorderDecorator::BorderDecorator(Symbol* _decorated)
 		decorated->setColour(ofColor(0, 0, 0));
 		getData();
 	}
+
+	layer = LAYER_DEFAULT;
 }
 
 BorderDecorator::~BorderDecorator()
@@ -30,13 +32,29 @@ BorderDecorator::~BorderDecorator()
 
 }
 
+void BorderDecorator::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for (auto it : children)
+	{
+		it->setLayer(layer);
+	}
+
+	decorated->setLayer(layer);
+}
+
 void BorderDecorator::display(LAYER _layer)
 {
+
 	if (decorated != nullptr)
 	{
-		ofSetColor(ofColor(255, 255, 255));
-		ofNoFill();
-		ofDrawRectangle(position.x, position.y - decorated->getHeight(), width, height);
+		if (layer == _layer)
+		{
+			ofSetColor(ofColor(255, 255, 255));
+			ofNoFill();
+			ofDrawRectangle(position.x, position.y - decorated->getHeight(),
+					width, height);
+		}
 		decorated->display(_layer);
 	}
 }

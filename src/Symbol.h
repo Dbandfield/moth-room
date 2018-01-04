@@ -12,8 +12,14 @@ namespace moth
 class Symbol
 {
 public:
-	Symbol(){};
-	virtual ~Symbol(){};
+	Symbol()
+	{
+	}
+	;
+	virtual ~Symbol()
+	{
+	}
+	;
 
 	virtual void display(LAYER _layer) = 0;
 
@@ -40,6 +46,8 @@ public:
 
 	virtual void setWidth(float _width) = 0;
 
+	virtual void setLayer(LAYER _layer) = 0;
+
 protected:
 
 	ofColor colCurrent;
@@ -53,10 +61,12 @@ protected:
 
 	FONT_SIZE fontSize;
 
-	ofTrueTypeFont *currentFont;
+	ofTrueTypeFont* currentFont;
 	ofTrueTypeFont* fontLarge;
 	ofTrueTypeFont* fontMedium;
 	ofTrueTypeFont* fontSmall;
+
+	LAYER layer;
 };
 
 } /* namespace moth */

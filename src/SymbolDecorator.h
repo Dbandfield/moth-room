@@ -37,6 +37,9 @@ public:
 
 	virtual void setWidth(float _width) = 0;
 
+	virtual void setLayer(LAYER _layer) =0;
+
+
 protected:
 
 	virtual void getData() = 0;

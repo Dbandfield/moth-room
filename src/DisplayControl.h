@@ -29,9 +29,7 @@ public:
 	DisplayControl();
 	virtual ~DisplayControl();
 
-	void displayMain();
-	void displayLevels();
-	void displayButtons();
+	void display(LAYER _layer);
 
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
 	void setLayout(DISPLAY_AREA, std::vector<float> _layout);
@@ -51,6 +49,8 @@ public:
 	void setGameControl(GameControl *_gameControl);
 
 	void setLevel(LEVEL _level, float _value);
+
+	void setCorruption(int _corruption);
 
 protected:
 

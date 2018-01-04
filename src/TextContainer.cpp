@@ -13,6 +13,8 @@ namespace moth
 TextContainer::TextContainer(FLOW _flow)
 {
 	flow = _flow;
+
+	layer = LAYER_DEFAULT;
 }
 
 TextContainer::~TextContainer()
@@ -25,16 +27,25 @@ TextContainer::~TextContainer()
 	children.clear();
 }
 
+void TextContainer::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
+	}
+}
+
 void TextContainer::addChild(Symbol *_symbol)
 {
 	children.push_back(_symbol);
 }
 
-void TextContainer::display()
+void TextContainer::display(LAYER _layer)
 {
 	for (auto i = children.begin(); i != children.end(); i++)
 	{
-		(*i)->display();
+		(*i)->display(_layer);
 	}
 }
 

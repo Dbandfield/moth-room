@@ -13,6 +13,7 @@ void ofApp::setup()
 
 	pixelate.load("shaders/pixelate");
 	vignette.load("shaders/vignette");
+	corrupt.load("shaders/corrupt");
 
 	fontsTransferred = false;
 	locationsTransferred = false;
@@ -20,10 +21,10 @@ void ofApp::setup()
 	dataLoader = new moth::DataLoader();
 
 	ofSetWindowTitle("Oh no! You are a Moth!");
-    ofSetFrameRate(60);
-    ofSetLogLevel(OF_LOG_VERBOSE);
+	ofSetFrameRate(60);
+	ofSetLogLevel(OF_LOG_VERBOSE);
 
-    dataLoader->load();
+	dataLoader->load();
 
 	ofLog(OF_LOG_VERBOSE) << "[ofApp] Creating Controls";
 
@@ -32,8 +33,9 @@ void ofApp::setup()
 	displayControl->setGameControl(gameControl);
 	gameControl->setDisplayControl(displayControl);
 
-	buf1.allocate(1366, 768);
-	buf2.allocate(1366, 768);
+	bufPixelate.allocate(1366, 768);
+	bufVignette.allocate(1366, 768);
+	bufCorrupt.allocate(1366, 768);
 
 	distort = 0.f;
 	dividor = 0;
@@ -49,24 +51,29 @@ void ofApp::update()
 {
 	dataLoader->update();
 
-	if(!fontsTransferred)
+	if (!fontsTransferred)
 	{
-		if(dataLoader->areFontsLoaded())
+		if (dataLoader->areFontsLoaded())
 		{
-			ofLog(OF_LOG_VERBOSE) << "[ofApp] Font is loaded, transferring to display control";
+			ofLog(OF_LOG_VERBOSE)
+					<< "[ofApp] Font is loaded, transferring to display control";
 
-			displayControl->setFont(moth::FONT_LARGE, &(dataLoader->getFont(moth::FONT_LARGE)));
-			displayControl->setFont(moth::FONT_MEDIUM, &(dataLoader->getFont(moth::FONT_MEDIUM)));
-			displayControl->setFont(moth::FONT_SMALL, &(dataLoader->getFont(moth::FONT_SMALL)));
+			displayControl->setFont(moth::FONT_LARGE,
+					&(dataLoader->getFont(moth::FONT_LARGE)));
+			displayControl->setFont(moth::FONT_MEDIUM,
+					&(dataLoader->getFont(moth::FONT_MEDIUM)));
+			displayControl->setFont(moth::FONT_SMALL,
+					&(dataLoader->getFont(moth::FONT_SMALL)));
 			fontsTransferred = true;
 		}
 	}
 
-	if(!locationsTransferred)
+	if (!locationsTransferred)
 	{
-		if(dataLoader->areLocationsLoaded())
+		if (dataLoader->areLocationsLoaded())
 		{
-			ofLog(OF_LOG_VERBOSE) << "[ofApp] Locations loaded, transferring to game control";
+			ofLog(OF_LOG_VERBOSE)
+					<< "[ofApp] Locations loaded, transferring to game control";
 			gameControl->setLocations(dataLoader->getLocations());
 			gameControl->locationsReady();
 		}
@@ -74,13 +81,13 @@ void ofApp::update()
 		locationsTransferred = true;
 	}
 
-	distort = sin(ofGetElapsedTimeMillis()/dividor) * 7;
+	distort = sin(ofGetElapsedTimeMillis() / dividor) * 7;
 	distort -= 2;
 	distort = std::max(0.f, distort);
 	distort = std::min(distort, 5.f);
 	dividor += dividorChange;
 
-	if(dividor > 5)
+	if (dividor > 5)
 	{
 		dividorChange = -0.01;
 	}
@@ -94,28 +101,43 @@ void ofApp::update()
 void ofApp::draw()
 {
 
-	buf1.begin();
+	// PIXELATE
+
+	bufPixelate.begin();
 	ofBackground(backgroundColour);
-	if(displayControl != nullptr) displayControl->displayMain();
-	if(displayControl != nullptr) displayControl->displayButtons();
-	if(displayControl != nullptr) displayControl->displayLevels();
 
-	buf1.end();
+	if (displayControl != nullptr)
+		displayControl->display(moth::LAYER_JITTER);
+	if (displayControl != nullptr)
+		displayControl->display(moth::LAYER_PIXELLATED);
 
-	buf2.begin();
+
+	bufPixelate.end();
+
+	// CORRUPT
+	bufCorrupt.begin();
+    ofClear(255,255,255, 0);
+	if (displayControl != nullptr)
+		displayControl->display(moth::LAYER_DISTORTED);
+	bufCorrupt.end();
+
+	// VIGNETTE
+	bufVignette.begin();
+
 	pixelate.begin();
 	pixelate.setUniform1f("distort", distort);
-
-	buf1.draw(0,0);
-
+	bufPixelate.draw(0, 0);
 	pixelate.end();
 
-	buf2.end();
+	corrupt.begin();
+	bufCorrupt.draw(0, 0);
+	corrupt.end();
+
+	bufVignette.end();
 
 	vignette.begin();
-	buf2.draw(0, 0);
+	bufVignette.draw(0, 0);
 
 	vignette.end();
 }
-
 

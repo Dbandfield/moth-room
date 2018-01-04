@@ -18,6 +18,8 @@ BackgroundDecorator::BackgroundDecorator(Symbol* _decorated)
 		decorated->setColour(ofColor(0, 0, 0));
 		getData();
 	}
+
+	layer = LAYER_DEFAULT;
 }
 
 BackgroundDecorator::~BackgroundDecorator()
@@ -34,9 +36,13 @@ void BackgroundDecorator::display(LAYER _layer)
 {
 	if (decorated != nullptr)
 	{
-		ofFill();
-		ofSetColor(ofColor(255, 255, 255));
-		ofDrawRectangle(position.x, position.y - decorated->getHeight(), width, height);
+		if (_layer == layer)
+		{
+			ofFill();
+			ofSetColor(ofColor(255, 255, 255));
+			ofDrawRectangle(position.x, position.y - decorated->getHeight(),
+					width, height);
+		}
 		decorated->display(_layer);
 	}
 }
@@ -205,6 +211,17 @@ void BackgroundDecorator::getData()
 		height = decorated->getHeight() + 20;
 
 	}
+}
+
+void BackgroundDecorator::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for (auto it : children)
+	{
+		it->setLayer(layer);
+	}
+	decorated->setLayer(layer);
+
 }
 
 } /* namespace moth */

@@ -26,6 +26,8 @@ Letter::Letter(ofColor _col)
 
 	colCurrent = _col;
 
+	layer = LAYER_DEFAULT;
+
 }
 
 Letter::~Letter()
@@ -109,12 +111,24 @@ void Letter::setFontSize(FONT_SIZE _sz)
 	calculateSize();
 }
 
+void Letter::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
+	}
+}
+
 void Letter::display(LAYER _layer)
 {
-	ofSetColor (colCurrent);
-	if (currentFont != nullptr)
+	if (layer == _layer)
 	{
-		currentFont->drawString(text, position.x, position.y);
+		ofSetColor(colCurrent);
+		if (currentFont != nullptr)
+		{
+			currentFont->drawString(text, position.x, position.y);
+		}
 	}
 }
 

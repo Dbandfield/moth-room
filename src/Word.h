@@ -38,9 +38,12 @@ public:
 
 	void setWidth(float _width);
 
+	void setLayer(LAYER _layer);
+
 protected:
 
 	void calculateSize();
+
 };
 
 } /* namespace moth */

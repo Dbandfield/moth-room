@@ -108,6 +108,8 @@ void GameControl::eat(unsigned int _arg)
 	hunger = std::min(hunger + 10, 100);
 	humanity = std::max(humanity - 10, 0);
 
+	displayControl->setCorruption((int)(((100.f - (float)humanity) + 1.f) /10.f));
+
 	displayControl->setLevel(LEVEL_HUNGER, hunger);
 	displayControl->setLevel(LEVEL_HUMANITY, humanity);
 

@@ -16,8 +16,12 @@ DisplayArea::DisplayArea()
 	width = 0;
 	height = 0;
 	index = 0;
-	clearLayout();
 
+	layer = LAYER_DEFAULT;
+
+	corruption = 0;
+
+	clearLayout();
 }
 
 DisplayArea::DisplayArea(ofPoint _pos, float _width, float _height)
@@ -26,18 +30,41 @@ DisplayArea::DisplayArea(ofPoint _pos, float _width, float _height)
 	position = _pos;
 	width = _width;
 	height = _height;
+
+	layer = LAYER_DEFAULT;
+
+	corruption = 0;
+
 	clearLayout();
 }
 
 DisplayArea::~DisplayArea()
 {
+	for(auto it : children)
+	{
+		delete it;
+	}
+
+	for(auto it : containers)
+	{
+		delete it.second;
+	}
+}
+
+void DisplayArea::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : containers)
+	{
+		it.second->setLayer(layer);
+	}
 }
 
 void DisplayArea::display(LAYER _layer)
 {
 	for (auto it : containers)
 	{
-		it.second->display();
+		it.second->display(_layer);
 	}
 }
 
@@ -98,13 +125,16 @@ void DisplayArea::setText(std::string _str)
 {
 	TextContainer* con = new TextContainer(FLOW_VERTICAL);
 	con->setText(_str);
+	con->setLayer(layer);
 	containers.insert(std::pair<unsigned int, Symbol*>(index, con));
+
 
 	readjustHeights();
 }
 
 void DisplayArea::addChild(Symbol* _symbol)
 {
+	_symbol->setLayer(layer);
 	containers.insert(std::pair<unsigned int, Symbol*>(index, _symbol));
 }
 
@@ -314,6 +344,8 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
 						new TextContainer(FLOW_VERTICAL)));
+		containers[_p]->setLayer(layer);
+
 
 	}
 
@@ -325,6 +357,10 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 	frame->setMargin(MARGIN_RIGHT, 64);
 	frame->setMargin(MARGIN_LEFT, 64);
 	frame->setMargin(MARGIN_BOTTOM, 0);
+	frame->setLayer(layer);
+
+	auto vec = frame->getChildren();
+	addWords(vec);
 
 	containers[_p]->addChild(frame);
 
@@ -355,10 +391,13 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
 						new TextContainer(FLOW_VERTICAL)));
+		containers[_p]->setLayer(layer);
+
 
 	}
 
 	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
+
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
@@ -367,6 +406,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	frame->setMargin(MARGIN_LEFT, 64);
 	frame->setMargin(MARGIN_BOTTOM, 0);
 	frame->setCallback(_gc, _f, _arg);
+	frame->setLayer(layer);
 
 	if(_background)
 	{
@@ -396,6 +436,8 @@ Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, flo
 		containers.insert(
 				std::pair<unsigned int, TextContainer*>(_p,
 						new TextContainer(FLOW_HORIZONTAL)));
+		containers[_p]->setLayer(layer);
+
 
 	}
 
@@ -405,6 +447,8 @@ Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, flo
 	level->setHeight(_height);
 	level->setFontSize(_sz);
 	level->setText(_str);
+	level->setLayer(layer);
+
 //	TextFrame* frame = new TextFrame(layout[_p].rect.width,
 //			layout[_p].rect.height,
 //			ofPoint(layout[_p].rect.x, layout[_p].rect.y), false, false);
@@ -422,6 +466,32 @@ Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, flo
 	return level;
 }
 
+void DisplayArea::addWords(std::vector<Symbol*> _words)
+{
+	words.insert(words.end(), _words.begin(), _words.end());
+	std::random_shuffle(words.begin(), words.end());
+	for(int i = 0; i < words.size(); i ++)
+	{
+		std::string txt = words[i]->getText();
+		ofLog() << " Word is: " << txt << "Corruption is: " << corruption;
+		if (i < corruption)
+		{
+			ofLog() << txt << " is now corrupted";
+			words[i]->setLayer(LAYER_DISTORTED);
+		}
+		else
+		{
+			words[i]->setLayer(layer);
+		}
+	}
+
+}
+
+void DisplayArea::setCorruption(int _corruption)
+{
+	corruption = _corruption;
+}
+
 void DisplayArea::clearContent()
 {
 	for (auto it : containers)
@@ -430,6 +500,7 @@ void DisplayArea::clearContent()
 	}
 
 	containers.clear();
+	words.clear();
 }
 
 } /* namespace moth */

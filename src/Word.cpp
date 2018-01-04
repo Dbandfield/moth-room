@@ -25,6 +25,8 @@ Word::Word(ofColor _col)
 	fontSize = FONT_SMALL;
 
 	colCurrent = _col;
+
+	layer = LAYER_DEFAULT;
 }
 
 Word::~Word()
@@ -38,6 +40,16 @@ Word::~Word()
 
 	children.clear();
 
+}
+
+
+void Word::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
+	}
 }
 
 void Word::setFont(FONT_SIZE _sz, ofTrueTypeFont *_font)

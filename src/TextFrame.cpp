@@ -46,6 +46,8 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	colBase = isSecret ? colIsSecret : colStatic;
 	colCurrent = colBase;
 
+	layer = LAYER_DEFAULT;
+
 }
 
 TextFrame::~TextFrame()
@@ -53,6 +55,15 @@ TextFrame::~TextFrame()
 	for (auto i = children.begin(); i != children.end(); i++)
 	{
 		delete (*i);
+	}
+}
+
+void TextFrame::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
 	}
 }
 
@@ -305,7 +316,6 @@ void TextFrame::recalculatePositions()
 
 	for (int i = 0; i < (int) children.size(); i++)
 	{
-		ofLog() << "Symbol is: " << children[i]->getText();
 		bool newLine = children[i]->getText() == "\n";
 		bool invisible = children[i]->getWidth() <= 0;
 
@@ -402,6 +412,7 @@ void TextFrame::setBackground()
 		auto tmpIt = it;
 		BackgroundDecorator* bg = new BackgroundDecorator(tmpIt);
 		BorderDecorator* bd = new BorderDecorator(bg);
+		bd->setLayer(layer);
 		tmpVec.push_back(bd);
 	}
 

@@ -1,9 +1,12 @@
 #pragma once
 
+#include <algorithm>
+
 #include "Symbol.h"
 #include "TextFrame.h"
 #include "BackgroundDecorator.h"
 #include "Level.h"
+#include "Word.h"
 
 namespace moth
 {
@@ -63,6 +66,8 @@ public:
 
 	void setWidth(float _width);
 
+	void setLayer(LAYER _layer);
+
 	/* not inherited */
 
 	void clearLayout();
@@ -79,8 +84,12 @@ public:
 	Level* addBar(unsigned int _p, std::string _str, FONT_SIZE _sz,
 			float _height);
 
+	void setCorruption(int _corruption);
+
 protected:
 	void readjustHeights();
+
+	void addWords(std::vector<Symbol*> _words);
 
 	std::vector<float> percentages;
 
@@ -90,6 +99,10 @@ protected:
 	unsigned int index;
 
 	std::map<unsigned int, Symbol*> containers;
+
+	std::vector<Symbol*> words;
+
+	int corruption;
 };
 
 } /* namespace moth */

@@ -26,6 +26,8 @@ Level::Level()
 
 	colCurrent = ofColor(255, 255, 255);
 
+	layer = LAYER_DEFAULT;
+
 	readjustDimensions();
 }
 
@@ -43,21 +45,33 @@ void Level::setValue(float _value)
 	barRealHeight = barMaxHeight * (barPercent / 100);
 }
 
+void Level::setLayer(LAYER _layer)
+{
+	layer = _layer;
+	for(auto it : children)
+	{
+		it ->setLayer(layer);
+	}
+}
+
 void Level::display(LAYER _layer)
 {
 
-	ofSetColor(colCurrent);
-
-	ofNoFill();
-	ofDrawRectangle(barPos.x, barPos.y, barWidth, barMaxHeight);
-	ofFill();
-	ofDrawRectangle(barPos.x + 10,
-			barPos.y + 10 + (barMaxHeight - barRealHeight), barWidth - 20,
-			barRealHeight - 20);
-
-	for (auto it : children)
+	if (layer == _layer)
 	{
-		it->display(_layer);
+		ofSetColor(colCurrent);
+
+		ofNoFill();
+		ofDrawRectangle(barPos.x, barPos.y, barWidth, barMaxHeight);
+		ofFill();
+		ofDrawRectangle(barPos.x + 10,
+				barPos.y + 10 + (barMaxHeight - barRealHeight), barWidth - 20,
+				barRealHeight - 20);
+
+		for (auto it : children)
+		{
+			it->display(_layer);
+		}
 	}
 }
 

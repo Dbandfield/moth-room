@@ -47,6 +47,10 @@ DisplayControl::DisplayControl() :
 	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUNGER, levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
 	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUMANITY, levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
 
+	levels->setLayer(LAYER_PIXELLATED);
+	main->setLayer(LAYER_JITTER);
+	buttons->setLayer(LAYER_PIXELLATED);
+
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_LEVELS, levels));
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_MAIN, main));
 	areas.insert(std::pair<DISPLAY_AREA, DisplayArea*>(AREA_BUTTONS, buttons));
@@ -58,6 +62,11 @@ DisplayControl::~DisplayControl()
 {
 	ofRemoveListener(ofEvents().keyReleased, this,
 			&DisplayControl::onKeyPressed);
+
+	for(auto it : areas)
+	{
+		delete it.second;
+	}
 }
 
 void DisplayControl::setLevel(LEVEL _level, float _value)
@@ -82,29 +91,12 @@ void DisplayControl::setLayout(DISPLAY_AREA _area, std::vector<float> _layout)
 	areas[_area]->setLayout(_layout);
 }
 
-void DisplayControl::displayMain()
+void DisplayControl::display(LAYER _layer)
 {
-	//ofBackground(backgroundColour);
-	ofSetColor(textColour);
-
-	areas[AREA_MAIN]->display();
-}
-
-void DisplayControl::displayLevels()
-{
-	//ofBackground(backgroundColour);
-	ofSetColor(textColour);
-
-	areas[AREA_LEVELS]->display();
-}
-
-void DisplayControl::displayButtons()
-{
-	//ofBackground(backgroundColour);
-	ofSetColor(textColour);
-
-	areas[AREA_BUTTONS]->display();
-}
+	for (auto it : areas)
+	{
+		it.second->display(_layer);
+	}}
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
@@ -133,6 +125,14 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 
 		fontSmall = _f;
 		break;
+	}
+}
+
+void DisplayControl::setCorruption(int _corruption)
+{
+	for(auto it : areas)
+	{
+		it.second->setCorruption(_corruption);
 	}
 }
 

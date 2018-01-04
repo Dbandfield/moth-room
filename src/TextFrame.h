@@ -53,6 +53,8 @@ public:
 
 	void setWidth(float _w);
 
+	void setLayer(LAYER _layer);
+
 	/* --- End inherited --- */
 
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
