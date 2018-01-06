@@ -248,8 +248,6 @@ void DataLoader::loadLocations()
 			{
 				for (int j = 0; j < numNodes; j++)
 				{
-					ofLog(OF_LOG_VERBOSE)
-							<< "[DataLoader] Loading node number: " << j;
 
 					locationsXml.pushTag("node", j);
 					std::stringstream nodeStream;
@@ -264,8 +262,6 @@ void DataLoader::loadLocations()
 
 					unsigned int numSecrets = locationsXml.getNumTags("is-secret");
 
-					ofLog(OF_LOG_VERBOSE) << "[DataLoader] Node Info, Text: "
-							<< nodeTxt << " ID: " << nodeId;
 
 					StoryNode* node = new StoryNode(nodeId, nodeTxt, numSecrets==1);
 
@@ -273,9 +269,6 @@ void DataLoader::loadLocations()
 
 					for (int k = 0; k < numResponses; k++)
 					{
-						ofLog(OF_LOG_VERBOSE)
-								<< "[DataLoader] Loading response number: "
-								<< k;
 
 						locationsXml.pushTag("response", k);
 
@@ -287,9 +280,6 @@ void DataLoader::loadLocations()
 						resStream << locationsXml.getValue("id", "0");
 						resStream >> resId;
 
-						ofLog(OF_LOG_VERBOSE)
-								<< "[DataLoader] Response info, Text: "
-								<< resTxt << " ID: " << resId;
 
 						node->addResponse(resId, resTxt);
 						locationsXml.popTag();

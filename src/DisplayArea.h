@@ -68,6 +68,10 @@ public:
 
 	void setLayer(LAYER _layer);
 
+	void setBackground(){};
+
+
+
 	/* not inherited */
 
 	void clearLayout();
@@ -78,9 +82,12 @@ public:
 
 	TextFrame* addText(unsigned int _p, std::string,
 			FONT_SIZE _sz = FONT_SMALL);
+
 	TextFrame* addOption(unsigned int _p, std::string, GameControl* _gc,
 			void (GameControl::*_f)(unsigned int), unsigned int _arg,
-			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false, bool _background = false);
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+			bool _background = false, FLOW _flow = FLOW_VERTICAL);
+
 	Level* addBar(unsigned int _p, std::string _str, FONT_SIZE _sz,
 			float _height);
 

@@ -14,6 +14,7 @@ void ofApp::setup()
 	pixelate.load("shaders/pixelate");
 	vignette.load("shaders/vignette");
 	corrupt.load("shaders/corrupt");
+	jitter.load("shaders/jitter");
 
 	fontsTransferred = false;
 	locationsTransferred = false;
@@ -36,6 +37,7 @@ void ofApp::setup()
 	bufPixelate.allocate(1366, 768);
 	bufVignette.allocate(1366, 768);
 	bufCorrupt.allocate(1366, 768);
+	bufJitter.allocate(1366, 768);
 
 	distort = 0.f;
 	dividor = 0;
@@ -104,15 +106,20 @@ void ofApp::draw()
 	// PIXELATE
 
 	bufPixelate.begin();
-	ofBackground(backgroundColour);
+    ofClear(255,255,255, 0);
 
-	if (displayControl != nullptr)
-		displayControl->display(moth::LAYER_JITTER);
 	if (displayControl != nullptr)
 		displayControl->display(moth::LAYER_PIXELLATED);
 
-
 	bufPixelate.end();
+
+	// JITTER
+
+	bufJitter.begin();
+    ofClear(255,255,255, 0);
+	if (displayControl != nullptr)
+		displayControl->display(moth::LAYER_JITTER);
+	bufJitter.end();
 
 	// CORRUPT
 	bufCorrupt.begin();
@@ -123,9 +130,14 @@ void ofApp::draw()
 
 	// VIGNETTE
 	bufVignette.begin();
+	ofBackground(backgroundColour);
+
+	jitter.begin();
+	jitter.setUniform1f("distort", distort);
+	bufJitter.draw(0, 0);
+	jitter.end();
 
 	pixelate.begin();
-	pixelate.setUniform1f("distort", distort);
 	bufPixelate.draw(0, 0);
 	pixelate.end();
 

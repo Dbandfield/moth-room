@@ -9,6 +9,8 @@
 #include "TextFrame.h"
 #include "enums.h"
 #include "Symbol.h"
+#include "BorderDecorator.h"
+
 namespace moth
 {
 
@@ -49,6 +51,8 @@ public:
 
 	void setLayer(LAYER _layer);
 
+
+
 	/* Not inherited */
 
 	void setPosition(float _x, float _y);
@@ -58,10 +62,18 @@ public:
 
 	std::vector<Symbol*> getSymbols();
 
+	void setBackground();
+	void setMargin(MARGIN, float _amt);
+
 
 protected:
 
 	FLOW flow;
+
+	float marginLeft;
+	float marginRight;
+	float marginTop;
+	float marginBottom;
 
 };
 

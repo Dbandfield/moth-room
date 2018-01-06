@@ -25,9 +25,11 @@ protected:
 	moth::DisplayControl *displayControl;
 	moth::DataLoader *dataLoader;
 
+	ofShader jitter;
 	ofShader pixelate;
 	ofShader vignette;
 	ofShader corrupt;
+	ofFbo bufJitter;
 	ofFbo bufPixelate;
 	ofFbo bufVignette;
 	ofFbo bufCorrupt;

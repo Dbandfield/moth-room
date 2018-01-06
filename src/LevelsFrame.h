@@ -44,6 +44,8 @@ public:
 
 	void setHeight(float _height);
 
+	void setBackground(){};
+
 protected:
 
 };

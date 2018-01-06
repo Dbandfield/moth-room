@@ -25,10 +25,10 @@ DisplayControl::DisplayControl() :
 
 	float screenWidth = ofGetWidth();
 	float screenHeight = ofGetHeight();
-	float levelsWidth = 150;
+	float levelsWidth = 180;
 	float levelsHeight = screenHeight;
 	float buttonWidth = screenWidth - levelsWidth;
-	float buttonHeight = 200;
+	float buttonHeight = 150;
 	float mainWidth = screenWidth - levelsWidth;
 	float mainHeight = screenHeight - buttonHeight;
 
@@ -41,8 +41,7 @@ DisplayControl::DisplayControl() :
 			buttonHeight);
 
 	std::vector<float> layout;
-	layout.push_back(50);
-	layout.push_back(50);
+	layout.push_back(100);
 	levels->setLayout(layout);
 	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUNGER, levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
 	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUMANITY, levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
@@ -161,10 +160,10 @@ void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
 
 void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 		std::string _str, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background)
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
 {
 	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
-			_sz, _isSecret, _background);
+			_sz, _isSecret, _background, _flow);
 
 	options.push_back(fr);
 
@@ -211,6 +210,7 @@ void DisplayControl::onArrow(int _key)
 	switch (_key)
 	{
 	case OF_KEY_UP:
+	case OF_KEY_LEFT:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow Pressed up";
 
 		selected--;
@@ -227,6 +227,7 @@ void DisplayControl::onArrow(int _key)
 		break;
 
 	case OF_KEY_DOWN:
+	case OF_KEY_RIGHT:
 		ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Arrow down Pressed";
 
 		selected++;

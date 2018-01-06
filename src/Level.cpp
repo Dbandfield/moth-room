@@ -62,6 +62,7 @@ void Level::display(LAYER _layer)
 		ofSetColor(colCurrent);
 
 		ofNoFill();
+		ofSetLineWidth(2);
 		ofDrawRectangle(barPos.x, barPos.y, barWidth, barMaxHeight);
 		ofFill();
 		ofDrawRectangle(barPos.x + 10,
