@@ -40,7 +40,7 @@ void BackgroundDecorator::display(LAYER _layer)
 		{
 			ofFill();
 			ofSetColor(ofColor(255, 255, 255));
-			ofDrawRectangle(position.x, position.y - decorated->getHeight(),
+			ofDrawRectangle(position.x, position.y,// - decorated->getHeight(),
 					width, height);
 		}
 		decorated->display(_layer);

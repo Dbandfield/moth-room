@@ -40,12 +40,12 @@ DisplayArea::DisplayArea(ofPoint _pos, float _width, float _height)
 
 DisplayArea::~DisplayArea()
 {
-	for(auto it : children)
+	for (auto it : children)
 	{
 		delete it;
 	}
 
-	for(auto it : containers)
+	for (auto it : containers)
 	{
 		delete it.second;
 	}
@@ -54,7 +54,7 @@ DisplayArea::~DisplayArea()
 void DisplayArea::setLayer(LAYER _layer)
 {
 	layer = _layer;
-	for(auto it : containers)
+	for (auto it : containers)
 	{
 		it.second->setLayer(layer);
 	}
@@ -127,7 +127,6 @@ void DisplayArea::setText(std::string _str)
 	con->setText(_str);
 	con->setLayer(layer);
 	containers.insert(std::pair<unsigned int, Symbol*>(index, con));
-
 
 	readjustHeights();
 }
@@ -263,7 +262,6 @@ bool DisplayArea::setIndex(unsigned int _index)
 
 void DisplayArea::readjustHeights()
 {
-	ofLog(OF_LOG_VERBOSE) << "[DISPLAY_AREA] - Readjusting Heights";
 	std::vector<float> rowMaxHeight;
 	float h = 0;
 	unsigned int thisRow = 0;
@@ -340,12 +338,13 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 	if (containers.find(_p) == containers.end())
 	{
-
-		containers.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer(FLOW_VERTICAL)));
-		containers[_p]->setLayer(layer);
-
+		TextContainer* cont = new TextContainer(FLOW_VERTICAL);
+		cont->setLayer(layer);
+		cont->setMargin(MARGIN_TOP, 32);
+		cont->setMargin(MARGIN_RIGHT, 32);
+		cont->setMargin(MARGIN_LEFT, 32);
+		cont->setMargin(MARGIN_BOTTOM, 32);
+		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
 
@@ -353,10 +352,10 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
-	frame->setMargin(MARGIN_TOP, 64);
-	frame->setMargin(MARGIN_RIGHT, 64);
-	frame->setMargin(MARGIN_LEFT, 64);
-	frame->setMargin(MARGIN_BOTTOM, 0);
+	frame->setMargin(MARGIN_TOP, 16);
+	frame->setMargin(MARGIN_RIGHT, 32);
+	frame->setMargin(MARGIN_LEFT, 32);
+	frame->setMargin(MARGIN_BOTTOM, 16);
 	frame->setLayer(layer);
 
 	auto vec = frame->getChildren();
@@ -377,7 +376,8 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 		GameControl* _gc, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background)
+		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background,
+		FLOW _flow)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
@@ -387,34 +387,43 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 	if (containers.find(_p) == containers.end())
 	{
-
-		containers.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer(FLOW_VERTICAL)));
-		containers[_p]->setLayer(layer);
-
+		TextContainer* cont = new TextContainer(_flow);
+		cont->setLayer(layer);
+		cont->setMargin(MARGIN_TOP, 32);
+		cont->setMargin(MARGIN_RIGHT, 32);
+		cont->setMargin(MARGIN_LEFT, 32);
+		cont->setMargin(MARGIN_BOTTOM, 32);
+		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
 
 	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
 
-
 	frame->setText(_str);
 	frame->setFontSize(_sz);
-	frame->setMargin(MARGIN_TOP, 64);
-	frame->setMargin(MARGIN_RIGHT, 64);
-	frame->setMargin(MARGIN_LEFT, 64);
-	frame->setMargin(MARGIN_BOTTOM, 0);
+
+	if (_background)
+	{
+		frame->setMargin(MARGIN_TOP, 0);
+		frame->setMargin(MARGIN_RIGHT, 16);
+		frame->setMargin(MARGIN_LEFT, 16);
+		frame->setMargin(MARGIN_BOTTOM, 0);
+		frame->setColour(ofColor(0,0,0));
+	}
+	else
+	{
+		frame->setMargin(MARGIN_TOP, 16);
+		frame->setMargin(MARGIN_RIGHT, 32);
+		frame->setMargin(MARGIN_LEFT, 32);
+		frame->setMargin(MARGIN_BOTTOM, 16);
+	}
 	frame->setCallback(_gc, _f, _arg);
 	frame->setLayer(layer);
 
-	if(_background)
-	{
-		frame->setBackground();
-	}
+	auto vec = frame->getChildren();
+	addWords(vec);
 
 	containers[_p]->addChild(frame);
-
 
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);
@@ -423,21 +432,29 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	if (fontSmall != nullptr)
 		setFont(FONT_SMALL, fontSmall);
 
+	if (_background)
+	{
+		containers[_p]->setBackground();
+	}
+
 	readjustHeights();
 
 	return frame;
 }
 
-Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, float _height)
+Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz,
+		float _height)
 {
 	if (containers.find(_p) == containers.end())
 	{
 
-		containers.insert(
-				std::pair<unsigned int, TextContainer*>(_p,
-						new TextContainer(FLOW_HORIZONTAL)));
-		containers[_p]->setLayer(layer);
-
+		TextContainer* cont = new TextContainer(FLOW_HORIZONTAL);
+		cont->setLayer(layer);
+		cont->setMargin(MARGIN_TOP, 0);
+		cont->setMargin(MARGIN_RIGHT, 0);
+		cont->setMargin(MARGIN_LEFT, 0);
+		cont->setMargin(MARGIN_BOTTOM, 0);
+		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
 
@@ -455,8 +472,8 @@ Level* DisplayArea::addBar(unsigned int _p, std::string _str, FONT_SIZE _sz, flo
 //	frame->setText(_str);
 //	frame->setFontSize(_sz);
 //	frame->setMargin(MARGIN_TOP, 8);
-//	frame->setMargin(MARGIN_RIGHT, 8);
-//	frame->setMargin(MARGIN_LEFT, 8);
+//	frame->setMargin(MARGIN_RIGHT, 32);
+//	frame->setMargin(MARGIN_LEFT, 32);
 //	frame->setMargin(MARGIN_BOTTOM, 8);
 //	level->addChild(frame);
 	containers[_p]->addChild(level);
@@ -470,13 +487,11 @@ void DisplayArea::addWords(std::vector<Symbol*> _words)
 {
 	words.insert(words.end(), _words.begin(), _words.end());
 	std::random_shuffle(words.begin(), words.end());
-	for(int i = 0; i < words.size(); i ++)
+	for (int i = 0; i < words.size(); i++)
 	{
 		std::string txt = words[i]->getText();
-		ofLog() << " Word is: " << txt << "Corruption is: " << corruption;
 		if (i < corruption)
 		{
-			ofLog() << txt << " is now corrupted";
 			words[i]->setLayer(LAYER_DISTORTED);
 		}
 		else

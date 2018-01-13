@@ -163,63 +163,7 @@ couldn't. I guess moth wings aren't strong enough for two." </text><id> 5 </id>
 
 </location>
 
-<!--- LOCATION THREE ---> <location> <id> 2 </id> <description> A Musical,
-Anxious Moth </description> <link> 0 </link>
-
-<node> <text> You come across a moth awkwardly flapping it's wings along to some
-unheard beat </text> <id> 0 </id>
-
-  <response> <text> "Hello, can you hear music?" </text> <id> 1 </id>
-  </response>
-
-  <response> <text> [Say Nothing, and flap your wings too]</text> <id> 2 </id>
-  </response>
-
-</node>
-
-<node> <text> "Oh hello. No. I can't, but there was a song I knew ... once ...
-If I could only remember how it went, i would be so happy!" </text> <id> 1 </id>
-
-  <response> <text> "Fret not! I shall find you this mystery song!" </text> <id>
-  3 </id> </response>
-
-  <response> <text> "I can't remember music either." </text> <id> 3 </id>
-  </response>
-
-</node>
-
-<node> <text> After a while the moth notices you, and gets excited: "You know
-the song too! Do you know its name?! I have spent weeks trying to " remember it ... "
-</text> <id> 2 </id>
-
-  <response> <text> "I am afraid not ..." </text> <id> 4 </id> </response>
-
-  <response> <text> "Yes! I do!" </text> <id> 5 </id> </response>
-
-</node>
-
-<node> <text> The moth goes back to flapping its wings. </text> <id> 3 </id>
-</node>
-
-<node> <text> "Oh... I hope some day I find it ..." </text> <id> 4 </id>
-
-  <response> <text> "Fret not! I shall find you this mystery song!" </text> <id>
-  3 </id> </response>
-
-  <response> <text> "I can't remember music either." </text> <id> 3 </id>
-  </response>
-
-</node>
-
-<node> <text> "You do ?! What is it ?!" </text> <id> 5 </id>
-
-  <response> <text> "I Lied." </text> <id> 4 </id> </response>
-
-</node>
-
-</location>
-
-<!--- LOCATION FOUR---> <location> <id> 3 </id> <description>  The beautiful moth
+<!--- LOCATION THREE---> <location> <id> 2 </id> <description>  The beautiful moth
 with no mouth. </description>
 <pos-secret-response> "Perfect! We can pull her out with the greatest of ease!"
     The moth flaps over to the nearby clock and squeezes behind to fetch the thread.
@@ -238,6 +182,101 @@ with no mouth. </description>
 <node><text> You dive down into the darkness, trepidation fading quickly
 as your wing muscles whir into motion. You land haphazardly beside a moth with
 huge, bright green wings.  </text><id> 0</id>
+
+  <response><text> "Hello. You're much bigger than the other moths" </text><id> 1 </id></response>
+</node>
+
+<node>
+<text> The moth nods in response but says nothing. </text><id> 1</id>
+<response><text> "Why don't you talk?" </text><id> 2
+</id></response>
+<response><text> Nod back </text><id>2</id></response>
+</node>
+
+<node><text> Again the moth says nothing, but this time shakes its head. Another moth
+emerges from the shadows and says, sadly: "He is a Luna Moth. They don't have mouths".</text><id> 2</id>
+<response><text> "So we are all different types of moths?" </text><id> 3 </id></response>
+<response><text> "How does he eat?" </text><id> 4 </id></response>
+<response><text> "Can you understand him?" </text><id> 5 </id></response>
+
+</node>
+
+<node><text> "Yes, I think. I was never a moth expert. Back before I changed
+    I sold pottery."
+</text><id> 3 </id>
+
+<response><text> "Do you know what type of moth I am?" </text><id> 6</id></response>
+<response><text> "What kind of pottery?" </text><id> 7</id></response>
+<response><text> Ask another question. </text><id> 2</id></response>
+
+</node>
+
+<node><text> The moth leans forwards and squints at you, as much as a moth can
+    squint. "I .. er .. a brown moth? I guess. "
+</text><id> 6 </id>
+
+<response><text> "Fantastic" </text><id> 2 </id></response>
+
+</node>
+
+<node><text> "My memory is hazy. I think it was art. Although, I'm not sure what
+    art is now. Maybe they were just pots."
+</text><id> 7 </id>
+
+<response><text> "I'm sure they weren't just pots." </text><id> 2 </id></response>
+
+</node>
+
+<node><text> He takes you to one side and whispers in a mothy whisper: "He can't eat.
+    He will die in a few days."&#10;&#10;A pause.&#10;&#10;
+    "It's the same for a lot of the big moths. It's sad,
+    but at least he doesn't have to make the difficult choice we have. Every bite
+    of the fruit takes away a bit more of our humanity ... " </text><id> 4 </id>
+<response><text> I am glad to have the choice of eating. </text><id> 8 </id></response>
+<response><text> Yes, choice is stressful. </text><id> 9 </id></response>
+<response><text> What is so great about humanity? </text><id> 10 </id></response>
+ </node>
+
+ <node><text> "Perhaps I'm taking my freedom for granted" </text><id> 8 </id>
+ <response><text> Ask another question </text><id> 2 </id></response>
+  </node>
+
+  <node><text> "mmm ... " </text><id> 9 </id>
+  <response><text> Ask another question </text><id> 2 </id></response>
+
+   </node>
+
+   <node><text> "What is so great about moths ?!" The moth says, indignantly. </text><id> 10 </id>
+   <response><text> Ask another question </text><id> 2 </id></response>
+
+    </node>
+
+<node><text> "There's more to communicating than just language. Just like people,
+    moths have body language too. Can you not see how sad he looks?". Try as
+    you might, you fail to see any emotion in the dying moth. </text><id> 5 </id>
+<response><text> Ask another question </text><id> 2 </id></response> </node>
+
+</location>
+
+
+<!--- LOCATION FOUR---> <location> <id> 3 </id> <description>  The Shy Moth Under The Floorboards  </description>
+<pos-secret-response> "Perfect! We can pull her out with the greatest of ease!"
+    The moth flaps over to the nearby clock and squeezes behind to fetch the thread.
+    He emerges covered in thick, grey dust. Together, you lower it into the lamp
+    and the trapped moth grabs on, towing the letter behind her. "Thank you
+    stranger-moth!" she exclaims. You turn to examine the note, but can only make out the
+    following: " ... because it is magic. They will be drawn to eat it, but it must
+    be their choice to abandon ... humanity ..."
+ </pos-secret-response>
+<neg-secret-response> What? How would that help? </neg-secret-response>
+<expected-secret>1</expected-secret>
+<secret> <text> The fruit is magic! </text>
+    <id> 2 </id></secret>
+<link> 1</link>
+
+<node><text> You see a hear a flutter from a crack between two floorboards. You
+easily fit your body through and land dustily on an ancient pipe just underneath.
+Two antennae bob up and down from behind a stack of letters. </text><id> 0</id>
 
   <response><text> "Hello. You're much bigger than the other moths" </text><id> 1 </id></response>
 </node>

@@ -40,6 +40,10 @@ public:
 
 	void setLayer(LAYER _layer);
 
+	void setBackground(){};
+
+
+
 protected:
 
 	void calculateSize();

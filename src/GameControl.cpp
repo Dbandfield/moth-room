@@ -133,7 +133,7 @@ void GameControl::eat(unsigned int _arg)
 					"human language ...";
 
 	displayControl->setLayout(AREA_MAIN, layout);
-	displayControl->addText(AREA_MAIN, 0, txt, FONT_MEDIUM);
+	displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
 
 	displayControl->addOption(AREA_MAIN, 1, "return", &GameControl::advanceNode,
 			currentNodeID, FONT_SMALL);
@@ -287,18 +287,16 @@ void GameControl::beginGame(unsigned int _arg)
 void GameControl::setButtons()
 {
 	std::vector<float> layoutButtons;
-	layoutButtons.push_back(25.f);
-	layoutButtons.push_back(25.f);
-	layoutButtons.push_back(25.f);
-	layoutButtons.push_back(25.f);
+	layoutButtons.push_back(100.f);
 	displayControl->setLayout(AREA_BUTTONS, layoutButtons);
-	displayControl->addOption(AREA_BUTTONS, 0, "Fly",
+	displayControl->addOption(AREA_BUTTONS, 0, "Eat", &GameControl::eat, 0,
+			FONT_SMALL, false, true, FLOW_HORIZONTAL);
+	displayControl->addOption(AREA_BUTTONS, 0, "Fly somewhere",
 			&GameControl::listLocations, currentLocation->getId(), FONT_SMALL,
-			false, true);
-	displayControl->addOption(AREA_BUTTONS, 1, "Secret",
-			&GameControl::listSecrets, 0, FONT_SMALL, false, true);
-	displayControl->addOption(AREA_BUTTONS, 2, "Eat", &GameControl::eat, 0,
-			FONT_SMALL, false, true);
+			false, true, FLOW_HORIZONTAL);
+	displayControl->addOption(AREA_BUTTONS, 0, "Reveal a secret",
+			&GameControl::listSecrets, 0, FONT_SMALL, false, true, FLOW_HORIZONTAL);
+
 }
 
 void GameControl::locationsReady()

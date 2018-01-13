@@ -40,7 +40,8 @@ public:
 	void clearLayout(DISPLAY_AREA _area);
 	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
 			void (GameControl::*_f)(unsigned int), unsigned int _arg,
-			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false, bool _background=false);
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+			bool _background = false, FLOW _flow=FLOW_VERTICAL);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);

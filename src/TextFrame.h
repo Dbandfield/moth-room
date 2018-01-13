@@ -55,6 +55,9 @@ public:
 
 	void setLayer(LAYER _layer);
 
+	void setBackground();
+
+
 	/* --- End inherited --- */
 
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
@@ -65,13 +68,15 @@ public:
 	void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
 
-	void setBackground();
+
 
 protected:
 	void calculateSize();
 	std::vector<std::string> split(const std::string &s, char delimiter);
 	void recalculatePositions();
 	Option* opt;
+
+	std::string selectMarker;
 
 	float selectedMod; // to modify colour, when selected
 	ofColor colStatic;
@@ -80,6 +85,8 @@ protected:
 
 	bool isOption;
 	bool isSecret;
+
+	bool smallWord;
 
 	ofPoint adjustedPosition;
 
@@ -92,7 +99,7 @@ protected:
 	/* Multiply letter height by this to get line height.
 	 * letter height is a bit too small for lines
 	 */
-	const float LINE_HEIGHT_ADJUST = 1.4;
+	const float LINE_HEIGHT_ADJUST = 1.6;
 
 
 

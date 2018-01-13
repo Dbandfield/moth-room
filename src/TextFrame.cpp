@@ -16,9 +16,12 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
 
+	selectMarker = "+ ";
+
 	fontSmall = nullptr;
 	fontMedium = nullptr;
 	fontLarge = nullptr;
+	currentFont = nullptr;
 
 	isOption = _isOption;
 	isSecret = _isSecret;
@@ -36,10 +39,10 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	adjustedPosition = position;
 	width = _width;
 	height = _height;
-	marginLeft = marginTop = marginRight = marginBottom = 64;
+	marginLeft = marginTop = marginRight = marginBottom = 32;
 	letterSpacing = 4;
 
-	selectedMod = 100;
+	selectedMod = 150;
 	colStatic.setHsb(0, 0, 150);
 	colIsSecret.setHsb(40, 200, 200);
 
@@ -47,6 +50,8 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	colCurrent = colBase;
 
 	layer = LAYER_DEFAULT;
+
+	smallWord = false;
 
 }
 
@@ -61,9 +66,9 @@ TextFrame::~TextFrame()
 void TextFrame::setLayer(LAYER _layer)
 {
 	layer = _layer;
-	for(auto it : children)
+	for (auto it : children)
 	{
-		it ->setLayer(layer);
+		it->setLayer(layer);
 	}
 }
 
@@ -90,9 +95,16 @@ void TextFrame::setSelected(bool _sel)
 		colBase.getHsb(h, s, b);
 		b = std::min(255.f, float(b + selectedMod));
 		colCurrent.setHsb(h, s, b);
+
+		size_t p = text.find(selectMarker);
+		if (p == std::string::npos)
+			setText(std::string(selectMarker + text));
 	}
 	else
 	{
+		size_t p = text.find(selectMarker);
+		if (p != std::string::npos)
+			setText(text.replace(p, selectMarker.size(), ""));
 		colCurrent = colBase;
 	}
 
@@ -160,6 +172,33 @@ void TextFrame::setPosition(ofPoint _pt)
 void TextFrame::setWidth(float _w)
 {
 	width = _w;
+
+	float w = 0;
+
+	for (auto it : children)
+	{
+		float childWidth = it->getWidth();
+		if (childWidth > 0)
+		{
+			w += childWidth;
+		}
+
+		w += letterSpacing;
+	}
+
+	if (w > 0)
+	{
+		if (w < width)
+		{
+			width = w + marginLeft + marginRight;
+			smallWord = true;
+		}
+		else
+		{
+			smallWord = false;
+		}
+	}
+
 	recalculatePositions();
 }
 
@@ -229,15 +268,18 @@ void TextFrame::setText(std::string _str)
 {
 	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting text: " << _str;
 
+	text = _str;
+
 	children.clear();
 
 	auto wrds = split(_str, ' ');
 
 	for (size_t i = 0; i < wrds.size(); i++)
 	{
-		//ofLog() << "[TEXT_FRAME] - Split word is: " << wrds[i];
+		ofLog() << "[TEXT_FRAME] - Split word is: " << wrds[i];
 		children.push_back(new Word(colStatic));
 		children.back()->setText(wrds[i]);
+		children.back()->setLayer(layer);
 	}
 
 	if (fontLarge != nullptr)
@@ -254,7 +296,9 @@ void TextFrame::setText(std::string _str)
 
 void TextFrame::setColour(ofColor _col)
 {
-	colCurrent = _col;
+	colStatic = _col;
+	colBase = isSecret ? colIsSecret : colStatic;
+	colCurrent = colBase;
 }
 
 void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
@@ -279,6 +323,8 @@ void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 		break;
 	}
 
+	currentFont = fontSmall;
+
 	recalculatePositions();
 }
 
@@ -288,6 +334,19 @@ void TextFrame::setFontSize(FONT_SIZE _sz)
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		children[i]->setFontSize(_sz);
+	}
+
+	switch (_sz)
+	{
+	case FONT_LARGE:
+		currentFont = fontLarge;
+		break;
+	case FONT_MEDIUM:
+		currentFont = fontMedium;
+		break;
+	case FONT_SMALL:
+		currentFont = fontSmall;
+		break;
 	}
 
 	recalculatePositions();
@@ -301,9 +360,17 @@ void TextFrame::recalculatePositions()
 	float innerWidth = width - (marginLeft + marginRight);
 	if (children.size() > 0)
 	{
-		adjustedPosition.y += children[0]->getHeight() * LINE_HEIGHT_ADJUST;
-		letterHeight = children[0]->getHeight() * LINE_HEIGHT_ADJUST;
-		letterSpacing = children[0]->getSpacing();
+		letterHeight =
+				currentFont != nullptr ?
+						currentFont->stringHeight("P") * LINE_HEIGHT_ADJUST:
+						children.back()->getHeight() * LINE_HEIGHT_ADJUST;
+
+		adjustedPosition.y += letterHeight;
+
+		letterSpacing =
+				currentFont != nullptr ?
+						currentFont->stringWidth("P") :
+						children.back()->getSpacing();
 	}
 
 	ofPoint thisPos = adjustedPosition;
@@ -316,42 +383,41 @@ void TextFrame::recalculatePositions()
 
 	for (int i = 0; i < (int) children.size(); i++)
 	{
+
 		bool newLine = children[i]->getText() == "\n";
 		bool invisible = children[i]->getWidth() <= 0;
 
-		if (newLine)
-		{
-			ofLog() << "is newl ine";
-		}
-
 		w += (children[i]->getWidth() + letterSpacing); // + letterSpacing;
-		if (w >= innerWidth || newLine)
+		if (!smallWord)
 		{
-			w = invisible ? 0 : children[i]->getWidth() * 1.2;
-
-			size_t ins = i;
-
-			if (!newLine)
+			if (w >= innerWidth || newLine)
 			{
-				for (size_t j = i; j > start; j--)
+				w = invisible ? 0 : children[i]->getWidth() * 1.2;
+
+				size_t ins = i;
+
+				if (!newLine)
 				{
-					if (children[j]->getText() == " ")
+					for (size_t j = i; j > start; j--)
 					{
-						ins = std::min(j + 1, children.size() - 1); // make sure doesnt go beyond bounds
-						break;
+						if (children[j]->getText() == " ")
+						{
+							ins = std::min(j + 1, children.size() - 1); // make sure doesnt go beyond bounds
+							break;
+						}
 					}
 				}
+
+				i = ins;
+
+				thisPos.y += letterHeight;
+				height += letterHeight;
+				thisPos.x = adjustedPosition.x + marginLeft;
+
+				start = i;
+				lineBeginning = true;
+
 			}
-
-			i = ins;
-
-			thisPos.y += letterHeight;
-			height += letterHeight;
-			thisPos.x = adjustedPosition.x + marginLeft;
-
-			start = i;
-			lineBeginning = true;
-
 		}
 
 		if (!lineBeginning)
@@ -370,6 +436,7 @@ void TextFrame::recalculatePositions()
 		children[i]->setPosition(thisPos);
 
 	}
+
 	height = height + letterHeight + marginTop + marginBottom;
 
 }
@@ -391,7 +458,7 @@ std::string TextFrame::getText()
 
 float TextFrame::getSpacing()
 {
-	return 0.f;
+	return letterSpacing * 10;
 }
 
 void TextFrame::calculateSize()
@@ -407,7 +474,7 @@ void TextFrame::addChild(Symbol* _symbol)
 void TextFrame::setBackground()
 {
 	std::vector<Symbol*> tmpVec;
-	for(auto it : children)
+	for (auto it : children)
 	{
 		auto tmpIt = it;
 		BackgroundDecorator* bg = new BackgroundDecorator(tmpIt);

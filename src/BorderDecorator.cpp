@@ -52,9 +52,11 @@ void BorderDecorator::display(LAYER _layer)
 		{
 			ofSetColor(ofColor(255, 255, 255));
 			ofNoFill();
-			ofDrawRectangle(position.x, position.y - decorated->getHeight(),
+			ofSetLineWidth(2);
+			ofDrawRectangle(position.x, position.y,// - decorated->getHeight(),
 					width, height);
 		}
+
 		decorated->display(_layer);
 	}
 }
@@ -217,10 +219,10 @@ void BorderDecorator::getData()
 {
 	if (decorated != nullptr)
 	{
-		position = ofPoint(decorated->getPosition().x - 15,
-				decorated->getPosition().y - 15);
-		width = decorated->getWidth() + 30;
-		height = decorated->getHeight() + 30;
+		position = ofPoint(decorated->getPosition().x - 20,
+				decorated->getPosition().y - 20);
+		width = decorated->getWidth() + 40;
+		height = decorated->getHeight() + 40;
 
 	}
 }

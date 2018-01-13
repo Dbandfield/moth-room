@@ -48,6 +48,9 @@ public:
 
 	virtual void setLayer(LAYER _layer) = 0;
 
+	virtual void setBackground() = 0;
+
+
 protected:
 
 	ofColor colCurrent;
