@@ -420,6 +420,9 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	frame->setCallback(_gc, _f, _arg);
 	frame->setLayer(layer);
 
+	auto vec = frame->getChildren();
+	addWords(vec);
+
 	containers[_p]->addChild(frame);
 
 	if (fontLarge != nullptr)
@@ -487,10 +490,8 @@ void DisplayArea::addWords(std::vector<Symbol*> _words)
 	for (int i = 0; i < words.size(); i++)
 	{
 		std::string txt = words[i]->getText();
-		ofLog() << " Word is: " << txt << "Corruption is: " << corruption;
 		if (i < corruption)
 		{
-			ofLog() << txt << " is now corrupted";
 			words[i]->setLayer(LAYER_DISTORTED);
 		}
 		else

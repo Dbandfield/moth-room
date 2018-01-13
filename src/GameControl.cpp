@@ -133,7 +133,7 @@ void GameControl::eat(unsigned int _arg)
 					"human language ...";
 
 	displayControl->setLayout(AREA_MAIN, layout);
-	displayControl->addText(AREA_MAIN, 0, txt, FONT_MEDIUM);
+	displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
 
 	displayControl->addOption(AREA_MAIN, 1, "return", &GameControl::advanceNode,
 			currentNodeID, FONT_SMALL);
