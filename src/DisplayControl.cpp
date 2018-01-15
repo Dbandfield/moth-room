@@ -159,8 +159,8 @@ void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
 }
 
 void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
-		std::string _str, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
+		std::string _str, void (GameControl::*_f)(Args),
+		Args _arg, FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
 {
 	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
 			_sz, _isSecret, _background, _flow);

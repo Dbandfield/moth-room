@@ -375,8 +375,8 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 }
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
-		GameControl* _gc, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background,
+		GameControl* _gc, void (GameControl::*_f)(Args),
+		Args _arg, FONT_SIZE _sz, bool _isSecret, bool _background,
 		FLOW _flow)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;

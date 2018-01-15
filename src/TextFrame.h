@@ -60,7 +60,7 @@ public:
 
 	/* --- End inherited --- */
 
-	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
+	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(Args), Args _arg);
 	void onSelect();
 
 	void setIsSecret(bool _isSecret);

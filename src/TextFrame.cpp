@@ -151,7 +151,7 @@ void TextFrame::onSelect()
 }
 
 void TextFrame::setCallback(GameControl *_gameControl,
-		void (GameControl::*_f)(unsigned int), unsigned int _arg)
+		void (GameControl::*_f)(Args), Args _arg)
 {
 	if (isOption)
 	{
@@ -276,7 +276,6 @@ void TextFrame::setText(std::string _str)
 
 	for (size_t i = 0; i < wrds.size(); i++)
 	{
-		ofLog() << "[TEXT_FRAME] - Split word is: " << wrds[i];
 		children.push_back(new Word(colStatic));
 		children.back()->setText(wrds[i]);
 		children.back()->setLayer(layer);
@@ -303,7 +302,6 @@ void TextFrame::setColour(ofColor _col)
 
 void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font";
 
 	for (size_t i = 0; i < children.size(); i++)
 	{

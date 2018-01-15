@@ -15,16 +15,17 @@ StoryNode::StoryNode(unsigned int _ID, std::string _text, bool _isSecret)
 	ID = _ID;
 	text = _text;
 
-	isSecret = _isSecret;
 }
 
 StoryNode::~StoryNode()
 {
 }
 
-void StoryNode::addResponse(unsigned int _ID, std::string _text)
+void StoryNode::addResponse(RESPONSE _type, unsigned int _ID, std::string _text,
+		int _threshold, unsigned int _skill, std::string _desc)
 {
-	responses.push_back(std::pair<unsigned int, std::string>(_ID, _text));
+	Response* res = new Response(_type, _ID, _text, _threshold, _skill, _desc);
+	responses.push_back(res);
 }
 
 std::string StoryNode::getText()

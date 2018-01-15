@@ -13,9 +13,7 @@ namespace moth
 class Location
 {
 public:
-	Location(std::string _description, std::string _goodSecretResponse,
-			std::string _badSecretResponse, unsigned int _id,
-			unsigned int _expectedSecretid, Secret* _secret);
+	Location(std::string _description, unsigned int _id);
 	virtual ~Location();
 
 	void addLink(unsigned int _id);
@@ -38,48 +36,18 @@ public:
 	}
 	;
 
-	std::string getGoodSecretResponse()
-	{
-		return goodSecretResponse;
-	}
-	;
+	LOCATION getType();
 
-	std::string getBadSecretResponse()
-	{
-		return badSecretResponse;
-	}
-	;
-
-	bool getSecretDiscovered()
-	{
-		return secretDiscovered;
-	}
-	;
-
-
-	bool solveProblem(unsigned int _secretId);
-
-	void setSecretDiscovered(bool _disc);
-
-	Secret* getSecret(){return secret;};
 
 protected:
 
-	std::string badSecretResponse;
-	std::string goodSecretResponse;
+	LOCATION m_type;
 
 	std::string description;
-
-	Secret *secret;
-
 	unsigned int id;
 	std::vector<unsigned int> links;
 
 	std::map<unsigned int, StoryNode*> storyNodes;
-	bool secretDiscovered;
-	bool problemSolved;
-
-	unsigned int expectedSecretId;
 
 };
 

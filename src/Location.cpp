@@ -10,21 +10,14 @@
 namespace moth
 {
 
-Location::Location(std::string _description, std::string _goodSecretResponse,
-		std::string _badSecretResponse, unsigned int _id,
-		unsigned int _expectedSecretId, Secret *_secret)
+Location::Location(std::string _description, unsigned int _id)
 {
-	secretDiscovered = false;
-	problemSolved = false;
 
 	description = _description;
-	goodSecretResponse = _goodSecretResponse;
-	badSecretResponse = _badSecretResponse;
 
 	id = _id;
-	expectedSecretId = _expectedSecretId;
 
-	secret = _secret;
+	m_type = LOCATION_NORMAL;
 }
 
 Location::~Location()
@@ -35,16 +28,9 @@ Location::~Location()
 	}
 }
 
-bool Location::solveProblem(unsigned int _secretId)
+LOCATION Location::getType()
 {
-	ofLog() << "Comparing " << _secretId << " to " << expectedSecretId;
-	problemSolved = _secretId == expectedSecretId;
-	return problemSolved;
-}
-
-void Location::setSecretDiscovered(bool _disc)
-{
-	secretDiscovered = _disc;
+	return m_type;
 }
 
 void Location::addLink(unsigned int _id)

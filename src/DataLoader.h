@@ -8,8 +8,11 @@
 
 #include "enums.h"
 #include "Location.h"
+#include "MothLocation.h"
+#include "ObstacleLocation.h"
 #include "StoryNode.h"
 #include "Secret.h"
+#include "Skill.h"
 
 namespace moth
 {
@@ -24,16 +27,25 @@ public:
 	void load();
 
 	ofTrueTypeFont& getFont(FONT_SIZE _size);
-	std::map<unsigned int, Location*> getLocations();
+	std::map<unsigned int, Location*> getAllLocations();
+	std::map<unsigned int, MothLocation*> getMothLocations();
+	std::map<unsigned int, ObstacleLocation*> getObstacleLocations();
+	std::map<unsigned int, Location*> getNormalLocations();
+	std::map<unsigned int, Secret*> getSecrets();
+	std::map<unsigned int, Skill*> getSkills();
 
 	void update();
 	bool areFontsLoaded();
 	bool areLocationsLoaded();
+	bool areSecretsLoaded();
+	bool areSkillsLoaded();
 
 protected:
 	void loadConfig();
 	void loadFonts();
 	void loadLocations();
+	void loadSecrets();
+	void loadSkills();
 	ofBuffer getBufferFromFile(std::string _fileName);
 
 	void stripHeader(std::string &str, char del1='[', char del2=']');
@@ -49,9 +61,37 @@ protected:
 	const int SZ_MEDIUM = 24;
 	const int SZ_LARGE = 48;
 
+	/* SKILLS */
+	std::map<unsigned int, Skill*> m_skills;
+	bool allSkillsLoaded;
+
+	const std::string SKILLS_DIR;
+	const std::string SKILLS_NAME;
+	ofxXmlSettings skillsXml;
+
+	ofFile skillsFile;
+	std::string pathToSkillsFile;
+	ofBuffer skillsBuf;
+
+	/* SECRETS */
+	std::map<unsigned int, Secret*> m_secrets;
+	bool allSecretsLoaded;
+
+	const std::string SECRETS_DIR;
+	const std::string SECRETS_NAME;
+	ofxXmlSettings secretsXml;
+
+	ofFile secretsFile;
+	std::string pathToSecretsFile;
+	ofBuffer secretsBuf;
+
 	/* LOCATIONS */
 	bool allLocationsLoaded;
-	std::map<unsigned int, Location*> locations;
+	std::map<unsigned int, Location*> m_allLocations;
+	std::map<unsigned int, MothLocation*> m_mothLocations;
+	std::map<unsigned int, ObstacleLocation*> m_obstacleLocations;
+	std::map<unsigned int, Location*> m_normalLocations;
+
 	const std::string LOCATION_DIR;
 	const std::string LOCATION_NAME;
 	ofxXmlSettings locationsXml;

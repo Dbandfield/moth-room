@@ -42,6 +42,8 @@ protected:
 
 	bool fontsTransferred;
 	bool locationsTransferred;
+	bool secretsTransferred;
+	bool skillsTransferred;
 
 	ofColor backgroundColour;
 

@@ -1,7 +1,11 @@
 #pragma once
 
+#include <vector>
+
 namespace moth
 {
+
+typedef std::vector<unsigned int> Args;
 
 enum STAGE
 {
@@ -56,6 +60,21 @@ enum LAYER
 	LAYER_JITTER,
 	LAYER_PIXELLATED,
 	LAYER_DISTORTED
+};
+
+
+enum RESPONSE
+{
+	RESPONSE_NORMAL,
+	RESPONSE_SECRET,
+	RESPONSE_TEACH
+};
+
+enum LOCATION
+{
+	LOCATION_NORMAL,
+	LOCATION_MOTH,
+	LOCATION_OBSTACLE
 };
 
 }

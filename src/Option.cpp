@@ -16,7 +16,7 @@ Option::Option()
 
 	gameControl = nullptr;
 	f = 0;
-	callbackArg = 0;
+
 }
 
 Option::~Option()
@@ -30,7 +30,7 @@ void Option::onSelect()
 	((*gameControl).*f)(callbackArg);
 }
 
-void Option::setCallback(GameControl *_gameControl, void (GameControl::*_f)(unsigned int), unsigned int _arg)
+void Option::setCallback(GameControl *_gameControl, void (GameControl::*_f)(Args), Args _arg)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Option] Setting Callback";
 

@@ -70,17 +70,34 @@ void ofApp::update()
 		}
 	}
 
-	if (!locationsTransferred)
+	if (!locationsTransferred || !secretsTransferred || !skillsTransferred)
 	{
-		if (dataLoader->areLocationsLoaded())
+		if (dataLoader->areLocationsLoaded() && dataLoader->areSecretsLoaded() && dataLoader->areSkillsLoaded())
 		{
 			ofLog(OF_LOG_VERBOSE)
 					<< "[ofApp] Locations loaded, transferring to game control";
-			gameControl->setLocations(dataLoader->getLocations());
-			gameControl->locationsReady();
+			gameControl->setLocations(dataLoader->getAllLocations(),
+					dataLoader->getMothLocations(),
+					dataLoader->getObstacleLocations(),
+					dataLoader->getNormalLocations());
+
+
+			ofLog(OF_LOG_VERBOSE)
+					<< "[ofApp] Secrets loaded, transferring to game control";
+			gameControl->setSecrets(dataLoader->getSecrets());
+
+
+			ofLog(OF_LOG_VERBOSE)
+					<< "[ofApp] Skills loaded, transferring to game control";
+			gameControl->setSkills(dataLoader->getSkills());
 		}
 
 		locationsTransferred = true;
+		secretsTransferred = true;
+		skillsTransferred = true;
+
+		gameControl->locationsReady();
+
 	}
 
 	distort = sin(ofGetElapsedTimeMillis() / dividor) * 7;
@@ -106,7 +123,7 @@ void ofApp::draw()
 	// PIXELATE
 
 	bufPixelate.begin();
-    ofClear(255,255,255, 0);
+	ofClear(255, 255, 255, 0);
 
 	if (displayControl != nullptr)
 		displayControl->display(moth::LAYER_PIXELLATED);
@@ -116,14 +133,14 @@ void ofApp::draw()
 	// JITTER
 
 	bufJitter.begin();
-    ofClear(255,255,255, 0);
+	ofClear(255, 255, 255, 0);
 	if (displayControl != nullptr)
 		displayControl->display(moth::LAYER_JITTER);
 	bufJitter.end();
 
 	// CORRUPT
 	bufCorrupt.begin();
-    ofClear(255,255,255, 0);
+	ofClear(255, 255, 255, 0);
 	if (displayControl != nullptr)
 		displayControl->display(moth::LAYER_DISTORTED);
 	bufCorrupt.end();

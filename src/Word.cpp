@@ -12,7 +12,6 @@ namespace moth
 
 Word::Word(ofColor _col)
 {
-	ofLog() << "[WORD] - Creating word";
 	currentFont = nullptr;
 	fontSmall = nullptr;
 	fontMedium = nullptr;
@@ -31,7 +30,6 @@ Word::Word(ofColor _col)
 
 Word::~Word()
 {
-	ofLog() << "[WORD] - Destroying word";
 
 	for (auto i = children.begin(); i != children.end(); i++)
 	{
