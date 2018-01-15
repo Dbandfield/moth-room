@@ -32,10 +32,11 @@ void GameControl::tellSecret(Args _arg)
 	displayControl->clearLayout(AREA_BUTTONS);
 	std::vector<float> layout;
 
-	layout.push_back(50.f);
-	layout.push_back(50.f);
-	layout.push_back(50.f);
-	layout.push_back(50.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
+
 
 	displayControl->setLayout(AREA_MAIN, layout);
 
@@ -43,43 +44,45 @@ void GameControl::tellSecret(Args _arg)
 
 	Secret* sec = m_allSecrets[_arg[0]];
 	MothLocation* mothLoc;
-	switch(currentLocation->getType())
+	switch (currentLocation->getType())
 	{
 	case LOCATION_MOTH:
 
 		mothLoc = static_cast<MothLocation*>(currentLocation);
 
-		txt += "You tell the moth ... ";
-		txt += "\n";
-		txt += sec->getText();
-		txt += "\n";
+		txt = "You tell the moth a secret ... ";
+		displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
 
-		if(mothLoc->tellTheMothASecret(sec))
+		txt = sec->getText();
+		displayControl->addText(AREA_MAIN, 1, txt, FONT_SMALL);
+
+		if (mothLoc->tellTheMothASecret(sec))
 		{
 			std::stringstream ss;
 			ss << sec->getPower();
-			txt += " ... and the moth's opinion of you changes by " + ss.str();
+			txt = " ... and the moth's opinion of you changes by " + ss.str();
+			displayControl->addText(AREA_MAIN, 2, txt, FONT_SMALL);
 		}
 		else
 		{
-			txt += " ... but the moth does not really care.";
+			txt = " ... but the moth does not really care.";
+			displayControl->addText(AREA_MAIN, 2, txt, FONT_SMALL);
 		}
 
 		break;
 
 	case LOCATION_NORMAL:
 	case LOCATION_OBSTACLE:
-		txt += "No one here wants to hear your secrets.";
+		txt = "No one here wants to hear your secrets.";
+		displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
 		break;
 	}
 
-	displayControl->addText(AREA_MAIN, 1, txt, FONT_SMALL);
 
 	Args a1;
 	a1.push_back(currentNodeID);
 
-
-	displayControl->addOption(AREA_MAIN, 7, "return", &GameControl::advanceNode,
+	displayControl->addOption(AREA_MAIN, 3, "return", &GameControl::advanceNode,
 			a1, FONT_SMALL);
 }
 
@@ -102,7 +105,7 @@ void GameControl::useSkill(Args _arg)
 
 	Skill* skill = m_gainedSkills[_arg[0]];
 	ObstacleLocation* obLoc;
-	switch(currentLocation->getType())
+	switch (currentLocation->getType())
 	{
 	case LOCATION_OBSTACLE:
 
@@ -113,7 +116,7 @@ void GameControl::useSkill(Args _arg)
 		txt += skill->getText();
 		txt += "\n";
 
-		if(obLoc->solve(skill->getId()))
+		if (obLoc->solve(skill->getId()))
 		{
 			txt += "[REPLACE] ... and the obstacle is solved![REPLACE]";
 		}
@@ -170,10 +173,9 @@ void GameControl::listSkills(Args _arg)
 		Args a1;
 		a1.push_back(it.second->getId());
 
-		displayControl->addOption(AREA_MAIN, 4, txt, &GameControl::useSkill,
-				a1, FONT_SMALL);
+		displayControl->addOption(AREA_MAIN, 4, txt, &GameControl::useSkill, a1,
+				FONT_SMALL);
 	}
-
 
 	Args a2;
 	a2.push_back(currentNodeID);
@@ -191,22 +193,19 @@ void GameControl::listSecrets(Args _arg)
 	displayControl->clearLayout(AREA_BUTTONS);
 	std::vector<float> layout;
 
+	layout.push_back(100.f);
 	layout.push_back(30.f);
-	layout.push_back(30.f); // 1
 	layout.push_back(30.f);
-
-	layout.push_back(30.f);
-	layout.push_back(30.f); // 4
-	layout.push_back(30.f);
-
-	layout.push_back(30.f);
-	layout.push_back(30.f);  // 7
 	layout.push_back(30.f);
 
 	ofLog() << "[GAME_CONTROL] - Setting layout of secrets";
 	displayControl->setLayout(AREA_MAIN, layout);
 
-	displayControl->addText(AREA_MAIN, 1, "You Know: ", FONT_MEDIUM);
+	displayControl->addText(AREA_MAIN, 0, "[ You Know About ]", FONT_MEDIUM);
+
+	int count = 0;
+	int layoutNum = 1;
+
 	for (auto&& it : discoveredSecrets)
 	{
 		std::string txt = it.second->getShort();
@@ -214,8 +213,15 @@ void GameControl::listSecrets(Args _arg)
 		Args a1;
 		a1.push_back(it.second->getId());
 
-		displayControl->addOption(AREA_MAIN, 4, txt, &GameControl::tellSecret,
+		displayControl->addOption(AREA_MAIN, layoutNum, txt, &GameControl::tellSecret,
 				a1, FONT_SMALL);
+
+		count ++;
+		if(count > 8)
+		{
+			count = 0;
+			layoutNum ++;
+		}
 	}
 
 	Args a2;
@@ -292,7 +298,7 @@ void GameControl::listLocations(Args _arg)
 
 	auto linkVec = currentLocation->getLinks();
 
-	for (auto&& it : linkVec)//linkVec.begin(); it != linkVec.end(); it++)
+	for (auto&& it : linkVec)  //linkVec.begin(); it != linkVec.end(); it++)
 	{
 		std::string txt = allLocations[it]->getDescription();
 
@@ -417,9 +423,9 @@ bool GameControl::likedEnoughByMoth(unsigned int _thresh)
 	return (static_cast<MothLocation*>(currentLocation)->getOpinion() > _thresh);
 }
 
-
 void GameControl::setSecrets(std::map<unsigned int, Secret*> _secrets)
 {
+	discoveredSecrets = _secrets;
 	m_allSecrets = _secrets;
 }
 
@@ -475,6 +481,9 @@ void GameControl::advanceNode(Args _arg)
 	displayControl->clearLayout(AREA_BUTTONS);
 	std::vector<float> layout;
 
+	layout.push_back(100.f);
+	if (currentLocation->getType() == LOCATION_MOTH)
+		layout.push_back(100.f);
 	layout.push_back(50.f);
 	layout.push_back(50.f);
 	layout.push_back(50.f);
@@ -484,13 +493,35 @@ void GameControl::advanceNode(Args _arg)
 	currentNodeID = _arg[0];
 	currentNode = currentLocation->getNode(currentNodeID);
 
-	displayControl->addText(AREA_MAIN, 0, currentNode->getText(), FONT_SMALL);
+	int layoutNum = 0;
+
+	displayControl->addText(AREA_MAIN, layoutNum,
+			"[ " + currentLocation->getDescription() + " ]", FONT_MEDIUM);
+
+	layoutNum ++;
+
+	if (currentLocation->getType() == LOCATION_MOTH)
+	{
+		MothLocation* moLoc = static_cast<MothLocation*>(currentLocation);
+		std::stringstream ss;
+		ss << moLoc->getOpinion();
+		displayControl->addText(AREA_MAIN, layoutNum,
+				"[ likes you " + ss.str() + "% ]", FONT_SMALL);
+
+		layoutNum ++;
+	}
+
+	displayControl->addText(AREA_MAIN, layoutNum, currentNode->getText(), FONT_SMALL);
+
+	layoutNum ++;
 
 	auto res = currentNode->getResponses();
 
 	for (auto&& it : res)
 	{
 		Args a1;
+		std::string txt;
+		std::stringstream ss1, ss2;
 		switch (it->getType())
 		{
 
@@ -498,7 +529,8 @@ void GameControl::advanceNode(Args _arg)
 
 			ofLog() << "REPSONSE " << it->getId();
 			a1.push_back(it->getId());
-			displayControl->addOption(AREA_MAIN, 1, it->getText(),
+			txt = it->getText();
+			displayControl->addOption(AREA_MAIN, layoutNum, txt,
 					&GameControl::advanceNode, a1, FONT_SMALL);
 			break;
 
@@ -506,14 +538,26 @@ void GameControl::advanceNode(Args _arg)
 
 			a1.push_back(it->getId());
 			a1.push_back(it->getThreshold());
-			displayControl->addOption(AREA_MAIN, 1, it->getText(),
+			ss1 << it->getThreshold();
+			txt = it->getText();
+			txt += " [";
+			txt += ss1.str();
+			txt += "%] ";
+
+			displayControl->addOption(AREA_MAIN, layoutNum, txt,
 					&GameControl::learnSecret, a1, FONT_SMALL);
 			break;
 
 		case RESPONSE_TEACH:
 
-			a1.push_back(0);
-			displayControl->addOption(AREA_MAIN, 1, it->getText(),
+			a1.push_back(it->getSkill());
+			a1.push_back(it->getThreshold());
+			ss2 << it->getThreshold();
+			txt = it->getText();
+			txt += " [";
+			txt += ss2.str();
+			txt += "%] ";
+			displayControl->addOption(AREA_MAIN, layoutNum, txt,
 					&GameControl::learnSkill, a1, FONT_SMALL);
 
 			break;
@@ -546,11 +590,14 @@ void GameControl::setButtons()
 			FONT_SMALL, false, true, FLOW_HORIZONTAL);
 	Args a2;
 	a2.push_back(currentLocation->getId());
-	displayControl->addOption(AREA_BUTTONS, 0, "Fly somewhere",
+	displayControl->addOption(AREA_BUTTONS, 0, "Go",
 			&GameControl::listLocations, a2, FONT_SMALL, false, true,
 			FLOW_HORIZONTAL);
-	displayControl->addOption(AREA_BUTTONS, 0, "Reveal a secret",
+	displayControl->addOption(AREA_BUTTONS, 0, "Secret",
 			&GameControl::listSecrets, a1, FONT_SMALL, false, true,
+			FLOW_HORIZONTAL);
+	displayControl->addOption(AREA_BUTTONS, 0, "Skill",
+			&GameControl::listSkills, a1, FONT_SMALL, false, true,
 			FLOW_HORIZONTAL);
 
 }
@@ -578,7 +625,7 @@ void GameControl::locationsReady()
 	displayControl->addOption(AREA_MAIN, 2, "Continue", &GameControl::beginGame,
 			a1, FONT_SMALL);
 
-	setButtons();
+	//setButtons();
 
 }
 
