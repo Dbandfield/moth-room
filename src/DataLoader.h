@@ -33,12 +33,14 @@ public:
 	std::map<unsigned int, Location*> getNormalLocations();
 	std::map<unsigned int, Secret*> getSecrets();
 	std::map<unsigned int, Skill*> getSkills();
+	std::map<AUDIO, ofSoundPlayer*> getAudio();
 
 	void update();
 	bool areFontsLoaded();
 	bool areLocationsLoaded();
 	bool areSecretsLoaded();
 	bool areSkillsLoaded();
+	bool isAudioLoaded();
 
 protected:
 	void loadConfig();
@@ -46,6 +48,7 @@ protected:
 	void loadLocations();
 	void loadSecrets();
 	void loadSkills();
+	void loadAudio();
 	ofBuffer getBufferFromFile(std::string _fileName);
 
 	void stripHeader(std::string &str, char del1='[', char del2=']');
@@ -108,6 +111,17 @@ protected:
 
 	const std::string CONFIG_DIR;
 	const std::string CONFIG_NAME;
+
+	/* AUDIO */
+	bool allAudioLoaded;
+	std::map<AUDIO, ofSoundPlayer*> m_players;
+
+	const std::string AUDIO_DIR;
+	const std::string AUDIO_BUTTON_FILE;
+	const std::string AUDIO_GO_FILE;
+	const std::string AUDIO_EAT_FILE;
+	const std::string AUDIO_SECRET_FILE;
+
 
 };
 

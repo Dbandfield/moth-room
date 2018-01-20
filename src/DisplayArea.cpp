@@ -348,7 +348,7 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, false);
+	TextFrame* frame = new TextFrame(40, 40, pt, nullptr, false);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
@@ -376,10 +376,12 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 		GameControl* _gc, void (GameControl::*_f)(Args),
-		Args _arg, FONT_SIZE _sz, bool _isSecret, bool _background,
+		Args _arg, AudioPlayer* _player, FONT_SIZE _sz, bool _isSecret, bool _background,
 		FLOW _flow)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
+
+	m_audio = _player;
 
 	ofPoint pt = ofPoint();
 	pt.x = layout[_p].rect.x;
@@ -397,7 +399,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
+	TextFrame* frame = new TextFrame(40, 40, pt, m_audio,true, _isSecret);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);

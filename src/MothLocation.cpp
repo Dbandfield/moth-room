@@ -10,10 +10,16 @@
 namespace moth
 {
 
-MothLocation::MothLocation(std::string _description, unsigned int _id):Location(_description, _id)
+MothLocation::MothLocation(MothLocation* _loc):	Location(_loc)
 {
+	opinion = _loc->opinion;
+	m_invalidSecrets = _loc->m_invalidSecrets;
 
+}
 
+MothLocation::MothLocation(std::string _description, unsigned int _id) :
+		Location(_description, _id)
+{
 	m_type = LOCATION_MOTH;
 
 	opinion = 50;
@@ -32,7 +38,7 @@ bool MothLocation::tellTheMothASecret(Secret* _secret)
 {
 	if (isValid(_secret))
 	{
-		opinion = std::min((int)100, (int)(opinion + _secret->getPower()));
+		opinion = std::min((int) 100, (int) (opinion + _secret->getPower()));
 		_secret->useSecret();
 		m_invalidSecrets.push_back(_secret->getId());
 		return true;

@@ -11,10 +11,10 @@ namespace moth
 {
 
 TextFrame::TextFrame(float _width, float _height, ofPoint _position,
-		bool _isOption, bool _isSecret)
+		AudioPlayer* _player, bool _isOption, bool _isSecret)
 
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
+	//ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setup";
 
 	selectMarker = "+ ";
 
@@ -26,14 +26,18 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 	isOption = _isOption;
 	isSecret = _isSecret;
 
+	m_audio = _player;
+
 	if (isOption)
 	{
 		opt = new Option();
+		opt->setAudioPlayer(m_audio);
 	}
 	else
 	{
 		opt = nullptr;
 	}
+
 
 	position = _position;
 	adjustedPosition = position;
@@ -74,7 +78,7 @@ void TextFrame::setLayer(LAYER _layer)
 
 void TextFrame::setIsSecret(bool _isSecret)
 {
-	ofLog() << "IS SECRET!";
+//	ofLog() << "IS SECRET!";
 	isSecret = _isSecret;
 
 	colBase = isSecret ? colIsSecret : colStatic;
@@ -136,7 +140,7 @@ void TextFrame::setMargin(MARGIN _mgn, float _amt)
 
 void TextFrame::onSelect()
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Selected";
+//	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Selected";
 
 	if (opt != nullptr)
 	{
@@ -234,7 +238,7 @@ std::vector<std::string> TextFrame::split(const std::string& s, char delimiter)
 		{
 			if (i)
 			{
-				ofLog() << "Pushing back new line " << i;
+//				ofLog() << "Pushing back new line " << i;
 				tokens.push_back("\n");
 			}
 
@@ -266,7 +270,7 @@ void TextFrame::setText(char* _c)
 
 void TextFrame::setText(std::string _str)
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting text: " << _str;
+//	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting text: " << _str;
 
 	text = _str;
 
@@ -328,7 +332,7 @@ void TextFrame::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 
 void TextFrame::setFontSize(FONT_SIZE _sz)
 {
-	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font Size";
+//	ofLog(OF_LOG_VERBOSE) << "[TextFrame] Setting Font Size";
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		children[i]->setFontSize(_sz);
@@ -360,7 +364,7 @@ void TextFrame::recalculatePositions()
 	{
 		letterHeight =
 				currentFont != nullptr ?
-						currentFont->stringHeight("P") * LINE_HEIGHT_ADJUST:
+						currentFont->stringHeight("P") * LINE_HEIGHT_ADJUST :
 						children.back()->getHeight() * LINE_HEIGHT_ADJUST;
 
 		adjustedPosition.y += letterHeight;

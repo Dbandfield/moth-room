@@ -7,12 +7,6 @@ namespace moth
 
 typedef std::vector<unsigned int> Args;
 
-enum STAGE
-{
-	STAGE_TITLE,
-	STAGE_MAIN
-};
-
 enum FONT_SIZE
 {
 	FONT_SMALL,
@@ -75,6 +69,14 @@ enum LOCATION
 	LOCATION_NORMAL,
 	LOCATION_MOTH,
 	LOCATION_OBSTACLE
+};
+
+enum AUDIO
+{
+	AUDIO_BUTTON,
+	AUDIO_GO,
+	AUDIO_EAT,
+	AUDIO_SECRET
 };
 
 }

@@ -10,6 +10,15 @@
 namespace moth
 {
 
+Location::Location(Location* _loc)
+{
+	m_type = _loc->getType();
+	description = _loc->description;
+	id = _loc->id;
+	links = _loc->links;
+	storyNodes = _loc->storyNodes;
+}
+
 Location::Location(std::string _description, unsigned int _id)
 {
 
@@ -22,10 +31,10 @@ Location::Location(std::string _description, unsigned int _id)
 
 Location::~Location()
 {
-	for (auto i = storyNodes.begin(); i != storyNodes.end(); i++)
-	{
-		delete i->second;
-	}
+//	for (auto i = storyNodes.begin(); i != storyNodes.end(); i++)
+//	{
+//		delete i->second;
+//	}
 }
 
 LOCATION Location::getType()
@@ -38,10 +47,9 @@ void Location::addLink(unsigned int _id)
 	links.push_back(_id);
 }
 
-void Location::addStoryNode(unsigned int _ID, StoryNode* _node)
+void Location::addStoryNode(unsigned int _ID, StoryNode _node)
 {
-	ofLog() << "ADDING: " << _ID;
-	storyNodes.insert(std::pair<unsigned int, StoryNode*>(_ID, _node));
+	storyNodes.insert(std::pair<unsigned int, StoryNode>(_ID, _node));
 }
 
 StoryNode* Location::getNode(unsigned int _ID)
@@ -53,7 +61,7 @@ StoryNode* Location::getNode(unsigned int _ID)
 	}
 	else
 	{
-		return storyNodes[_ID];
+		return &(storyNodes.find(_ID)->second);
 	}
 }
 

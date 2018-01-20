@@ -13,7 +13,10 @@ namespace moth
 DataLoader::DataLoader() :
 		CONFIG_DIR("config"), CONFIG_NAME("config.cfg"), LOCATION_DIR("xml"), LOCATION_NAME(
 				"locations.xml"), SECRETS_DIR("xml"), SECRETS_NAME(
-				"secrets.xml"), SKILLS_DIR("xml"), SKILLS_NAME("skills.xml")
+				"secrets.xml"), SKILLS_DIR("xml"), SKILLS_NAME("skills.xml"), AUDIO_DIR(
+				"audio"), AUDIO_BUTTON_FILE("button_1.wav"), AUDIO_GO_FILE(
+				"go_1.wav"), AUDIO_EAT_FILE("eat_1.wav"), AUDIO_SECRET_FILE(
+				"secret_1.wav")
 {
 	fontHeaderFound = false;
 	fonts.insert(fontPair(FONT_SMALL, ofTrueTypeFont()));
@@ -24,6 +27,12 @@ DataLoader::DataLoader() :
 	allLocationsLoaded = false;
 	allSecretsLoaded = false;
 	allSkillsLoaded = false;
+	allAudioLoaded = false;
+
+	m_players[AUDIO_BUTTON] = new ofSoundPlayer();
+	m_players[AUDIO_GO] = new ofSoundPlayer();
+	m_players[AUDIO_EAT] = new ofSoundPlayer();
+	m_players[AUDIO_SECRET] = new ofSoundPlayer();
 }
 
 DataLoader::~DataLoader()
@@ -72,6 +81,22 @@ void DataLoader::load()
 	loadLocations();
 	loadSkills();
 	loadSecrets();
+	loadAudio();
+}
+
+void DataLoader::loadAudio()
+{
+	m_players[AUDIO_BUTTON]->load(ofFilePath::join(AUDIO_DIR, AUDIO_BUTTON_FILE));
+	m_players[AUDIO_GO]->load(ofFilePath::join(AUDIO_DIR, AUDIO_GO_FILE));
+	m_players[AUDIO_EAT]->load(ofFilePath::join(AUDIO_DIR, AUDIO_EAT_FILE));
+	m_players[AUDIO_SECRET]->load(ofFilePath::join(AUDIO_DIR, AUDIO_SECRET_FILE));
+
+	allAudioLoaded = true;
+}
+
+std::map<AUDIO, ofSoundPlayer*> DataLoader::getAudio()
+{
+	return m_players;
 }
 
 void DataLoader::loadConfig()
@@ -233,7 +258,6 @@ void DataLoader::loadSkills()
 
 		ofLog() << "[DATA_LOADER] - loading skill " << txt;
 
-
 		m_skills.insert(
 				std::pair<unsigned int, Skill*>(id, new Skill(txt, id)));
 
@@ -267,7 +291,6 @@ void DataLoader::loadSecrets()
 				"[ERROR] - no secret text in xml");
 
 		ofLog() << "[DATA_LOADER] - loading secret " << shortTxt;
-
 
 		m_secrets.insert(
 				std::pair<unsigned int, Secret*>(id,
@@ -353,17 +376,14 @@ void DataLoader::loadLocations()
 			else if (type == "obstacle")
 			{
 				std::stringstream skillNeedSS;
-				skillNeedSS << locationsXml.getValue("solve",
-						"ERROR_NO_SOLVE");
+				skillNeedSS << locationsXml.getValue("solve", "ERROR_NO_SOLVE");
 				unsigned int skillNeedId;
 				skillNeedSS >> skillNeedId;
 
 				std::stringstream skillGiveSS;
-				skillGiveSS << locationsXml.getValue("skill",
-						"ERROR_NO_SKILL");
+				skillGiveSS << locationsXml.getValue("skill", "ERROR_NO_SKILL");
 				unsigned int skillGiveId;
 				skillGiveSS >> skillGiveId;
-
 
 				loc = new ObstacleLocation(locDesc, locId, skillNeedId,
 						skillGiveId);
@@ -505,9 +525,9 @@ void DataLoader::loadLocations()
 							resDesc = locationsXml.getValue("description",
 									"[ERROR] - No response description in xml");
 
-
-							resSkillSS << locationsXml.getValue("skill",
-									"[ERROR] - No response skill in xml");
+							resSkillSS
+									<< locationsXml.getValue("skill",
+											"[ERROR] - No response skill in xml");
 							resSkillSS >> resSkill;
 
 							node->addResponse(resType, resId, resTxt, resThresh,
@@ -518,7 +538,7 @@ void DataLoader::loadLocations()
 
 					}
 
-					loc->addStoryNode(node->getID(), node);
+					loc->addStoryNode(node->getID(), *node);
 					locationsXml.popTag();
 
 				}

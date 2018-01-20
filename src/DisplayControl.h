@@ -12,6 +12,8 @@
 #include "DisplayArea.h"
 #include "Level.h"
 #include "LevelsFrame.h"
+#include "AudioPlayer.h"
+
 
 #include "enums.h"
 
@@ -53,11 +55,14 @@ public:
 
 	void setCorruption(int _corruption);
 
+	void setAudioPlayer(AudioPlayer* _player);
+
 protected:
 
 	std::vector<Symbol*> getSymbols();
 
 	GameControl* gameControl;
+	AudioPlayer* m_audioPlayer;
 
 	std::map<LEVEL, Level*> levelMap;
 

@@ -25,6 +25,8 @@ protected:
 	moth::DisplayControl *displayControl;
 	moth::DataLoader *dataLoader;
 
+	moth::AudioPlayer *audioPlayer;
+
 	ofShader jitter;
 	ofShader pixelate;
 	ofShader vignette;

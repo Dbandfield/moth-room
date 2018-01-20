@@ -13,12 +13,13 @@ namespace moth
 class Location
 {
 public:
+	Location(Location* _loc);
 	Location(std::string _description, unsigned int _id);
 	virtual ~Location();
 
 	void addLink(unsigned int _id);
 
-	void addStoryNode(unsigned int _ID, StoryNode* _node);
+	void addStoryNode(unsigned int _ID, StoryNode _node);
 	StoryNode* getNode(unsigned int _ID);
 	unsigned int getId()
 	{
@@ -38,7 +39,6 @@ public:
 
 	LOCATION getType();
 
-
 protected:
 
 	LOCATION m_type;
@@ -47,7 +47,7 @@ protected:
 	unsigned int id;
 	std::vector<unsigned int> links;
 
-	std::map<unsigned int, StoryNode*> storyNodes;
+	std::map<unsigned int, StoryNode> storyNodes;
 
 };
 

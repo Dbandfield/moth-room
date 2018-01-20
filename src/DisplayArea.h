@@ -7,6 +7,8 @@
 #include "BackgroundDecorator.h"
 #include "Level.h"
 #include "Word.h"
+#include "AudioPlayer.h"
+
 
 namespace moth
 {
@@ -70,8 +72,6 @@ public:
 
 	void setBackground(){};
 
-
-
 	/* not inherited */
 
 	void clearLayout();
@@ -84,7 +84,7 @@ public:
 			FONT_SIZE _sz = FONT_SMALL);
 
 	TextFrame* addOption(unsigned int _p, std::string, GameControl* _gc,
-			void (GameControl::*_f)(Args), Args _arg,
+			void (GameControl::*_f)(Args), Args _arg, AudioPlayer* _audio,
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false, FLOW _flow = FLOW_VERTICAL);
 
@@ -110,6 +110,8 @@ protected:
 	std::vector<Symbol*> words;
 
 	int corruption;
+
+	AudioPlayer* m_audio;
 };
 
 } /* namespace moth */

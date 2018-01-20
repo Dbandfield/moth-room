@@ -10,7 +10,9 @@ namespace moth
 class ObstacleLocation: public Location
 {
 public:
-	ObstacleLocation(std::string _description, unsigned int _id, unsigned int _skillNeeded, unsigned int _skillGiven);
+	ObstacleLocation(ObstacleLocation* _loc);
+	ObstacleLocation(std::string _description, unsigned int _id,
+			unsigned int _skillNeeded, unsigned int _skillGiven);
 	virtual ~ObstacleLocation();
 
 	void addBlockedLink(unsigned int _id);

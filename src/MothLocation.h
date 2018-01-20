@@ -10,6 +10,7 @@ namespace moth
 class MothLocation: public Location
 {
 public:
+	MothLocation(MothLocation* _loc);
 	MothLocation(std::string _description, unsigned int _id);
 	virtual ~MothLocation();
 

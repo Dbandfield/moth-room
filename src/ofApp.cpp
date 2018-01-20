@@ -21,7 +21,7 @@ void ofApp::setup()
 
 	dataLoader = new moth::DataLoader();
 
-	ofSetWindowTitle("Oh no! You are a Moth!");
+	ofSetWindowTitle("THE MOTH GAME");
 	ofSetFrameRate(60);
 	ofSetLogLevel(OF_LOG_VERBOSE);
 
@@ -29,9 +29,13 @@ void ofApp::setup()
 
 	ofLog(OF_LOG_VERBOSE) << "[ofApp] Creating Controls";
 
+	audioPlayer = new moth::AudioPlayer;
+	audioPlayer->setAudio(dataLoader->getAudio());
+
 	displayControl = new moth::DisplayControl();
 	gameControl = new moth::GameControl();
 	displayControl->setGameControl(gameControl);
+	displayControl->setAudioPlayer(audioPlayer);
 	gameControl->setDisplayControl(displayControl);
 
 	bufPixelate.allocate(1366, 768);
@@ -72,7 +76,8 @@ void ofApp::update()
 
 	if (!locationsTransferred || !secretsTransferred || !skillsTransferred)
 	{
-		if (dataLoader->areLocationsLoaded() && dataLoader->areSecretsLoaded() && dataLoader->areSkillsLoaded())
+		if (dataLoader->areLocationsLoaded() && dataLoader->areSecretsLoaded()
+				&& dataLoader->areSkillsLoaded())
 		{
 			ofLog(OF_LOG_VERBOSE)
 					<< "[ofApp] Locations loaded, transferring to game control";
@@ -81,11 +86,9 @@ void ofApp::update()
 					dataLoader->getObstacleLocations(),
 					dataLoader->getNormalLocations());
 
-
 			ofLog(OF_LOG_VERBOSE)
 					<< "[ofApp] Secrets loaded, transferring to game control";
 			gameControl->setSecrets(dataLoader->getSecrets());
-
 
 			ofLog(OF_LOG_VERBOSE)
 					<< "[ofApp] Skills loaded, transferring to game control";

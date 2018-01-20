@@ -3,6 +3,7 @@
 #include <ofMain.h>
 
 #include "GameControl.h"
+#include "AudioPlayer.h"
 
 namespace moth
 {
@@ -18,9 +19,12 @@ public:
 	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(Args), Args);
 	void onSelect();
 
+	void setAudioPlayer(AudioPlayer* _player);
+
 protected:
 
 	GameControl *gameControl;
+	AudioPlayer *m_audioPlayer;
 	void (GameControl::*f)(Args);
 	ofRectangle bounds;
 	Args callbackArg;

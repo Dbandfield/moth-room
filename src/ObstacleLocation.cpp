@@ -10,6 +10,15 @@
 namespace moth
 {
 
+ObstacleLocation::ObstacleLocation(ObstacleLocation* _loc):	Location(_loc)
+{
+	m_solved = _loc->m_solved;
+	m_skillNeeded = _loc->m_skillNeeded;
+	m_skillGiven = _loc->m_skillGiven;
+	m_blockedLinks = _loc->m_blockedLinks;
+
+}
+
 ObstacleLocation::ObstacleLocation(std::string _description, unsigned int _id,
 		unsigned int _skillNeeded, unsigned int _skillGiven) :
 		Location(_description, _id)

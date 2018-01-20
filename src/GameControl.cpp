@@ -14,14 +14,17 @@ GameControl::GameControl()
 {
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Setup";
 
-	switchStage(STAGE_TITLE);
-
 	hunger = 100;
 	humanity = 100;
 }
 
 GameControl::~GameControl()
 {
+}
+
+void GameControl::setAudioPlayer(AudioPlayer* _player)
+{
+	m_audioPlayer = _player;
 }
 
 void GameControl::tellSecret(Args _arg)
@@ -36,7 +39,6 @@ void GameControl::tellSecret(Args _arg)
 	layout.push_back(100.f);
 	layout.push_back(100.f);
 	layout.push_back(100.f);
-
 
 	displayControl->setLayout(AREA_MAIN, layout);
 
@@ -77,7 +79,6 @@ void GameControl::tellSecret(Args _arg)
 		displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
 		break;
 	}
-
 
 	Args a1;
 	a1.push_back(currentNodeID);
@@ -150,22 +151,20 @@ void GameControl::listSkills(Args _arg)
 	displayControl->clearLayout(AREA_BUTTONS);
 	std::vector<float> layout;
 
+	layout.push_back(100.f);
 	layout.push_back(30.f);
-	layout.push_back(30.f); // 1
 	layout.push_back(30.f);
-
 	layout.push_back(30.f);
-	layout.push_back(30.f); // 4
-	layout.push_back(30.f);
-
-	layout.push_back(30.f);
-	layout.push_back(30.f);  // 7
-	layout.push_back(30.f);
+	layout.push_back(100.f);
 
 	ofLog() << "[GAME_CONTROL] - Setting layout of skills";
 	displayControl->setLayout(AREA_MAIN, layout);
 
-	displayControl->addText(AREA_MAIN, 1, "You know: ", FONT_MEDIUM);
+	displayControl->addText(AREA_MAIN, 0, "You know how to: ", FONT_MEDIUM);
+
+	int count = 0;
+	int layoutNum = 1;
+
 	for (auto&& it : m_gainedSkills)
 	{
 		std::string txt = it.second->getText();
@@ -173,14 +172,20 @@ void GameControl::listSkills(Args _arg)
 		Args a1;
 		a1.push_back(it.second->getId());
 
-		displayControl->addOption(AREA_MAIN, 4, txt, &GameControl::useSkill, a1,
+		displayControl->addOption(AREA_MAIN, layoutNum, txt, &GameControl::useSkill, a1,
 				FONT_SMALL);
+		count++;
+		if (count > 8)
+		{
+			count = 0;
+			layoutNum++;
+		}
 	}
 
 	Args a2;
 	a2.push_back(currentNodeID);
 
-	displayControl->addOption(AREA_MAIN, 7, "return", &GameControl::advanceNode,
+	displayControl->addOption(AREA_MAIN, 4, "return", &GameControl::advanceNode,
 			a2, FONT_SMALL);
 
 }
@@ -197,6 +202,7 @@ void GameControl::listSecrets(Args _arg)
 	layout.push_back(30.f);
 	layout.push_back(30.f);
 	layout.push_back(30.f);
+	layout.push_back(100.f);
 
 	ofLog() << "[GAME_CONTROL] - Setting layout of secrets";
 	displayControl->setLayout(AREA_MAIN, layout);
@@ -213,21 +219,21 @@ void GameControl::listSecrets(Args _arg)
 		Args a1;
 		a1.push_back(it.second->getId());
 
-		displayControl->addOption(AREA_MAIN, layoutNum, txt, &GameControl::tellSecret,
-				a1, FONT_SMALL);
+		displayControl->addOption(AREA_MAIN, layoutNum, txt,
+				&GameControl::tellSecret, a1, FONT_SMALL);
 
-		count ++;
-		if(count > 8)
+		count++;
+		if (count > 8)
 		{
 			count = 0;
-			layoutNum ++;
+			layoutNum++;
 		}
 	}
 
 	Args a2;
 	a2.push_back(currentNodeID);
 
-	displayControl->addOption(AREA_MAIN, 7, "return", &GameControl::advanceNode,
+	displayControl->addOption(AREA_MAIN, 4, "return", &GameControl::advanceNode,
 			a2, FONT_SMALL);
 
 }
@@ -444,10 +450,13 @@ void GameControl::setLocations(std::map<unsigned int, Location*> _all,
 		std::map<unsigned int, ObstacleLocation*> _obstacle,
 		std::map<unsigned int, Location*> _normal)
 {
-	allLocations = _all;
-	mothLocations = _moth;
-	obstacleLocations = _obstacle;
-	normalLocations = _normal;
+	allLocationsOriginal = _all;
+	mothLocationsOriginal = _moth;
+	obstacleLocationsOriginal = _obstacle;
+	normalLocationsOriginal = _normal;
+
+	reset(std::vector<unsigned int>());
+
 	currentLocation = allLocations[0];
 	currentNodeID = 0;
 	currentLocationType = currentLocation->getType();
@@ -455,26 +464,39 @@ void GameControl::setLocations(std::map<unsigned int, Location*> _all,
 
 void GameControl::moveLocation(Args _arg)
 {
-	makeHungry();
+	if (makeHungry())
+	{
 
-	currentLocation = allLocations[_arg[0]];
-	currentLocationType = currentLocation->getType();
+		currentLocation = allLocations[_arg[0]];
+		currentLocationType = currentLocation->getType();
 
-	Args a1;
-	a1.push_back(0);
-	advanceNode(a1);
+		Args a1;
+		a1.push_back(0);
+		advanceNode(a1);
+	}
 }
 
-void GameControl::makeHungry()
+bool GameControl::makeHungry()
 {
+	ofLog() << "[GAME_CONTROL] - Making Hungry from " << hunger;
 	hunger = std::max(0, hunger - 5);
+	ofLog() << "\t to " << hunger;
 	displayControl->setLevel(LEVEL_HUNGER, hunger);
+
+	if (hunger <= 0)
+	{
+		starved();
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
-void GameControl::advanceNode(Args _arg)
+void GameControl::starved()
 {
-	makeHungry();
-
+	ofLog() << "[GAME_CONTROL] - Starved";
 	displayControl->clearContent(AREA_MAIN);
 	displayControl->clearLayout(AREA_MAIN);
 	displayControl->clearContent(AREA_BUTTONS);
@@ -482,97 +504,166 @@ void GameControl::advanceNode(Args _arg)
 	std::vector<float> layout;
 
 	layout.push_back(100.f);
-	if (currentLocation->getType() == LOCATION_MOTH)
-		layout.push_back(100.f);
 	layout.push_back(50.f);
-	layout.push_back(50.f);
-	layout.push_back(50.f);
-	layout.push_back(50.f);
+	layout.push_back(100.f);
 
 	displayControl->setLayout(AREA_MAIN, layout);
-	currentNodeID = _arg[0];
-	currentNode = currentLocation->getNode(currentNodeID);
+	displayControl->addText(AREA_MAIN, 0, "You \nDied", FONT_LARGE);
+	std::string txt = "Rather than eat the fruit and succumb to life "
+			"eternal as a moth, you chose to starve to death. "
+			"It is unlikely the fruit-addled moths will remember you.";
+	displayControl->addText(AREA_MAIN, 1, txt);
 
-	int layoutNum = 0;
+	Args a2 = Args();
+	//a2.push_back(0);
 
-	displayControl->addText(AREA_MAIN, layoutNum,
-			"[ " + currentLocation->getDescription() + " ]", FONT_MEDIUM);
+	displayControl->addOption(AREA_MAIN, 2, "Actually, I want to go back.",
+			&GameControl::reset, a2, FONT_SMALL);
+}
 
-	layoutNum ++;
-
-	if (currentLocation->getType() == LOCATION_MOTH)
+void GameControl::reset(Args _arg)
+{
+	for (auto it : mothLocationsOriginal)
 	{
-		MothLocation* moLoc = static_cast<MothLocation*>(currentLocation);
-		std::stringstream ss;
-		ss << moLoc->getOpinion();
-		displayControl->addText(AREA_MAIN, layoutNum,
-				"[ likes you " + ss.str() + "% ]", FONT_SMALL);
-
-		layoutNum ++;
+		mothLocations.insert(std::make_pair(it.first, MothLocation(it.second)));
+		allLocations.insert(
+				std::make_pair(it.first,
+						&(mothLocations.find(it.first)->second)));
 	}
 
-	displayControl->addText(AREA_MAIN, layoutNum, currentNode->getText(), FONT_SMALL);
-
-	layoutNum ++;
-
-	auto res = currentNode->getResponses();
-
-	for (auto&& it : res)
+	for (auto it : obstacleLocationsOriginal)
 	{
-		Args a1;
-		std::string txt;
-		std::stringstream ss1, ss2;
-		switch (it->getType())
+		obstacleLocations.insert(
+				std::make_pair(it.first, ObstacleLocation(it.second)));
+		allLocations.insert(
+				std::make_pair(it.first,
+						&(obstacleLocations.find(it.first)->second)));
+	}
+
+	for (auto it : normalLocationsOriginal)
+	{
+		normalLocations.insert(std::make_pair(it.first, Location(it.second)));
+		allLocations.insert(
+				std::make_pair(it.first,
+						&(normalLocations.find(it.first)->second)));
+	}
+
+	hunger = 100;
+	humanity = 100;
+
+	displayControl->setLevel(LEVEL_HUNGER, hunger);
+
+	discoveredSecrets.clear();
+	m_gainedSkills.clear();
+
+	locationsReady();
+}
+
+void GameControl::advanceNode(Args _arg)
+{
+
+	if (makeHungry())
+	{
+		displayControl->clearContent(AREA_MAIN);
+		displayControl->clearLayout(AREA_MAIN);
+		displayControl->clearContent(AREA_BUTTONS);
+		displayControl->clearLayout(AREA_BUTTONS);
+		std::vector<float> layout;
+
+		layout.push_back(100.f);
+		if (currentLocation->getType() == LOCATION_MOTH)
+			layout.push_back(100.f);
+		layout.push_back(50.f);
+		layout.push_back(50.f);
+		layout.push_back(50.f);
+		layout.push_back(50.f);
+
+		displayControl->setLayout(AREA_MAIN, layout);
+		currentNodeID = _arg[0];
+		currentNode = currentLocation->getNode(currentNodeID);
+
+		int layoutNum = 0;
+
+		displayControl->addText(AREA_MAIN, layoutNum,
+				"[ " + currentLocation->getDescription() + " ]", FONT_MEDIUM);
+
+		layoutNum++;
+
+		if (currentLocation->getType() == LOCATION_MOTH)
 		{
+			MothLocation* moLoc = static_cast<MothLocation*>(currentLocation);
+			std::stringstream ss;
+			ss << moLoc->getOpinion();
+			displayControl->addText(AREA_MAIN, layoutNum,
+					"[ likes you " + ss.str() + "% ]", FONT_SMALL);
 
-		case RESPONSE_NORMAL:
-
-			ofLog() << "REPSONSE " << it->getId();
-			a1.push_back(it->getId());
-			txt = it->getText();
-			displayControl->addOption(AREA_MAIN, layoutNum, txt,
-					&GameControl::advanceNode, a1, FONT_SMALL);
-			break;
-
-		case RESPONSE_SECRET:
-
-			a1.push_back(it->getId());
-			a1.push_back(it->getThreshold());
-			ss1 << it->getThreshold();
-			txt = it->getText();
-			txt += " [";
-			txt += ss1.str();
-			txt += "%] ";
-
-			displayControl->addOption(AREA_MAIN, layoutNum, txt,
-					&GameControl::learnSecret, a1, FONT_SMALL);
-			break;
-
-		case RESPONSE_TEACH:
-
-			a1.push_back(it->getSkill());
-			a1.push_back(it->getThreshold());
-			ss2 << it->getThreshold();
-			txt = it->getText();
-			txt += " [";
-			txt += ss2.str();
-			txt += "%] ";
-			displayControl->addOption(AREA_MAIN, layoutNum, txt,
-					&GameControl::learnSkill, a1, FONT_SMALL);
-
-			break;
+			layoutNum++;
 		}
 
+		displayControl->addText(AREA_MAIN, layoutNum, currentNode->getText(),
+				FONT_SMALL);
+
+		layoutNum++;
+
+		auto res = currentNode->getResponses();
+
+		for (auto&& it : res)
+		{
+			Args a1;
+			std::string txt;
+			std::stringstream ss1, ss2;
+			switch (it->getType())
+			{
+
+			case RESPONSE_NORMAL:
+
+				ofLog() << "REPSONSE " << it->getId();
+				a1.push_back(it->getId());
+				txt = it->getText();
+				displayControl->addOption(AREA_MAIN, layoutNum, txt,
+						&GameControl::advanceNode, a1, FONT_SMALL);
+				break;
+
+			case RESPONSE_SECRET:
+
+				a1.push_back(it->getId());
+				a1.push_back(it->getThreshold());
+				ss1 << it->getThreshold();
+				txt = it->getText();
+				txt += " [";
+				txt += ss1.str();
+				txt += "%] ";
+
+				displayControl->addOption(AREA_MAIN, layoutNum, txt,
+						&GameControl::learnSecret, a1, FONT_SMALL);
+				break;
+
+			case RESPONSE_TEACH:
+
+				a1.push_back(it->getSkill());
+				a1.push_back(it->getThreshold());
+				ss2 << it->getThreshold();
+				txt = it->getText();
+				txt += " [";
+				txt += ss2.str();
+				txt += "%] ";
+				displayControl->addOption(AREA_MAIN, layoutNum, txt,
+						&GameControl::learnSkill, a1, FONT_SMALL);
+
+				break;
+			}
+
+		}
+
+		setButtons();
+
 	}
-
-	setButtons();
-
 }
 
 void GameControl::beginGame(Args _arg)
 {
 	ofLog(OF_LOG_VERBOSE) << "[GameControl] Beginning Game";
-	switchStage(STAGE_MAIN);
+
 	Args a;
 	a.push_back(0);
 	advanceNode(a);
@@ -625,7 +716,7 @@ void GameControl::locationsReady()
 	displayControl->addOption(AREA_MAIN, 2, "Continue", &GameControl::beginGame,
 			a1, FONT_SMALL);
 
-	//setButtons();
+//setButtons();
 
 }
 
@@ -635,13 +726,6 @@ void GameControl::setDisplayControl(DisplayControl *_displayControl)
 
 	displayControl = _displayControl;
 
-}
-
-void GameControl::switchStage(STAGE _stage)
-{
-	ofLog(OF_LOG_VERBOSE) << "[GameControl] Switch Stage";
-
-	stage = _stage;
 }
 
 } /* namespace moth */

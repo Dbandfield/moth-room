@@ -15,7 +15,9 @@ Option::Option()
 	ofLog(OF_LOG_VERBOSE) << "[Option] Setup";
 
 	gameControl = nullptr;
-	f = 0;
+	f = nullptr;;
+
+	m_audioPlayer = nullptr;
 
 }
 
@@ -23,11 +25,18 @@ Option::~Option()
 {
 }
 
+void Option::setAudioPlayer(AudioPlayer* _player)
+{
+	m_audioPlayer = _player;
+}
+
+
 void Option::onSelect()
 {
 	ofLog(OF_LOG_VERBOSE) << "[Options] Selected";
 
 	((*gameControl).*f)(callbackArg);
+	if(m_audioPlayer) m_audioPlayer->play(AUDIO_BUTTON);
 }
 
 void Option::setCallback(GameControl *_gameControl, void (GameControl::*_f)(Args), Args _arg)
