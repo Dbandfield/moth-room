@@ -45,7 +45,7 @@ public:
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_font);
 	void setFontSize(FONT_SIZE _sz);
 
-	void setPosition(ofPoint _pt);
+	virtual void setPosition(ofPoint _pt);
 
 	void setColour(ofColor _col);
 

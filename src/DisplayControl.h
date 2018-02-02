@@ -14,7 +14,6 @@
 #include "LevelsFrame.h"
 #include "AudioPlayer.h"
 
-
 #include "enums.h"
 
 namespace moth
@@ -43,7 +42,11 @@ public:
 	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
 			void (GameControl::*_f)(Args), Args _arg,
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
-			bool _background = false, FLOW _flow=FLOW_VERTICAL);
+			bool _background = false, FLOW _flow = FLOW_VERTICAL);
+	void addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p, std::string _str,
+			void (GameControl::*_f)(Args), Args _arg,
+			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+			bool _background = false);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);

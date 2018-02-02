@@ -183,6 +183,22 @@ void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 	}
 }
 
+void DisplayControl::addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p, std::string _str,
+		void (GameControl::*_f)(Args), Args _arg,
+		FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+		bool _background = false)
+{
+	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
+			m_audioPlayer, _sz, _isSecret, _background, _flow);
+
+	options.push_back(fr);
+
+	for (size_t i = 0; i < options.size(); i++)
+	{
+		options[i]->setSelected(i == selected);
+	}
+}
+
 void DisplayControl::onKeyPressed(ofKeyEventArgs &_args)
 {
 	ofLog(OF_LOG_VERBOSE) << "[DisplayControl] Key Pressed";

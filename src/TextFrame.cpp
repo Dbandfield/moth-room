@@ -173,6 +173,7 @@ void TextFrame::setPosition(ofPoint _pt)
 	position = _pt;
 	recalculatePositions();
 }
+
 void TextFrame::setWidth(float _w)
 {
 	width = _w;
