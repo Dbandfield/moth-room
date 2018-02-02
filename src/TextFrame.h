@@ -12,6 +12,8 @@
 #include "Word.h"
 #include "BackgroundDecorator.h"
 #include "BorderDecorator.h"
+#include "AudioPlayer.h"
+
 
 #include "enums.h"
 
@@ -21,10 +23,11 @@ class GameControl;
 class Option;
 class Symbol;
 
-class TextFrame : public Symbol
+class TextFrame: public Symbol
 {
 public:
-	TextFrame(float _width, float _height, ofPoint _position, bool _isOption=false, bool _isSecret=false);
+	TextFrame(float _width, float _height, ofPoint _position,AudioPlayer* _player, bool _isOption =
+			false, bool _isSecret = false);
 	virtual ~TextFrame();
 
 	/* --- Inherited --- */
@@ -36,7 +39,11 @@ public:
 	ofPoint getPosition();
 	std::string getText();
 	float getSpacing();
-	std::vector<Symbol*> getChildren(){return children;};
+	std::vector<Symbol*> getChildren()
+	{
+		return children;
+	}
+	;
 
 	void setText(char _c);
 	void setText(char* _c);
@@ -57,10 +64,10 @@ public:
 
 	void setBackground();
 
-
 	/* --- End inherited --- */
 
-	void setCallback(GameControl *_gameControl, void(GameControl::*_f)(unsigned int), unsigned int _arg);
+	void setCallback(GameControl *_gameControl, void (GameControl::*_f)(Args),
+			Args _arg);
 	void onSelect();
 
 	void setIsSecret(bool _isSecret);
@@ -68,13 +75,13 @@ public:
 	void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
 
-
-
 protected:
 	void calculateSize();
 	std::vector<std::string> split(const std::string &s, char delimiter);
 	void recalculatePositions();
 	Option* opt;
+
+	AudioPlayer* m_audio;
 
 	std::string selectMarker;
 
@@ -100,8 +107,6 @@ protected:
 	 * letter height is a bit too small for lines
 	 */
 	const float LINE_HEIGHT_ADJUST = 1.6;
-
-
 
 };
 

@@ -10,41 +10,36 @@
 namespace moth
 {
 
-Location::Location(std::string _description, std::string _goodSecretResponse,
-		std::string _badSecretResponse, unsigned int _id,
-		unsigned int _expectedSecretId, Secret *_secret)
+Location::Location(Location* _loc)
 {
-	secretDiscovered = false;
-	problemSolved = false;
+	m_type = _loc->getType();
+	description = _loc->description;
+	id = _loc->id;
+	links = _loc->links;
+	storyNodes = _loc->storyNodes;
+}
+
+Location::Location(std::string _description, unsigned int _id)
+{
 
 	description = _description;
-	goodSecretResponse = _goodSecretResponse;
-	badSecretResponse = _badSecretResponse;
 
 	id = _id;
-	expectedSecretId = _expectedSecretId;
 
-	secret = _secret;
+	m_type = LOCATION_NORMAL;
 }
 
 Location::~Location()
 {
-	for (auto i = storyNodes.begin(); i != storyNodes.end(); i++)
-	{
-		delete i->second;
-	}
+//	for (auto i = storyNodes.begin(); i != storyNodes.end(); i++)
+//	{
+//		delete i->second;
+//	}
 }
 
-bool Location::solveProblem(unsigned int _secretId)
+LOCATION Location::getType()
 {
-	ofLog() << "Comparing " << _secretId << " to " << expectedSecretId;
-	problemSolved = _secretId == expectedSecretId;
-	return problemSolved;
-}
-
-void Location::setSecretDiscovered(bool _disc)
-{
-	secretDiscovered = _disc;
+	return m_type;
 }
 
 void Location::addLink(unsigned int _id)
@@ -52,10 +47,9 @@ void Location::addLink(unsigned int _id)
 	links.push_back(_id);
 }
 
-void Location::addStoryNode(unsigned int _ID, StoryNode* _node)
+void Location::addStoryNode(unsigned int _ID, StoryNode _node)
 {
-	ofLog() << "ADDING: " << _ID;
-	storyNodes.insert(std::pair<unsigned int, StoryNode*>(_ID, _node));
+	storyNodes.insert(std::pair<unsigned int, StoryNode>(_ID, _node));
 }
 
 StoryNode* Location::getNode(unsigned int _ID)
@@ -67,7 +61,7 @@ StoryNode* Location::getNode(unsigned int _ID)
 	}
 	else
 	{
-		return storyNodes[_ID];
+		return &(storyNodes.find(_ID)->second);
 	}
 }
 

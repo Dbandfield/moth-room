@@ -9,6 +9,8 @@
 #include "Location.h"
 #include "DataLoader.h"
 #include "Secret.h"
+#include "Skill.h"
+#include "AudioPlayer.h"
 
 namespace moth
 {
@@ -23,32 +25,65 @@ public:
 
 	void setDisplayControl(DisplayControl *_displayControl);
 
-	void beginGame(unsigned int _arg);
-	void advanceSecretNode(unsigned int _arg);
-	void advanceNode(unsigned int _arg);
-	void listLocations(unsigned int _arg);
-	void listSecrets(unsigned int _arg);
-	void moveLocation(unsigned int _arg);
-	void tellSecret(unsigned int _arg);
-	void eat(unsigned int _arg);
+	void beginGame(Args _arg);
+	void advanceNode(Args _arg);
 
-	void setLocations(std::map<unsigned int, Location*>  _locs);
+	void listLocations(Args _arg);
+	void listSecrets(Args _arg);
+	void listSkills(Args _arg);
+
+	void moveLocation(Args _arg);
+	void tellSecret(Args _arg);
+	void useSkill(Args _arg);
+	void eat(Args _arg);
+	void learnSecret(Args _arg);
+	void learnSkill(Args _arg);
+	void reset(Args _arg);
+
+	void setLocations(std::map<unsigned int, Location*> _all,
+			std::map<unsigned int, MothLocation*> _moth,
+			std::map<unsigned int, ObstacleLocation*> _obstacle,
+			std::map<unsigned int, Location*> _normal);
+
+	void setSecrets(std::map<unsigned int, Secret*> _secrets);
+	void setSkills(std::map<unsigned int, Skill*> _skills);
+
 	void locationsReady();
+	void secretsReady();
+
+	void setAudioPlayer(AudioPlayer* _player);
 
 protected:
-	void switchStage(STAGE _stage);
 	void setButtons();
-	void makeHungry();
+	bool makeHungry();
+	void starved();
+	bool knowsSecret(unsigned int _secret);
+	bool likedEnoughByMoth(unsigned int _thresh);
+	bool knowsSkill(unsigned int _skill);
 
-	std::map<unsigned int, Location*> locations;
+	std::map<unsigned int, Location*> allLocationsOriginal;
+	std::map<unsigned int, MothLocation*> mothLocationsOriginal;
+	std::map<unsigned int, ObstacleLocation*> obstacleLocationsOriginal;
+	std::map<unsigned int, Location*> normalLocationsOriginal;
+
+	std::map<unsigned int, Location*> allLocations;
+	std::map<unsigned int, MothLocation> mothLocations;
+	std::map<unsigned int, ObstacleLocation> obstacleLocations;
+	std::map<unsigned int, Location> normalLocations;
+
 	Location* currentLocation;
+	LOCATION currentLocationType;
 	unsigned int currentNodeID;
 	StoryNode* currentNode;
 
 	DisplayControl *displayControl;
-	STAGE stage;
 
-	std::vector<Secret*> discoveredSecrets;
+	AudioPlayer* m_audioPlayer;
+
+	std::map<unsigned int, Secret*> m_allSecrets;
+	std::map<unsigned int, Secret*> discoveredSecrets;
+	std::map<unsigned int, Skill*> m_allSkills;
+	std::map<unsigned int, Skill*> m_gainedSkills;
 
 	int hunger;
 	int humanity;

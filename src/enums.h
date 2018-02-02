@@ -1,13 +1,11 @@
 #pragma once
 
+#include <vector>
+
 namespace moth
 {
 
-enum STAGE
-{
-	STAGE_TITLE,
-	STAGE_MAIN
-};
+typedef std::vector<unsigned int> Args;
 
 enum FONT_SIZE
 {
@@ -56,6 +54,29 @@ enum LAYER
 	LAYER_JITTER,
 	LAYER_PIXELLATED,
 	LAYER_DISTORTED
+};
+
+
+enum RESPONSE
+{
+	RESPONSE_NORMAL,
+	RESPONSE_SECRET,
+	RESPONSE_TEACH
+};
+
+enum LOCATION
+{
+	LOCATION_NORMAL,
+	LOCATION_MOTH,
+	LOCATION_OBSTACLE
+};
+
+enum AUDIO
+{
+	AUDIO_BUTTON,
+	AUDIO_GO,
+	AUDIO_EAT,
+	AUDIO_SECRET
 };
 
 }

@@ -348,7 +348,7 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, false);
+	TextFrame* frame = new TextFrame(40, 40, pt, nullptr, false);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
@@ -375,11 +375,13 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 }
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
-		GameControl* _gc, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background,
+		GameControl* _gc, void (GameControl::*_f)(Args),
+		Args _arg, AudioPlayer* _player, FONT_SIZE _sz, bool _isSecret, bool _background,
 		FLOW _flow)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
+
+	m_audio = _player;
 
 	ofPoint pt = ofPoint();
 	pt.x = layout[_p].rect.x;
@@ -397,7 +399,77 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, true, _isSecret);
+	TextFrame* frame = new TextFrame(40, 40, pt, m_audio,true, _isSecret);
+
+	frame->setText(_str);
+	frame->setFontSize(_sz);
+
+	if (_background)
+	{
+		frame->setMargin(MARGIN_TOP, 0);
+		frame->setMargin(MARGIN_RIGHT, 16);
+		frame->setMargin(MARGIN_LEFT, 16);
+		frame->setMargin(MARGIN_BOTTOM, 0);
+		frame->setColour(ofColor(0,0,0));
+	}
+	else
+	{
+		frame->setMargin(MARGIN_TOP, 16);
+		frame->setMargin(MARGIN_RIGHT, 32);
+		frame->setMargin(MARGIN_LEFT, 32);
+		frame->setMargin(MARGIN_BOTTOM, 16);
+	}
+	frame->setCallback(_gc, _f, _arg);
+	frame->setLayer(layer);
+
+	auto vec = frame->getChildren();
+	addWords(vec);
+
+	containers[_p]->addChild(frame);
+
+	if (fontLarge != nullptr)
+		setFont(FONT_LARGE, fontLarge);
+	if (fontMedium != nullptr)
+		setFont(FONT_MEDIUM, fontMedium);
+	if (fontSmall != nullptr)
+		setFont(FONT_SMALL, fontSmall);
+
+	if (_background)
+	{
+		containers[_p]->setBackground();
+	}
+
+	readjustHeights();
+
+	return frame;
+}
+
+MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, std::string, GameControl* _gc,
+		void (GameControl::*_f)(Args), Args _arg, AudioPlayer* _audio,
+		FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+		bool _background = false)
+{
+	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
+
+	m_audio = _player;
+
+	ofPoint pt = ofPoint();
+	pt.x = layout[_p].rect.x;
+	pt.y = layout[_p].rect.y;
+
+	if (containers.find(_p) == containers.end())
+	{
+		MapContainer* cont = new MapContainer();
+		cont->setLayer(layer);
+		cont->setMargin(MARGIN_TOP, 32);
+		cont->setMargin(MARGIN_RIGHT, 32);
+		cont->setMargin(MARGIN_LEFT, 32);
+		cont->setMargin(MARGIN_BOTTOM, 32);
+		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
+
+	}
+
+	TextFrame* frame = new TextFrame(40, 40, pt, m_audio,true, _isSecret);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);

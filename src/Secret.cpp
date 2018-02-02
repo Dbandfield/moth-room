@@ -10,14 +10,22 @@
 namespace moth
 {
 
-Secret::Secret(std::string _text, unsigned int _id)
+Secret::Secret(std::string _short, std::string _text, unsigned int _id)
 {
-	text = _text;
-	id = _id;
+	m_short = _short;
+	m_text = _text;
+	m_id = _id;
+
+	m_power = 10;
 }
 
 Secret::~Secret()
 {
+}
+
+void Secret::useSecret()
+{
+	m_power = std::max(0, m_power - 2);
 }
 
 } /* namespace moth */

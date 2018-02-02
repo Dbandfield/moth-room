@@ -43,8 +43,12 @@ DisplayControl::DisplayControl() :
 	std::vector<float> layout;
 	layout.push_back(100);
 	levels->setLayout(layout);
-	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUNGER, levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
-	levelMap.insert(std::pair<LEVEL, Level*>(LEVEL_HUMANITY, levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
+	levelMap.insert(
+			std::pair<LEVEL, Level*>(LEVEL_HUNGER,
+					levels->addBar(0, "Hunger", FONT_SMALL, screenHeight)));
+	levelMap.insert(
+			std::pair<LEVEL, Level*>(LEVEL_HUMANITY,
+					levels->addBar(0, "Humanity", FONT_SMALL, screenHeight)));
 
 	levels->setLayer(LAYER_PIXELLATED);
 	main->setLayer(LAYER_JITTER);
@@ -62,7 +66,7 @@ DisplayControl::~DisplayControl()
 	ofRemoveListener(ofEvents().keyReleased, this,
 			&DisplayControl::onKeyPressed);
 
-	for(auto it : areas)
+	for (auto it : areas)
 	{
 		delete it.second;
 	}
@@ -95,7 +99,8 @@ void DisplayControl::display(LAYER _layer)
 	for (auto it : areas)
 	{
 		it.second->display(_layer);
-	}}
+	}
+}
 
 void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 {
@@ -129,7 +134,7 @@ void DisplayControl::setFont(FONT_SIZE _sz, ofTrueTypeFont *_f)
 
 void DisplayControl::setCorruption(int _corruption)
 {
-	for(auto it : areas)
+	for (auto it : areas)
 	{
 		it.second->setCorruption(_corruption);
 	}
@@ -158,12 +163,33 @@ void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
 	areas[_area]->addText(_p, _str, _sz);
 }
 
+void DisplayControl::setAudioPlayer(AudioPlayer* _player)
+{
+	m_audioPlayer = _player;
+}
+
 void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
-		std::string _str, void (GameControl::*_f)(unsigned int),
-		unsigned int _arg, FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
+		std::string _str, void (GameControl::*_f)(Args), Args _arg,
+		FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
 {
 	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
-			_sz, _isSecret, _background, _flow);
+			m_audioPlayer, _sz, _isSecret, _background, _flow);
+
+	options.push_back(fr);
+
+	for (size_t i = 0; i < options.size(); i++)
+	{
+		options[i]->setSelected(i == selected);
+	}
+}
+
+void DisplayControl::addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p, std::string _str,
+		void (GameControl::*_f)(Args), Args _arg,
+		FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+		bool _background = false)
+{
+	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
+			m_audioPlayer, _sz, _isSecret, _background, _flow);
 
 	options.push_back(fr);
 

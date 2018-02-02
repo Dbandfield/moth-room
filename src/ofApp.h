@@ -25,6 +25,8 @@ protected:
 	moth::DisplayControl *displayControl;
 	moth::DataLoader *dataLoader;
 
+	moth::AudioPlayer *audioPlayer;
+
 	ofShader jitter;
 	ofShader pixelate;
 	ofShader vignette;
@@ -42,6 +44,8 @@ protected:
 
 	bool fontsTransferred;
 	bool locationsTransferred;
+	bool secretsTransferred;
+	bool skillsTransferred;
 
 	ofColor backgroundColour;
 
