@@ -6,6 +6,9 @@
  */
 
 #include "TextContainer.h"
+#include "GameControl.h"
+#include "BorderDecorator.h"
+#include "TextFrame.h"
 
 namespace moth
 {
@@ -122,6 +125,11 @@ float TextContainer::getHeight()
 	}
 
 	return h;
+}
+
+void TextContainer::setPosition(float _x, float _y)
+{
+	setPosition(ofPoint(_x, _y));
 }
 
 void TextContainer::setPosition(ofPoint _pt)

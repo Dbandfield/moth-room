@@ -1,25 +1,39 @@
 #pragma once
 #include "TextContainer.h"
-#include "MapText.h"
+#include "enums.h"
 
-namespace VO
+namespace moth
 {
 
-class MapContainer: public moth::TextContainer
+class MapText;
+
+class MapContainer: public TextContainer
 {
 public:
-	MapContainer();
+	MapContainer(float _width, float _height);
 	virtual ~MapContainer();
 
-	void setPosition(ofPoint _pt);
+	float getHeight(){return height;}
+	float getWidth(){return width;}
 
-	void setText(std::string _txt, float _propX, float _propY);
+	void display(LAYER _layer);
+
+	void setPosition(ofPoint _pt);
+	void setPosition(float _x, float _y);
+
+	void setText(std::string _txt, float _propX, float _propY, Symbol* _label);
+
+	void setWidth(float _w);
+
+	void addConnection(unsigned int _node1, unsigned int _node2);
+	void clearConnections();
 
 protected:
 
 	void recalcMapPos();
+	std::map<unsigned int, unsigned int> connections;
 
 
 };
 
-} /* namespace VO */
+} /* namespace moth */

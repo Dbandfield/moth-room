@@ -5,18 +5,15 @@
 
 #include <ofMain.h>
 
-#include "GameControl.h"
-#include "TextFrame.h"
 #include "enums.h"
 #include "Symbol.h"
-#include "BorderDecorator.h"
 
 namespace moth
 {
 
 class GameControl;
-class TextFrame;
 class Symbol;
+class TextFrame;
 
 class TextContainer : public Symbol
 {
@@ -26,12 +23,12 @@ public:
 
 	/* Inherited */
 
-	void display(LAYER _layer);
+	virtual void display(LAYER _layer);
 
 	std::vector<Symbol*> getChildren();
 
-	float getHeight();
-	float getWidth();
+	virtual float getHeight();
+	virtual float getWidth();
 	ofPoint getPosition();
 	std::string getText();
 	float getSpacing();
@@ -55,8 +52,8 @@ public:
 
 	/* Not inherited */
 
-	void setPosition(float _x, float _y);
-	void setWidth(float _w);
+	virtual void setPosition(float _x, float _y);
+	virtual void setWidth(float _w);
 
 	unsigned int getSize(){return children.size();};
 

@@ -6,6 +6,11 @@
  */
 
 #include "TextFrame.h"
+#include "BackgroundDecorator.h"
+#include "BorderDecorator.h"
+#include "Option.h"
+#include "GameControl.h"
+
 
 namespace moth
 {
@@ -57,6 +62,8 @@ TextFrame::TextFrame(float _width, float _height, ofPoint _position,
 
 	smallWord = false;
 
+	selected = false;
+
 }
 
 TextFrame::~TextFrame()
@@ -93,6 +100,8 @@ void TextFrame::setIsSecret(bool _isSecret)
 
 void TextFrame::setSelected(bool _sel)
 {
+	selected = _sel;
+
 	if (_sel)
 	{
 		float h, s, b;
@@ -145,6 +154,7 @@ void TextFrame::onSelect()
 	if (opt != nullptr)
 	{
 		opt->onSelect();
+		ofLog() << "[TEXT_FRAME] - selected";
 	}
 	else
 	{

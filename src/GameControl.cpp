@@ -172,8 +172,8 @@ void GameControl::listSkills(Args _arg)
 		Args a1;
 		a1.push_back(it.second->getId());
 
-		displayControl->addOption(AREA_MAIN, layoutNum, txt, &GameControl::useSkill, a1,
-				FONT_SMALL);
+		displayControl->addOption(AREA_MAIN, layoutNum, txt,
+				&GameControl::useSkill, a1, FONT_SMALL);
 		count++;
 		if (count > 8)
 		{
@@ -285,40 +285,37 @@ void GameControl::listLocations(Args _arg)
 	displayControl->clearLayout(AREA_BUTTONS);
 	std::vector<float> layout;
 
-	layout.push_back(30.f);
-	layout.push_back(30.f); // 1
-	layout.push_back(30.f);
-
-	layout.push_back(30.f);
-	layout.push_back(30.f); // 4
-	layout.push_back(30.f);
-
-	layout.push_back(30.f);
-	layout.push_back(30.f);  // 7
-	layout.push_back(30.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
+	layout.push_back(100.f);
 
 	ofLog() << "[GAME_CONTROL] - Setting layout of locations";
 
 	displayControl->setLayout(AREA_MAIN, layout);
-	displayControl->addText(AREA_MAIN, 1, "Fly to: ", FONT_MEDIUM);
+	displayControl->addText(AREA_MAIN, 0, "Fly to: ", FONT_MEDIUM);
 
-	auto linkVec = currentLocation->getLinks();
 
-	for (auto&& it : linkVec)  //linkVec.begin(); it != linkVec.end(); it++)
+	Symbol* label = displayControl->addText(AREA_MAIN, 2, "", FONT_SMALL);
+
+	for (auto it : allLocations)
 	{
-		std::string txt = allLocations[it]->getDescription();
+		auto linkVec = it.second->getLinks();
+
+		std::string txt = it.second->getDescription();
 
 		Args a1;
-		a1.push_back(it);
+		a1.push_back(it.first);
 
-		displayControl->addOption(AREA_MAIN, 4, txt, &GameControl::moveLocation,
-				a1, FONT_SMALL);
+		displayControl->addMapOption(it.second->getRelX(), it.second->getRelY(),
+				AREA_MAIN, 1, txt, &GameControl::moveLocation, a1, linkVec, label,
+				FONT_SMALL);
 	}
 
 	Args a2;
 	a2.push_back(currentNodeID);
 
-	displayControl->addOption(AREA_MAIN, 7, "return", &GameControl::advanceNode,
+	displayControl->addOption(AREA_MAIN, 3, "return", &GameControl::advanceNode,
 			a2, FONT_SMALL);
 }
 

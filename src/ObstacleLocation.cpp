@@ -20,8 +20,8 @@ ObstacleLocation::ObstacleLocation(ObstacleLocation* _loc):	Location(_loc)
 }
 
 ObstacleLocation::ObstacleLocation(std::string _description, unsigned int _id,
-		unsigned int _skillNeeded, unsigned int _skillGiven) :
-		Location(_description, _id)
+		unsigned int _skillNeeded, unsigned int _skillGiven, float _x, float _y) :
+		Location(_description, _id, _x, _y)
 {
 	m_skillNeeded = _skillNeeded;
 	m_skillGiven = _skillGiven;

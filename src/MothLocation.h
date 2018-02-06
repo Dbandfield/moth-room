@@ -11,7 +11,7 @@ class MothLocation: public Location
 {
 public:
 	MothLocation(MothLocation* _loc);
-	MothLocation(std::string _description, unsigned int _id);
+	MothLocation(std::string _description, unsigned int _id, float _x, float _y);
 	virtual ~MothLocation();
 
 	void addInvalidSecret(unsigned int _secret);

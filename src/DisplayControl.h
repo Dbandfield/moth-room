@@ -13,6 +13,7 @@
 #include "Level.h"
 #include "LevelsFrame.h"
 #include "AudioPlayer.h"
+#include "MapContainer.h"
 
 #include "enums.h"
 
@@ -35,18 +36,20 @@ public:
 	void setFont(FONT_SIZE _sz, ofTrueTypeFont *_f);
 	void setLayout(DISPLAY_AREA, std::vector<float> _layout);
 
-	void addText(DISPLAY_AREA _area, unsigned int _p, std::string,
+	Symbol* addText(DISPLAY_AREA _area, unsigned int _p, std::string,
 			FONT_SIZE _sz = FONT_SMALL);
 	void clearContent(DISPLAY_AREA _area);
 	void clearLayout(DISPLAY_AREA _area);
-	void addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
+
+	Symbol* addOption(DISPLAY_AREA _area, unsigned int _p, std::string,
 			void (GameControl::*_f)(Args), Args _arg,
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false, FLOW _flow = FLOW_VERTICAL);
-	void addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p, std::string _str,
-			void (GameControl::*_f)(Args), Args _arg,
-			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
-			bool _background = false);
+
+	Symbol* addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p,
+			std::string _str, void (GameControl::*_f)(Args), Args _arg,
+			std::vector<unsigned int> _links, Symbol* _label, FONT_SIZE _sz =
+					FONT_SMALL);
 
 	void onKeyPressed(ofKeyEventArgs &_args);
 	void onArrow(int _key);

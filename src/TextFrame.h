@@ -6,14 +6,11 @@
 
 #include "ofMain.h"
 
-#include "GameControl.h"
 #include "Symbol.h"
-#include "Option.h"
-#include "Word.h"
-#include "BackgroundDecorator.h"
-#include "BorderDecorator.h"
-#include "AudioPlayer.h"
 
+#include "Word.h"
+
+#include "AudioPlayer.h"
 
 #include "enums.h"
 
@@ -26,13 +23,14 @@ class Symbol;
 class TextFrame: public Symbol
 {
 public:
-	TextFrame(float _width, float _height, ofPoint _position,AudioPlayer* _player, bool _isOption =
-			false, bool _isSecret = false);
+	TextFrame(float _width, float _height, ofPoint _position,
+			AudioPlayer* _player, bool _isOption = false,
+			bool _isSecret = false);
 	virtual ~TextFrame();
 
 	/* --- Inherited --- */
 
-	void display(LAYER _layer);
+	virtual void display(LAYER _layer);
 
 	float getHeight();
 	float getWidth();
@@ -72,7 +70,7 @@ public:
 
 	void setIsSecret(bool _isSecret);
 
-	void setSelected(bool _sel);
+	virtual void setSelected(bool _sel);
 	void setMargin(MARGIN, float _amt);
 
 protected:
@@ -92,6 +90,7 @@ protected:
 
 	bool isOption;
 	bool isSecret;
+	bool selected;
 
 	bool smallWord;
 

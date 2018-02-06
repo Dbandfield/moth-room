@@ -340,19 +340,22 @@ void DataLoader::loadLocations()
 			// GET LOCATION TYPE
 			std::string type = locationsXml.getValue("type", "ERROR_NO_TYPE");
 
+			float x = std::stof(locationsXml.getValue("x", ""));
+			float y = std::stof(locationsXml.getValue("y", ""));
+
 			Location* loc;
 
 			// NORMAL
 			if (type == "normal")
 			{
-				loc = new Location(locDesc, locId);
+				loc = new Location(locDesc, locId, x, y);
 				m_normalLocations.insert(
 						std::pair<unsigned int, Location*>(locId, loc));
 			}
 			// MOTH
 			else if (type == "moth")
 			{
-				loc = new MothLocation(locDesc, locId);
+				loc = new MothLocation(locDesc, locId, x, y);
 				m_mothLocations.insert(
 						std::pair<unsigned int, MothLocation*>(locId,
 								static_cast<MothLocation*>(loc)));
@@ -386,7 +389,7 @@ void DataLoader::loadLocations()
 				skillGiveSS >> skillGiveId;
 
 				loc = new ObstacleLocation(locDesc, locId, skillNeedId,
-						skillGiveId);
+						skillGiveId, x, y);
 				m_obstacleLocations.insert(
 						std::pair<unsigned int, ObstacleLocation*>(locId,
 								static_cast<ObstacleLocation*>(loc)));

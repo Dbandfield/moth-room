@@ -11,9 +11,12 @@
 #include "MapContainer.h"
 #include "MapText.h"
 
-
 namespace moth
 {
+
+class MapContainer;
+class TextFrame;
+class MapText;
 
 struct Cell
 {
@@ -72,7 +75,10 @@ public:
 
 	void setLayer(LAYER _layer);
 
-	void setBackground(){};
+	void setBackground()
+	{
+	}
+	;
 
 	/* not inherited */
 
@@ -90,9 +96,10 @@ public:
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false, FLOW _flow = FLOW_VERTICAL);
 
-	MapText* addMapOption(unsigned int _p, float _relX, float _relY, std::string, GameControl* _gc,
-			void (GameControl::*_f)(Args), Args _arg, AudioPlayer* _audio,
-			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
+	MapText* addMapOption(unsigned int _p, float _relX, float _relY,
+			std::string, GameControl* _gc, void (GameControl::*_f)(Args),
+			Args _arg, AudioPlayer* _audio, std::vector<unsigned int> _links,
+			Symbol* _label, FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false);
 
 	Level* addBar(unsigned int _p, std::string _str, FONT_SIZE _sz,

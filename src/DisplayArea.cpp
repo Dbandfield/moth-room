@@ -375,8 +375,8 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 }
 
 TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
-		GameControl* _gc, void (GameControl::*_f)(Args),
-		Args _arg, AudioPlayer* _player, FONT_SIZE _sz, bool _isSecret, bool _background,
+		GameControl* _gc, void (GameControl::*_f)(Args), Args _arg,
+		AudioPlayer* _player, FONT_SIZE _sz, bool _isSecret, bool _background,
 		FLOW _flow)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
@@ -399,7 +399,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, m_audio,true, _isSecret);
+	TextFrame* frame = new TextFrame(40, 40, pt, m_audio, true, _isSecret);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
@@ -410,7 +410,7 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 		frame->setMargin(MARGIN_RIGHT, 16);
 		frame->setMargin(MARGIN_LEFT, 16);
 		frame->setMargin(MARGIN_BOTTOM, 0);
-		frame->setColour(ofColor(0,0,0));
+		frame->setColour(ofColor(0, 0, 0));
 	}
 	else
 	{
@@ -444,10 +444,10 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	return frame;
 }
 
-MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, std::string, GameControl* _gc,
-		void (GameControl::*_f)(Args), Args _arg, AudioPlayer* _audio,
-		FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
-		bool _background = false)
+MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY,
+		std::string _str, GameControl* _gc, void (GameControl::*_f)(Args),
+		Args _arg, AudioPlayer* _player, std::vector<unsigned int> _links,
+		Symbol* _label, FONT_SIZE _sz, bool _isSecret, bool _background)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
@@ -459,7 +459,7 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, st
 
 	if (containers.find(_p) == containers.end())
 	{
-		MapContainer* cont = new MapContainer();
+		MapContainer* cont = new MapContainer(600, 400);
 		cont->setLayer(layer);
 		cont->setMargin(MARGIN_TOP, 32);
 		cont->setMargin(MARGIN_RIGHT, 32);
@@ -469,10 +469,11 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, st
 
 	}
 
-	TextFrame* frame = new TextFrame(40, 40, pt, m_audio,true, _isSecret);
+	MapText* frame = new MapText(40, 40, pt, m_audio, _label, true);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
+	frame->setPropPos(_relX, _relY);
 
 	if (_background)
 	{
@@ -480,7 +481,7 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, st
 		frame->setMargin(MARGIN_RIGHT, 16);
 		frame->setMargin(MARGIN_LEFT, 16);
 		frame->setMargin(MARGIN_BOTTOM, 0);
-		frame->setColour(ofColor(0,0,0));
+		frame->setColour(ofColor(0, 0, 0));
 	}
 	else
 	{
@@ -496,6 +497,12 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY, st
 	addWords(vec);
 
 	containers[_p]->addChild(frame);
+
+	for (auto it : _links)
+	{
+		MapContainer* m = static_cast<MapContainer*>(containers[_p]);
+		m->addConnection(_p, it);
+	}
 
 	if (fontLarge != nullptr)
 		setFont(FONT_LARGE, fontLarge);

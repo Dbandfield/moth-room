@@ -157,10 +157,10 @@ void DisplayControl::clearLayout(DISPLAY_AREA _area)
 	areas[_area]->clearLayout();
 
 }
-void DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
+Symbol* DisplayControl::addText(DISPLAY_AREA _area, unsigned int _p,
 		std::string _str, FONT_SIZE _sz)
 {
-	areas[_area]->addText(_p, _str, _sz);
+	return areas[_area]->addText(_p, _str, _sz);
 }
 
 void DisplayControl::setAudioPlayer(AudioPlayer* _player)
@@ -168,7 +168,7 @@ void DisplayControl::setAudioPlayer(AudioPlayer* _player)
 	m_audioPlayer = _player;
 }
 
-void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
+Symbol* DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 		std::string _str, void (GameControl::*_f)(Args), Args _arg,
 		FONT_SIZE _sz, bool _isSecret, bool _background, FLOW _flow)
 {
@@ -181,15 +181,17 @@ void DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 	{
 		options[i]->setSelected(i == selected);
 	}
+
+	return fr;
 }
 
-void DisplayControl::addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p, std::string _str,
-		void (GameControl::*_f)(Args), Args _arg,
-		FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
-		bool _background = false)
+Symbol* DisplayControl::addMapOption(float _relX, float _relY, DISPLAY_AREA _area,
+		unsigned int _p, std::string _str, void (GameControl::*_f)(Args),
+		Args _arg, std::vector<unsigned int> _links, Symbol* _label,
+		FONT_SIZE _sz)
 {
-	TextFrame* fr = areas[_area]->addOption(_p, _str, gameControl, _f, _arg,
-			m_audioPlayer, _sz, _isSecret, _background, _flow);
+	MapText* fr = areas[_area]->addMapOption(_p, _relX, _relY, _str,
+			gameControl, _f, _arg, m_audioPlayer, _links, _label, _sz);
 
 	options.push_back(fr);
 
@@ -197,6 +199,8 @@ void DisplayControl::addMapOption(float _relX, float relY, DISPLAY_AREA, unsigne
 	{
 		options[i]->setSelected(i == selected);
 	}
+
+	return fr;
 }
 
 void DisplayControl::onKeyPressed(ofKeyEventArgs &_args)

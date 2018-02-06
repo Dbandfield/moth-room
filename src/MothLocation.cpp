@@ -17,8 +17,8 @@ MothLocation::MothLocation(MothLocation* _loc):	Location(_loc)
 
 }
 
-MothLocation::MothLocation(std::string _description, unsigned int _id) :
-		Location(_description, _id)
+MothLocation::MothLocation(std::string _description, unsigned int _id, float _x, float _y) :
+		Location(_description, _id, _x, _y)
 {
 	m_type = LOCATION_MOTH;
 

@@ -14,7 +14,7 @@ class Location
 {
 public:
 	Location(Location* _loc);
-	Location(std::string _description, unsigned int _id);
+	Location(std::string _description, unsigned int _id, float _x, float _y);
 	virtual ~Location();
 
 	void addLink(unsigned int _id);
@@ -26,16 +26,18 @@ public:
 		return id;
 	}
 	;
-	std::vector<unsigned int> getLinks()
+	inline std::vector<unsigned int> getLinks()
 	{
 		return links;
-	}
-	;
-	std::string getDescription()
+	};
+
+	inline std::string getDescription()
 	{
 		return description;
-	}
-	;
+	};
+
+	inline float getRelX(){return relX;}
+	inline float getRelY(){return relY;}
 
 	LOCATION getType();
 
@@ -48,6 +50,9 @@ protected:
 	std::vector<unsigned int> links;
 
 	std::map<unsigned int, StoryNode> storyNodes;
+
+	float relX;
+	float relY;
 
 };
 

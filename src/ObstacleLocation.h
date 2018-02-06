@@ -12,7 +12,8 @@ class ObstacleLocation: public Location
 public:
 	ObstacleLocation(ObstacleLocation* _loc);
 	ObstacleLocation(std::string _description, unsigned int _id,
-			unsigned int _skillNeeded, unsigned int _skillGiven);
+			unsigned int _skillNeeded, unsigned int _skillGiven, float _x,
+			float _y);
 	virtual ~ObstacleLocation();
 
 	void addBlockedLink(unsigned int _id);

@@ -17,9 +17,11 @@ Location::Location(Location* _loc)
 	id = _loc->id;
 	links = _loc->links;
 	storyNodes = _loc->storyNodes;
+	relX = _loc->getRelX();
+	relY = _loc->getRelY();
 }
 
-Location::Location(std::string _description, unsigned int _id)
+Location::Location(std::string _description, unsigned int _id, float _x, float _y)
 {
 
 	description = _description;
@@ -27,6 +29,9 @@ Location::Location(std::string _description, unsigned int _id)
 	id = _id;
 
 	m_type = LOCATION_NORMAL;
+
+	relX = _x;
+	relY = _y;
 }
 
 Location::~Location()
