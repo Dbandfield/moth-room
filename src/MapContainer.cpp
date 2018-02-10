@@ -23,6 +23,17 @@ MapContainer::~MapContainer()
 	// TODO Auto-generated destructor stub
 }
 
+void MapContainer::addChild(Symbol* _child)
+{
+	unsigned int ndx = children.size();
+	unsigned int id = static_cast<MapText*>(_child)->getId();
+	idToIndex[id] = ndx;
+
+	ofLog() << "[MAP_CONTAINER] - adding index " << ndx << " to id " << id;
+
+	children.push_back(_child);
+}
+
 void MapContainer::setPosition(float _x, float _y)
 {
 	setPosition(ofPoint(_x, _y));
@@ -46,14 +57,15 @@ void MapContainer::display(LAYER _layer)
 
 	for (auto it : connections)
 	{
-		ofDrawLine(children[it.first]->getPosition(),
-				children[it.second]->getPosition());
+		ofDrawLine(children[idToIndex[it.first]]->getPosition(),
+				children[idToIndex[it.second]]->getPosition());
 	}
 }
 
 void MapContainer::addConnection(unsigned int _node1, unsigned int _node2)
 {
 	connections[_node1] = _node2;
+	ofLog() << "[MAP_CONTAINER] - Adding connection from " << _node1 << " to " << _node2;
 }
 
 void MapContainer::clearConnections()
@@ -66,11 +78,6 @@ void MapContainer::recalcMapPos()
 	for (auto it : children)
 	{
 		MapText* txt = static_cast<MapText*>(it);
-		ofLog() << "[MAP_CONTAINER] - " << position.x << " " << position.y
-				<< " " << width << " " << height << " " << txt->getPropX()
-				<< " " << txt->getPropY();
-		ofLog() << "[MAP_CONTAINER] - " << width * txt->getPropX();
-		ofLog() << "[MAP_CONTAINER] - " << height * txt->getPropY();
 
 		txt->setPosition(
 				ofPoint(position.x + (width * txt->getPropX()),
@@ -78,10 +85,10 @@ void MapContainer::recalcMapPos()
 	}
 }
 
-void MapContainer::setText(std::string _str, float _propX, float _propY,
+void MapContainer::setText(unsigned int _locId, std::string _str, float _propX, float _propY,
 		Symbol* _label)
 {
-	MapText* frame = new MapText(width - (marginLeft + marginRight),
+	MapText* frame = new MapText(_locId, width - (marginLeft + marginRight),
 			height - (marginTop + marginBottom),
 			ofPoint(position.x + marginLeft, position.y + marginTop), nullptr,
 			_label, true);

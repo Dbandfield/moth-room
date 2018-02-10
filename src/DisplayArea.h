@@ -96,7 +96,7 @@ public:
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false, FLOW _flow = FLOW_VERTICAL);
 
-	MapText* addMapOption(unsigned int _p, float _relX, float _relY,
+	MapText* addMapOption(unsigned int _p, unsigned int _locId, float _relX, float _relY,
 			std::string, GameControl* _gc, void (GameControl::*_f)(Args),
 			Args _arg, AudioPlayer* _audio, std::vector<unsigned int> _links,
 			Symbol* _label, FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,

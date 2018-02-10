@@ -46,7 +46,7 @@ public:
 			FONT_SIZE _sz = FONT_SMALL, bool _isSecret = false,
 			bool _background = false, FLOW _flow = FLOW_VERTICAL);
 
-	Symbol* addMapOption(float _relX, float relY, DISPLAY_AREA, unsigned int _p,
+	Symbol* addMapOption(unsigned int _locId, float _relX, float relY, DISPLAY_AREA, unsigned int _p,
 			std::string _str, void (GameControl::*_f)(Args), Args _arg,
 			std::vector<unsigned int> _links, Symbol* _label, FONT_SIZE _sz =
 					FONT_SMALL);

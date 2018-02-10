@@ -94,7 +94,7 @@ void TextContainer::setText(std::string _str)
 {
 	TextFrame* frame = new TextFrame(width - (marginLeft + marginRight),
 			height - (marginTop + marginBottom),
-			ofPoint(position.x + marginLeft, position.y + marginTop), false,
+			ofPoint(position.x + marginLeft, position.y + marginTop), nullptr, false,
 			false);
 	frame->setText(_str);
 	children.push_back(frame);

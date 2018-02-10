@@ -11,12 +11,13 @@
 namespace moth
 {
 
-MapText::MapText(float _width, float _height, ofPoint _position,
+MapText::MapText(unsigned int _locId, float _width, float _height, ofPoint _position,
 		AudioPlayer* _player, Symbol*_label, bool _option) :
 		TextFrame(_width, _height, _position, _player, _option)
 
 {
 	label = _label;
+	id = _locId;
 }
 
 MapText::~MapText()

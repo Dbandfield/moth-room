@@ -13,6 +13,8 @@ public:
 	MapContainer(float _width, float _height);
 	virtual ~MapContainer();
 
+	void addChild(Symbol* _child);
+
 	float getHeight(){return height;}
 	float getWidth(){return width;}
 
@@ -21,7 +23,7 @@ public:
 	void setPosition(ofPoint _pt);
 	void setPosition(float _x, float _y);
 
-	void setText(std::string _txt, float _propX, float _propY, Symbol* _label);
+	void setText(unsigned int _locId, std::string _txt, float _propX, float _propY, Symbol* _label);
 
 	void setWidth(float _w);
 
@@ -32,6 +34,7 @@ protected:
 
 	void recalcMapPos();
 	std::map<unsigned int, unsigned int> connections;
+	std::map<unsigned int, unsigned int> idToIndex;
 
 
 };

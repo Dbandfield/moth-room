@@ -307,7 +307,8 @@ void GameControl::listLocations(Args _arg)
 		Args a1;
 		a1.push_back(it.first);
 
-		displayControl->addMapOption(it.second->getRelX(), it.second->getRelY(),
+		ofLog() << "[GAME_CONTROL] - adding map option";
+		displayControl->addMapOption(it.first, it.second->getRelX(), it.second->getRelY(),
 				AREA_MAIN, 1, txt, &GameControl::moveLocation, a1, linkVec, label,
 				FONT_SMALL);
 	}

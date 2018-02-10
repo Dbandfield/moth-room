@@ -444,10 +444,11 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	return frame;
 }
 
-MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY,
-		std::string _str, GameControl* _gc, void (GameControl::*_f)(Args),
-		Args _arg, AudioPlayer* _player, std::vector<unsigned int> _links,
-		Symbol* _label, FONT_SIZE _sz, bool _isSecret, bool _background)
+MapText* DisplayArea::addMapOption(unsigned int _p, unsigned int _locId,
+		float _relX, float _relY, std::string _str, GameControl* _gc,
+		void (GameControl::*_f)(Args), Args _arg, AudioPlayer* _player,
+		std::vector<unsigned int> _links, Symbol* _label, FONT_SIZE _sz,
+		bool _isSecret, bool _background)
 {
 	ofLog(OF_LOG_VERBOSE) << "[Display Control] Adding Text " << _str;
 
@@ -469,7 +470,7 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY,
 
 	}
 
-	MapText* frame = new MapText(40, 40, pt, m_audio, _label, true);
+	MapText* frame = new MapText(_locId, 40, 40, pt, m_audio, _label, true);
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
@@ -501,7 +502,7 @@ MapText* DisplayArea::addMapOption(unsigned int _p, float _relX, float _relY,
 	for (auto it : _links)
 	{
 		MapContainer* m = static_cast<MapContainer*>(containers[_p]);
-		m->addConnection(_p, it);
+		m->addConnection(_locId, it);
 	}
 
 	if (fontLarge != nullptr)

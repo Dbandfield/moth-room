@@ -185,12 +185,12 @@ Symbol* DisplayControl::addOption(DISPLAY_AREA _area, unsigned int _p,
 	return fr;
 }
 
-Symbol* DisplayControl::addMapOption(float _relX, float _relY, DISPLAY_AREA _area,
+Symbol* DisplayControl::addMapOption(unsigned int _locId, float _relX, float _relY, DISPLAY_AREA _area,
 		unsigned int _p, std::string _str, void (GameControl::*_f)(Args),
 		Args _arg, std::vector<unsigned int> _links, Symbol* _label,
 		FONT_SIZE _sz)
 {
-	MapText* fr = areas[_area]->addMapOption(_p, _relX, _relY, _str,
+	MapText* fr = areas[_area]->addMapOption(_p, _locId, _relX, _relY, _str,
 			gameControl, _f, _arg, m_audioPlayer, _links, _label, _sz);
 
 	options.push_back(fr);
