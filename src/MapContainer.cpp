@@ -80,8 +80,8 @@ void MapContainer::recalcMapPos()
 		MapText* txt = static_cast<MapText*>(it);
 
 		txt->setPosition(
-				ofPoint(position.x + (width * txt->getPropX()),
-						position.y + (height * txt->getPropY())));
+				ofPoint(position.x + marginLeft + (width * txt->getPropX()),
+						position.y + marginRight + (height * txt->getPropY())));
 	}
 }
 

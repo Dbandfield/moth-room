@@ -7,12 +7,12 @@
 namespace moth
 {
 
-class MothLocation: public Location
+class MajorMothLocation: public Location
 {
 public:
-	MothLocation(MothLocation* _loc);
-	MothLocation(std::string _description, unsigned int _id, float _x, float _y);
-	virtual ~MothLocation();
+	MajorMothLocation(MajorMothLocation* _loc);
+	MajorMothLocation(std::string _description, unsigned int _id, float _x, float _y);
+	virtual ~MajorMothLocation();
 
 	void addInvalidSecret(unsigned int _secret);
 

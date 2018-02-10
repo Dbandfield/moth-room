@@ -5,36 +5,36 @@
  *      Author: daniel
  */
 
-#include "MothLocation.h"
+#include <MajorMothLocation.h>
 
 namespace moth
 {
 
-MothLocation::MothLocation(MothLocation* _loc):	Location(_loc)
+MajorMothLocation::MajorMothLocation(MajorMothLocation* _loc):	Location(_loc)
 {
 	opinion = _loc->opinion;
 	m_invalidSecrets = _loc->m_invalidSecrets;
 
 }
 
-MothLocation::MothLocation(std::string _description, unsigned int _id, float _x, float _y) :
+MajorMothLocation::MajorMothLocation(std::string _description, unsigned int _id, float _x, float _y) :
 		Location(_description, _id, _x, _y)
 {
-	m_type = LOCATION_MOTH;
+	m_type = LOCATION_MAJ_MOTH;
 
 	opinion = 50;
 }
 
-MothLocation::~MothLocation()
+MajorMothLocation::~MajorMothLocation()
 {
 }
 
-void MothLocation::addInvalidSecret(unsigned int _secret)
+void MajorMothLocation::addInvalidSecret(unsigned int _secret)
 {
 	m_invalidSecrets.push_back(_secret);
 }
 
-bool MothLocation::tellTheMothASecret(Secret* _secret)
+bool MajorMothLocation::tellTheMothASecret(Secret* _secret)
 {
 	if (isValid(_secret))
 	{
@@ -49,7 +49,7 @@ bool MothLocation::tellTheMothASecret(Secret* _secret)
 	}
 }
 
-bool MothLocation::isValid(Secret* _secret)
+bool MajorMothLocation::isValid(Secret* _secret)
 {
 	return std::find(m_invalidSecrets.begin(), m_invalidSecrets.end(),
 			_secret->getId()) == m_invalidSecrets.end();

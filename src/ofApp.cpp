@@ -82,7 +82,9 @@ void ofApp::update()
 			ofLog(OF_LOG_VERBOSE)
 					<< "[ofApp] Locations loaded, transferring to game control";
 			gameControl->setLocations(dataLoader->getAllLocations(),
-					dataLoader->getMothLocations(),
+					dataLoader->getMajMothLocations(),
+
+					dataLoader->getMinMothLocations(),
 					dataLoader->getObstacleLocations(),
 					dataLoader->getNormalLocations());
 

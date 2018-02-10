@@ -119,10 +119,12 @@ void TextContainer::setFontSize(FONT_SIZE _sz)
 float TextContainer::getHeight()
 {
 	float h = 0;
+	h += marginTop;
 	for (auto i : children)
 	{
 		h += i->getHeight();
 	}
+	h += marginBottom;
 
 	return h;
 }

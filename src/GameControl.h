@@ -41,7 +41,8 @@ public:
 	void reset(Args _arg);
 
 	void setLocations(std::map<unsigned int, Location*> _all,
-			std::map<unsigned int, MothLocation*> _moth,
+			std::map<unsigned int, MajorMothLocation*> _majMoth,
+			std::map<unsigned int, MinorMothLocation*> _minMoth,
 			std::map<unsigned int, ObstacleLocation*> _obstacle,
 			std::map<unsigned int, Location*> _normal);
 
@@ -62,12 +63,14 @@ protected:
 	bool knowsSkill(unsigned int _skill);
 
 	std::map<unsigned int, Location*> allLocationsOriginal;
-	std::map<unsigned int, MothLocation*> mothLocationsOriginal;
+	std::map<unsigned int, MajorMothLocation*> majMothLocationsOriginal;
+	std::map<unsigned int, MinorMothLocation*> minMothLocationsOriginal;
 	std::map<unsigned int, ObstacleLocation*> obstacleLocationsOriginal;
 	std::map<unsigned int, Location*> normalLocationsOriginal;
 
 	std::map<unsigned int, Location*> allLocations;
-	std::map<unsigned int, MothLocation> mothLocations;
+	std::map<unsigned int, MajorMothLocation> majMothLocations;
+	std::map<unsigned int, MinorMothLocation> minMothLocations;
 	std::map<unsigned int, ObstacleLocation> obstacleLocations;
 	std::map<unsigned int, Location> normalLocations;
 

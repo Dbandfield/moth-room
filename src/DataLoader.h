@@ -8,7 +8,8 @@
 
 #include "enums.h"
 #include "Location.h"
-#include "MothLocation.h"
+#include "MajorMothLocation.h"
+#include "MinorMothLocation.h"
 #include "ObstacleLocation.h"
 #include "StoryNode.h"
 #include "Secret.h"
@@ -28,7 +29,8 @@ public:
 
 	ofTrueTypeFont& getFont(FONT_SIZE _size);
 	std::map<unsigned int, Location*> getAllLocations();
-	std::map<unsigned int, MothLocation*> getMothLocations();
+	std::map<unsigned int, MajorMothLocation*> getMajMothLocations();
+	std::map<unsigned int, MinorMothLocation*> getMinMothLocations();
 	std::map<unsigned int, ObstacleLocation*> getObstacleLocations();
 	std::map<unsigned int, Location*> getNormalLocations();
 	std::map<unsigned int, Secret*> getSecrets();
@@ -91,7 +93,8 @@ protected:
 	/* LOCATIONS */
 	bool allLocationsLoaded;
 	std::map<unsigned int, Location*> m_allLocations;
-	std::map<unsigned int, MothLocation*> m_mothLocations;
+	std::map<unsigned int, MajorMothLocation*> m_majMothLocations;
+	std::map<unsigned int, MinorMothLocation*> m_minMothLocations;
 	std::map<unsigned int, ObstacleLocation*> m_obstacleLocations;
 	std::map<unsigned int, Location*> m_normalLocations;
 

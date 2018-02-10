@@ -172,7 +172,7 @@ void Letter::calculateSize()
 		if (text == " ")
 		{
 			width = currentFont->stringWidth("p");
-			height = currentFont->stringHeight("p");
+			height = currentFont->stringHeight("R");
 		}
 		else
 		{

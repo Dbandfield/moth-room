@@ -340,10 +340,10 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 	{
 		TextContainer* cont = new TextContainer(FLOW_VERTICAL);
 		cont->setLayer(layer);
-		cont->setMargin(MARGIN_TOP, 32);
-		cont->setMargin(MARGIN_RIGHT, 32);
-		cont->setMargin(MARGIN_LEFT, 32);
-		cont->setMargin(MARGIN_BOTTOM, 32);
+		cont->setMargin(MARGIN_TOP, 8);
+		cont->setMargin(MARGIN_RIGHT, 8);
+		cont->setMargin(MARGIN_LEFT, 8);
+		cont->setMargin(MARGIN_BOTTOM, 8);
 		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
@@ -352,10 +352,10 @@ TextFrame* DisplayArea::addText(unsigned int _p, std::string _str,
 
 	frame->setText(_str);
 	frame->setFontSize(_sz);
-	frame->setMargin(MARGIN_TOP, 16);
-	frame->setMargin(MARGIN_RIGHT, 32);
-	frame->setMargin(MARGIN_LEFT, 32);
-	frame->setMargin(MARGIN_BOTTOM, 16);
+	frame->setMargin(MARGIN_TOP, 8);
+	frame->setMargin(MARGIN_RIGHT, 8);
+	frame->setMargin(MARGIN_LEFT, 8);
+	frame->setMargin(MARGIN_BOTTOM, 8);
 	frame->setLayer(layer);
 
 	auto vec = frame->getChildren();
@@ -391,10 +391,10 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 	{
 		TextContainer* cont = new TextContainer(_flow);
 		cont->setLayer(layer);
-		cont->setMargin(MARGIN_TOP, 32);
-		cont->setMargin(MARGIN_RIGHT, 32);
-		cont->setMargin(MARGIN_LEFT, 32);
-		cont->setMargin(MARGIN_BOTTOM, 32);
+		cont->setMargin(MARGIN_TOP, 8);
+		cont->setMargin(MARGIN_RIGHT, 16);
+		cont->setMargin(MARGIN_LEFT, 16);
+		cont->setMargin(MARGIN_BOTTOM, 8);
 		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
@@ -406,18 +406,18 @@ TextFrame* DisplayArea::addOption(unsigned int _p, std::string _str,
 
 	if (_background)
 	{
-		frame->setMargin(MARGIN_TOP, 0);
+		frame->setMargin(MARGIN_TOP, 8);
 		frame->setMargin(MARGIN_RIGHT, 16);
 		frame->setMargin(MARGIN_LEFT, 16);
-		frame->setMargin(MARGIN_BOTTOM, 0);
+		frame->setMargin(MARGIN_BOTTOM, 8);
 		frame->setColour(ofColor(0, 0, 0));
 	}
 	else
 	{
-		frame->setMargin(MARGIN_TOP, 16);
-		frame->setMargin(MARGIN_RIGHT, 32);
-		frame->setMargin(MARGIN_LEFT, 32);
-		frame->setMargin(MARGIN_BOTTOM, 16);
+		frame->setMargin(MARGIN_TOP, 8);
+		frame->setMargin(MARGIN_RIGHT, 16);
+		frame->setMargin(MARGIN_LEFT, 16);
+		frame->setMargin(MARGIN_BOTTOM, 8);
 	}
 	frame->setCallback(_gc, _f, _arg);
 	frame->setLayer(layer);
@@ -462,10 +462,10 @@ MapText* DisplayArea::addMapOption(unsigned int _p, unsigned int _locId,
 	{
 		MapContainer* cont = new MapContainer(600, 400);
 		cont->setLayer(layer);
-		cont->setMargin(MARGIN_TOP, 32);
-		cont->setMargin(MARGIN_RIGHT, 32);
-		cont->setMargin(MARGIN_LEFT, 32);
-		cont->setMargin(MARGIN_BOTTOM, 32);
+		cont->setMargin(MARGIN_TOP, 16);
+		cont->setMargin(MARGIN_RIGHT, 8);
+		cont->setMargin(MARGIN_LEFT, 8);
+		cont->setMargin(MARGIN_BOTTOM, 16);
 		containers.insert(std::pair<unsigned int, TextContainer*>(_p, cont));
 
 	}
@@ -478,18 +478,18 @@ MapText* DisplayArea::addMapOption(unsigned int _p, unsigned int _locId,
 
 	if (_background)
 	{
-		frame->setMargin(MARGIN_TOP, 0);
-		frame->setMargin(MARGIN_RIGHT, 16);
-		frame->setMargin(MARGIN_LEFT, 16);
-		frame->setMargin(MARGIN_BOTTOM, 0);
+		frame->setMargin(MARGIN_TOP, 8);
+		frame->setMargin(MARGIN_RIGHT, 8);
+		frame->setMargin(MARGIN_LEFT, 8);
+		frame->setMargin(MARGIN_BOTTOM, 8);
 		frame->setColour(ofColor(0, 0, 0));
 	}
 	else
 	{
-		frame->setMargin(MARGIN_TOP, 16);
-		frame->setMargin(MARGIN_RIGHT, 32);
-		frame->setMargin(MARGIN_LEFT, 32);
-		frame->setMargin(MARGIN_BOTTOM, 16);
+		frame->setMargin(MARGIN_TOP, 8);
+		frame->setMargin(MARGIN_RIGHT, 16);
+		frame->setMargin(MARGIN_LEFT, 16);
+		frame->setMargin(MARGIN_BOTTOM, 8);
 	}
 	frame->setCallback(_gc, _f, _arg);
 	frame->setLayer(layer);

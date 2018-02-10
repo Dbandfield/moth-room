@@ -206,9 +206,14 @@ std::map<unsigned int, Location*> DataLoader::getAllLocations()
 	return m_allLocations;
 }
 
-std::map<unsigned int, MothLocation*> DataLoader::getMothLocations()
+std::map<unsigned int, MajorMothLocation*> DataLoader::getMajMothLocations()
 {
-	return m_mothLocations;
+	return m_majMothLocations;
+}
+
+std::map<unsigned int, MinorMothLocation*> DataLoader::getMinMothLocations()
+{
+	return m_minMothLocations;
 }
 
 std::map<unsigned int, ObstacleLocation*> DataLoader::getObstacleLocations()
@@ -353,12 +358,12 @@ void DataLoader::loadLocations()
 						std::pair<unsigned int, Location*>(locId, loc));
 			}
 			// MOTH
-			else if (type == "moth")
+			else if (type == "major-moth")
 			{
-				loc = new MothLocation(locDesc, locId, x, y);
-				m_mothLocations.insert(
-						std::pair<unsigned int, MothLocation*>(locId,
-								static_cast<MothLocation*>(loc)));
+				loc = new MajorMothLocation(locDesc, locId, x, y);
+				m_majMothLocations.insert(
+						std::pair<unsigned int, MajorMothLocation*>(locId,
+								static_cast<MajorMothLocation*>(loc)));
 
 				size_t numInvalidSecret = locationsXml.getNumTags(
 						"invalid-secret");
@@ -371,9 +376,16 @@ void DataLoader::loadLocations()
 						invSs << locationsXml.getValue("link-blocked", "0", j);
 						invSs >> inv;
 
-						static_cast<MothLocation*>(loc)->addInvalidSecret(inv);
+						static_cast<MajorMothLocation*>(loc)->addInvalidSecret(inv);
 					}
 				}
+			}
+			else if (type == "minor-moth")
+			{
+				loc = new MinorMothLocation(locDesc, locId, x, y);
+				m_minMothLocations.insert(
+						std::pair<unsigned int, MinorMothLocation*>(locId,
+								static_cast<MinorMothLocation*>(loc)));
 			}
 			// OBSTACLE
 			else if (type == "obstacle")
@@ -416,7 +428,7 @@ void DataLoader::loadLocations()
 			else
 			{
 				ofLog(OF_LOG_ERROR)
-						<< "[ERROR] - invalid type for location from xml";
+						<< "[ERROR] - invalid type for location from xml: " << type;
 			}
 
 			if (numLinks > 0)

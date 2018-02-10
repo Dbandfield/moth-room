@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 namespace moth
 {
@@ -67,7 +68,8 @@ enum RESPONSE
 enum LOCATION
 {
 	LOCATION_NORMAL,
-	LOCATION_MOTH,
+	LOCATION_MAJ_MOTH,
+	LOCATION_MIN_MOTH,
 	LOCATION_OBSTACLE
 };
 
@@ -78,5 +80,30 @@ enum AUDIO
 	AUDIO_EAT,
 	AUDIO_SECRET
 };
+
+enum PERSONALITY
+{
+	PER_ANGRY,
+	PER_KIND,
+	PER_ENVIOUS,
+	PER_SHY,
+	PER_GREGARIOUS,
+	PER_GENEROUS,
+	PER_PROUD,
+	PER_GUARDED,
+	PER_DUPLICITOUS,
+	_PER_NUM
+};
+
+enum SOCIAL
+{
+	SOC_ADMIRE,
+	SOC_MIRROR,
+	SOC_INTIMIDATE,
+	SOC_LAUGH,
+	SOC_SYMPATHISE,
+	_SOC_NUM
+};
+
 
 }

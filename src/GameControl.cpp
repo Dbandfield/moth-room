@@ -16,6 +16,11 @@ GameControl::GameControl()
 
 	hunger = 100;
 	humanity = 100;
+
+	currentLocationType = LOCATION_NORMAL;
+	m_audioPlayer = nullptr;
+	currentNode = 0;
+	displayControl = nullptr;
 }
 
 GameControl::~GameControl()
@@ -45,12 +50,12 @@ void GameControl::tellSecret(Args _arg)
 	std::string txt = "";
 
 	Secret* sec = m_allSecrets[_arg[0]];
-	MothLocation* mothLoc;
+	MajorMothLocation* mothLoc;
 	switch (currentLocation->getType())
 	{
-	case LOCATION_MOTH:
+	case LOCATION_MAJ_MOTH:
 
-		mothLoc = static_cast<MothLocation*>(currentLocation);
+		mothLoc = static_cast<MajorMothLocation*>(currentLocation);
 
 		txt = "You tell the moth a secret ... ";
 		displayControl->addText(AREA_MAIN, 0, txt, FONT_SMALL);
@@ -73,6 +78,7 @@ void GameControl::tellSecret(Args _arg)
 
 		break;
 
+	case LOCATION_MIN_MOTH:
 	case LOCATION_NORMAL:
 	case LOCATION_OBSTACLE:
 		txt = "No one here wants to hear your secrets.";
@@ -129,7 +135,8 @@ void GameControl::useSkill(Args _arg)
 		break;
 
 	case LOCATION_NORMAL:
-	case LOCATION_MOTH:
+	case LOCATION_MAJ_MOTH:
+	case LOCATION_MIN_MOTH:
 		txt += "This neither the time nor place to show off your skills.";
 		break;
 	}
@@ -293,8 +300,7 @@ void GameControl::listLocations(Args _arg)
 	ofLog() << "[GAME_CONTROL] - Setting layout of locations";
 
 	displayControl->setLayout(AREA_MAIN, layout);
-	displayControl->addText(AREA_MAIN, 0, "Fly to: ", FONT_MEDIUM);
-
+	displayControl->addText(AREA_MAIN, 0, "Fly to: ", FONT_SMALL);
 
 	Symbol* label = displayControl->addText(AREA_MAIN, 2, "", FONT_SMALL);
 
@@ -308,9 +314,9 @@ void GameControl::listLocations(Args _arg)
 		a1.push_back(it.first);
 
 		ofLog() << "[GAME_CONTROL] - adding map option";
-		displayControl->addMapOption(it.first, it.second->getRelX(), it.second->getRelY(),
-				AREA_MAIN, 1, txt, &GameControl::moveLocation, a1, linkVec, label,
-				FONT_SMALL);
+		displayControl->addMapOption(it.first, it.second->getRelX(),
+				it.second->getRelY(), AREA_MAIN, 1, txt,
+				&GameControl::moveLocation, a1, linkVec, label, FONT_SMALL);
 	}
 
 	Args a2;
@@ -424,7 +430,8 @@ void GameControl::learnSecret(Args _arg)
 
 bool GameControl::likedEnoughByMoth(unsigned int _thresh)
 {
-	return (static_cast<MothLocation*>(currentLocation)->getOpinion() > _thresh);
+	return (static_cast<MajorMothLocation*>(currentLocation)->getOpinion()
+			> _thresh);
 }
 
 void GameControl::setSecrets(std::map<unsigned int, Secret*> _secrets)
@@ -444,12 +451,14 @@ bool GameControl::knowsSkill(unsigned int _skill)
 }
 
 void GameControl::setLocations(std::map<unsigned int, Location*> _all,
-		std::map<unsigned int, MothLocation*> _moth,
+		std::map<unsigned int, MajorMothLocation*> _majMoth,
+		std::map<unsigned int, MinorMothLocation*> _minMoth,
 		std::map<unsigned int, ObstacleLocation*> _obstacle,
 		std::map<unsigned int, Location*> _normal)
 {
 	allLocationsOriginal = _all;
-	mothLocationsOriginal = _moth;
+	majMothLocationsOriginal = _majMoth;
+	minMothLocationsOriginal = _minMoth;
 	obstacleLocationsOriginal = _obstacle;
 	normalLocationsOriginal = _normal;
 
@@ -521,12 +530,22 @@ void GameControl::starved()
 
 void GameControl::reset(Args _arg)
 {
-	for (auto it : mothLocationsOriginal)
+	for (auto it : minMothLocationsOriginal)
 	{
-		mothLocations.insert(std::make_pair(it.first, MothLocation(it.second)));
+		minMothLocations.insert(
+				std::make_pair(it.first, MinorMothLocation(it.second)));
 		allLocations.insert(
 				std::make_pair(it.first,
-						&(mothLocations.find(it.first)->second)));
+						&(minMothLocations.find(it.first)->second)));
+	}
+
+	for (auto it : majMothLocationsOriginal)
+	{
+		majMothLocations.insert(
+				std::make_pair(it.first, MajorMothLocation(it.second)));
+		allLocations.insert(
+				std::make_pair(it.first,
+						&(majMothLocations.find(it.first)->second)));
 	}
 
 	for (auto it : obstacleLocationsOriginal)
@@ -569,7 +588,8 @@ void GameControl::advanceNode(Args _arg)
 		std::vector<float> layout;
 
 		layout.push_back(100.f);
-		if (currentLocation->getType() == LOCATION_MOTH)
+		if (currentLocation->getType() == LOCATION_MAJ_MOTH
+				|| currentLocation->getType() == LOCATION_MIN_MOTH)
 			layout.push_back(100.f);
 		layout.push_back(50.f);
 		layout.push_back(50.f);
@@ -587,9 +607,19 @@ void GameControl::advanceNode(Args _arg)
 
 		layoutNum++;
 
-		if (currentLocation->getType() == LOCATION_MOTH)
+		if (currentLocation->getType() == LOCATION_MAJ_MOTH)
 		{
-			MothLocation* moLoc = static_cast<MothLocation*>(currentLocation);
+			MajorMothLocation* moLoc = static_cast<MajorMothLocation*>(currentLocation);
+			std::stringstream ss;
+			ss << moLoc->getOpinion();
+			displayControl->addText(AREA_MAIN, layoutNum,
+					"[ likes you " + ss.str() + "% ]", FONT_SMALL);
+
+			layoutNum++;
+		}
+		else if (currentLocation->getType() == LOCATION_MIN_MOTH)
+		{
+			MinorMothLocation* moLoc = static_cast<MinorMothLocation*>(currentLocation);
 			std::stringstream ss;
 			ss << moLoc->getOpinion();
 			displayControl->addText(AREA_MAIN, layoutNum,
